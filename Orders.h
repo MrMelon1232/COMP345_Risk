@@ -4,7 +4,7 @@
 #include <string>
 
 
-class Order 
+class Order
 {
     public: 
         virtual ~Order() = default; 
@@ -18,11 +18,11 @@ class Deploy : public Order
 {
     public:
         Deploy();
-        virtual ~Deploy() = default; 
+        Deploy(const Deploy& d);
+        ~Deploy() override; 
         Deploy(const Deploy& d);
         void execute() override;
         bool validate() const override;
-
-
+        std::string getDescription() override; 
 };
 

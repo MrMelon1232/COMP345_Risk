@@ -3,14 +3,6 @@
 #include <iostream>
 
 
-class Order
-{
-    public:
-
-
-
-
-};
 
 
 class OrderList
@@ -29,6 +21,11 @@ class OrderList
         {
                 
         }
+
+};
+
+Deploy::Deploy()
+{
 
 };
 
