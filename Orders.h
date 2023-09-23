@@ -1,28 +1,75 @@
 #pragma once
 #include <iostream>
 #include <vector>
-#include <string>
-
 
 class Order
 {
-    public: 
-        virtual ~Order() = default; 
+        public: 
+        virtual Order* copy() const = 0;
         virtual void execute() = 0; 
         virtual bool validate() = 0; 
-        virtual std::string getDescription() const = 0;
-        virtual Order* copy() const = 0;
-}; 
+        virtual void orderExecuted() = 0
+};
 
 class Deploy : public Order
 {
     public:
         Deploy();
-        Deploy(const Deploy& d);
-        ~Deploy() override; 
-        Deploy(const Deploy& d);
+        Deploy* copy() const  override;
         void execute() override;
-        bool validate() const override;
-        std::string getDescription() override; 
+        bool validate() override;
+        void orderExecuted() override; 
 };
+
+class Advance : public Order
+{
+    public:
+        Advance();
+        Advance* copy() const  override;
+        void execute() override;
+        bool validate() override;
+        void orderExecuted() override; 
+};
+
+class Bomb : public Order
+{
+    public:
+        Bomb();
+        Bomb* copy() const  override; 
+        void execute() override;
+        bool validate() override;
+        void orderExecuted() override; 
+};
+
+class Blockade : public Order
+{
+    public:
+        Blockade();
+        Blockade* copy() const  override; 
+        void execute() override;
+        bool validate() override;
+        void orderExecuted() override; 
+};
+
+class Airlift : public Order
+{
+    public:
+        Airlift();
+        Airlift* copy() const  override; 
+        void execute() override;
+        bool validate() override;
+        void orderExecuted() override; 
+};
+
+class Negotiate : public Order
+{
+    public:
+        Negotiate();
+        Negotiate* copy() const  override; 
+        void execute() override;
+        bool validate() override;
+        void orderExecuted() override; 
+};
+
+
 
