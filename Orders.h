@@ -2,13 +2,14 @@
 #include <iostream>
 #include <vector>
 
+//----Order and all subclasses of Order----//
 class Order
 {
         public: 
         virtual Order* copy() const = 0;
         virtual void execute() = 0; 
         virtual bool validate() = 0; 
-        virtual void orderExecuted() = 0
+        virtual void orderExecuted() = 0;
 };
 
 class Deploy : public Order
@@ -18,7 +19,10 @@ class Deploy : public Order
         Deploy* copy() const  override;
         void execute() override;
         bool validate() override;
-        void orderExecuted() override; 
+        void orderExecuted() override;
+
+    private:
+        int numArmyUnits; 
 };
 
 class Advance : public Order
@@ -29,6 +33,9 @@ class Advance : public Order
         void execute() override;
         bool validate() override;
         void orderExecuted() override; 
+    
+    private:
+        int numArmyUnits; 
 };
 
 class Bomb : public Order
@@ -59,6 +66,8 @@ class Airlift : public Order
         void execute() override;
         bool validate() override;
         void orderExecuted() override; 
+    private:
+        int numArmyUnits;
 };
 
 class Negotiate : public Order
@@ -70,6 +79,24 @@ class Negotiate : public Order
         bool validate() override;
         void orderExecuted() override; 
 };
+
+//----End of Order and all subclasses of Order----//
+
+//----OrderList-----//
+
+class OrderList
+{
+    public:
+        OrderList();
+        void add(Order* O);
+        int getSize();
+        void remove(int i);
+        void move(int initial, int final);
+
+    private: 
+        std::vector<Order*> listOfOrders;
+}; 
+
 
 
 

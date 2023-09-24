@@ -3,25 +3,6 @@
 #include <iostream>
 using namespace std;
 
-class OrderList
-{
-    private: 
-        std::vector<Order*> ordersList;
-
-    public:
-    //Default Constructor
-        OrderList()
-        {
-      
-        }      
-
-        OrderList(OrderList &O)
-        {
-                
-        }
-
-};
-
 
 //-------Below are function definitions for classes that inherit from Order---------//
 
@@ -179,6 +160,50 @@ bool Negotiate::validate()
 void Negotiate::orderExecuted()
 {
     cout << "NEGOTIATE order has been executed \n";
+}
+
+//-------End of function definitions for classes that inherit from Order---------//
+
+//-------OrderList and respective methods definition---------//
+
+//Default constructor
+OrderList::OrderList()
+{
+
+}
+
+//Adds an object of type "Order" to the list
+void OrderList::add(Order* O)
+{
+    listOfOrders.push_back(O); 
+}
+
+//Returns the size of the list
+int OrderList::getSize()
+{
+    return listOfOrders.size(); 
+}
+
+//Removes an Order at an index "i"
+void OrderList::remove(int i)
+{
+    int listSize = this -> getSize();
+
+    if(listSize = 0)
+    {
+        cout << "The list for Orders is empty. We cannot remove the order!";
+        return; 
+    } 
+
+    if((i<0) || (i > listSize-1))
+    {
+        cout << "Index out of bound error, order cannot be removed!";
+        return; 
+    }
+
+    
+
+
 }
 
 
