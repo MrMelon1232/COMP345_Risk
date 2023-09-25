@@ -201,12 +201,37 @@ void OrderList::remove(int i)
         return; 
     }
 
-    
+    //using an iterator to reach the index 
+    auto myIterator = listOfOrders.begin(); 
+    std::advance(myIterator, i);
 
+    //deleting the content of the pointer
+    delete *myIterator;
 
+    //erasing the pointer
+    listOfOrders.erase(myIterator); 
 }
 
+void OrderList::move(int initial,int final)
+{
+    int listSize = this -> getSize();
 
+    if(initial < 0 || final < 0 || initial > listSize -1 || final > listSize -1)
+    {
+        cout << "Invalid indices provided, cannot move order!";
+        return;
+    }
+
+    if(initial == final)
+    {
+        cout << "Cannot move order, it is already in destination!";
+        return;
+    }
+
+    Order* temp = listOfOrders.at(initial);
+    listOfOrders.at(initial) = listOfOrders.at(final);
+    listOfOrders.at(final) = temp;
+}
 
 
 
