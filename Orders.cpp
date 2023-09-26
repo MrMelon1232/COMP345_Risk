@@ -19,17 +19,26 @@ Deploy* Deploy::copy() const
 
 void Deploy::execute()
 {
-
+    if(validate() == true)
+    {
+        cout<<"Executing Deploy";
+    }
 }
 
 bool Deploy::validate()
 {
-
+    return true; 
 }
 
-void Deploy::orderExecuted()
+Deploy& Deploy::operator=(const Deploy &other)
 {
-    cout << "DEPLOY order has been executed \n";
+    return; 
+}
+
+ostream& Deploy::displayOrder(ostream &myOrder) const 
+{
+    myOrder << "Deploying...";
+    return myOrder;
 }
 
 //Function Definition for Advance
@@ -45,18 +54,28 @@ Advance* Advance::copy() const
 
 void Advance::execute()
 {
-
+    if(validate() == true)
+    {
+        cout <<"Executing Advance";
+    }
 }
 
 bool Advance::validate()
 {
-
+    return true;
 }
 
-void Advance::orderExecuted()
+Advance& Advance::operator=(const Advance &other)
 {
-    cout << "ADVANCE order has been executed \n";
+    return; 
 }
+
+ostream& Advance::displayOrder(ostream &myOrder) const 
+{
+    myOrder << "Advancing...";
+    return myOrder;
+}
+
 
 //Function Definition for Bomb
 Bomb::Bomb()
@@ -71,18 +90,28 @@ Bomb* Bomb::copy() const
 
 void Bomb::execute()
 {
-
+    if(validate() == true)
+    {
+        cout<<"Executing Bomb";
+    }
 }
 
 bool Bomb::validate()
 {
-
+    return true; 
 }
 
-void Bomb::orderExecuted()
+Bomb& Bomb::operator=(const Bomb &other)
 {
-    cout << "BOMB order has been executed \n";
+    return; 
 }
+
+ostream& Bomb::displayOrder(ostream &myOrder) const 
+{
+    myOrder << "Bombing...";
+    return myOrder;
+}
+
 
 //Function Definition for Blockade
 Blockade::Blockade()
@@ -97,18 +126,28 @@ Blockade* Blockade::copy() const
 
 void Blockade::execute()
 {
-
+    if(validate() == true)
+    {
+        cout<<"Executing Blockade";
+    }
 }
 
 bool Blockade::validate()
 {
-
+    return true; 
 }
 
-void Blockade::orderExecuted()
+Blockade& Blockade::operator=(const Blockade &other)
 {
-    cout << "BLOCKADE order has been executed \n";
+    return; 
 }
+
+ostream& Blockade::displayOrder(ostream &myOrder) const 
+{
+    myOrder << "Blockade...";
+    return myOrder;
+}
+
 
 //Function Definition for Airlift
 Airlift::Airlift()
@@ -123,18 +162,28 @@ Airlift* Airlift::copy() const
 
 void Airlift::execute()
 {
-
+    if(validate() == true)
+    {
+        cout<<"Executing Airlift";
+    }
 }
 
 bool Airlift::validate()
 {
-
+    return true; 
 }
 
-void Airlift::orderExecuted()
+Airlift& Airlift::operator=(const Airlift &other)
 {
-    cout << "AIRLIFT order has been executed \n";
+    return; 
 }
+
+ostream& Airlift::displayOrder(ostream &myOrder) const 
+{
+    myOrder << "Airlifting to...";
+    return myOrder;
+}
+
 
 //Function Definition for Negotiate
 Negotiate::Negotiate()
@@ -149,22 +198,32 @@ Negotiate* Negotiate::copy() const
 
 void Negotiate::execute()
 {
-
+    if(validate() == true)
+    {
+        cout<<"Executing Negotiate";
+    }
 }
 
 bool Negotiate::validate()
 {
-
+    return true;
 }
 
-void Negotiate::orderExecuted()
+Negotiate& Negotiate::operator=(const Negotiate &other)
 {
-    cout << "NEGOTIATE order has been executed \n";
+    return; 
+}
+
+ostream& Negotiate::displayOrder(ostream &myOrder) const 
+{
+    myOrder << "Negotiating...";
+    return myOrder;
 }
 
 //-------End of function definitions for classes that inherit from Order---------//
 
 //-------OrderList and respective methods definition---------//
+
 
 //Default constructor
 OrderList::OrderList()
@@ -203,7 +262,7 @@ void OrderList::remove(int i)
 
     //using an iterator to reach the index 
     auto myIterator = listOfOrders.begin(); 
-    std::advance(myIterator, i);
+    advance(myIterator, i);
 
     //deleting the content of the pointer
     delete *myIterator;
@@ -233,7 +292,26 @@ void OrderList::move(int initial,int final)
     listOfOrders.at(final) = temp;
 }
 
+ostream& OrderList::displayOrderList(ostream& myOrderList)
+{
+    //we will display the list numbered and we will increment the variable number after each iteration
+    int number = 1; 
 
+    myOrderList << "Orders List: " << '\n';
+
+    //for loop to go over every order in the list
+    for (Order* orderObject: listOfOrders) 
+    {
+        myOrderList << number++ << ". " << *orderObject << '\n';
+    }
+    
+    return myOrderList;
+}
+
+OrderList& OrderList::operator=(const OrderList &other)
+{
+    return; 
+} 
 
 
     
