@@ -6,6 +6,11 @@ using namespace std;
 
 //-------Below are function definitions for classes that inherit from Order---------//
 
+
+ Order::Order()
+ {
+ }
+
 //Function Definition for Deploy
 Deploy::Deploy()
 {
@@ -32,13 +37,18 @@ bool Deploy::validate()
 
 Deploy& Deploy::operator=(const Deploy &other)
 {
-    return; 
+    return *this;
 }
 
 ostream& Deploy::displayOrder(ostream &myOrder) const 
 {
-    myOrder << "Deploying...";
+    myOrder << "Deploy";
     return myOrder;
+}
+
+ostream& operator<< (ostream& myOrder, Order& O)
+{
+    return O.displayOrder(myOrder); 
 }
 
 //Function Definition for Advance
@@ -67,12 +77,12 @@ bool Advance::validate()
 
 Advance& Advance::operator=(const Advance &other)
 {
-    return; 
+    return *this;
 }
 
 ostream& Advance::displayOrder(ostream &myOrder) const 
 {
-    myOrder << "Advancing...";
+    myOrder << "Advance";
     return myOrder;
 }
 
@@ -103,12 +113,12 @@ bool Bomb::validate()
 
 Bomb& Bomb::operator=(const Bomb &other)
 {
-    return; 
+    return *this;
 }
 
 ostream& Bomb::displayOrder(ostream &myOrder) const 
 {
-    myOrder << "Bombing...";
+    myOrder << "Bomb";
     return myOrder;
 }
 
@@ -139,12 +149,12 @@ bool Blockade::validate()
 
 Blockade& Blockade::operator=(const Blockade &other)
 {
-    return; 
+    return *this; 
 }
-
+ 
 ostream& Blockade::displayOrder(ostream &myOrder) const 
 {
-    myOrder << "Blockade...";
+    myOrder << "Blockade";
     return myOrder;
 }
 
@@ -175,12 +185,12 @@ bool Airlift::validate()
 
 Airlift& Airlift::operator=(const Airlift &other)
 {
-    return; 
+    return *this;
 }
 
 ostream& Airlift::displayOrder(ostream &myOrder) const 
 {
-    myOrder << "Airlifting to...";
+    myOrder << "Airlift";
     return myOrder;
 }
 
@@ -211,12 +221,12 @@ bool Negotiate::validate()
 
 Negotiate& Negotiate::operator=(const Negotiate &other)
 {
-    return; 
+    return *this;
 }
 
 ostream& Negotiate::displayOrder(ostream &myOrder) const 
 {
-    myOrder << "Negotiating...";
+    myOrder << "Negotiate";
     return myOrder;
 }
 
@@ -226,37 +236,37 @@ ostream& Negotiate::displayOrder(ostream &myOrder) const
 
 
 //Default constructor
-OrderList::OrderList()
+OrdersList::OrdersList()
 {
 
 }
 
 //Adds an object of type "Order" to the list
-void OrderList::add(Order* O)
+void OrdersList::add(Order* O)
 {
     listOfOrders.push_back(O); 
 }
 
 //Returns the size of the list
-int OrderList::getSize()
+int OrdersList::getSize()
 {
     return listOfOrders.size(); 
 }
 
 //Removes an Order at an index "i"
-void OrderList::remove(int i)
+void OrdersList::remove(int i)
 {
     int listSize = this -> getSize();
 
     if(listSize = 0)
     {
-        cout << "The list for Orders is empty. We cannot remove the order!";
+        cout << "The list for Orders is empty. We cannot remove the order!"<<'\n';
         return; 
     } 
 
-    if((i<0) || (i > listSize-1))
+    if ((i < 0) || (i >= this -> getSize()))
     {
-        cout << "Index out of bound error, order cannot be removed!";
+        cout << "Index out of bound error, order cannot be removed!"<<'\n';
         return; 
     }
 
@@ -271,7 +281,7 @@ void OrderList::remove(int i)
     listOfOrders.erase(myIterator); 
 }
 
-void OrderList::move(int initial,int final)
+void OrdersList::move(int initial,int final)
 {
     int listSize = this -> getSize();
 
@@ -292,7 +302,7 @@ void OrderList::move(int initial,int final)
     listOfOrders.at(final) = temp;
 }
 
-ostream& OrderList::displayOrderList(ostream& myOrderList)
+ostream& OrdersList::displayOrderList(ostream& myOrderList)
 {
     //we will display the list numbered and we will increment the variable number after each iteration
     int number = 1; 
@@ -308,10 +318,20 @@ ostream& OrderList::displayOrderList(ostream& myOrderList)
     return myOrderList;
 }
 
-OrderList& OrderList::operator=(const OrderList &other)
+ostream& operator << (ostream& myOrderList, OrdersList& Olist)
 {
-    return; 
+    return Olist.displayOrderList(myOrderList);
+}
+
+OrdersList& OrdersList::operator=(const OrdersList &other)
+{
+    return *this;
 } 
+
+OrdersList::~OrdersList()
+{
+
+}
 
 
     

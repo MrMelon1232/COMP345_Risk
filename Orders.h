@@ -6,14 +6,15 @@ using namespace std;
 //----Order and all subclasses of Order----//
 class Order
 {
-    public: 
+    public:
+        Order();   
         virtual Order* copy() const = 0;
         virtual void execute() = 0; 
         virtual bool validate() = 0; 
         virtual ostream& displayOrder(ostream& myOrder) const = 0;
 
     private:
-        friend ostream& operator<<(ostream& myOrder, Order& O);
+        friend ostream& operator<< (ostream& myOrder, Order& O);
 };
 
 class Deploy : public Order
@@ -26,8 +27,6 @@ class Deploy : public Order
         ostream& displayOrder(ostream& myOrder) const override;
         Deploy& operator=(const Deploy& other);
 
-    private:
-        int numArmyUnits; 
 };
 
 class Advance : public Order
@@ -39,9 +38,7 @@ class Advance : public Order
         bool validate() override; 
         ostream& displayOrder(ostream& myOrder) const override;
         Advance& operator=(const Advance& other);
-    
-    private:
-        int numArmyUnits; 
+
 };
 
 class Bomb : public Order
@@ -63,7 +60,7 @@ class Blockade : public Order
         void execute() override;
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
-        Bomb& operator=(const Bomb& other);
+        Blockade& operator=(const Blockade& other);
 };
 
 class Airlift : public Order
@@ -94,21 +91,23 @@ class Negotiate : public Order
 
 //----OrderList-----//
 
-class OrderList
+class OrdersList
 {
     public:
-        OrderList();
+        OrdersList();
         void add(Order* O);
         int getSize();
         void remove(int i);
         void move(int initial, int final);
         ostream& displayOrderList(ostream& myOrderList);
-        OrderList& operator=(const OrderList& other);
+        OrdersList& operator=(const OrdersList& other);
+        ~OrdersList(); 
 
     private: 
         std::vector<Order*> listOfOrders;
-        friend ostream& operator<<(ostream& myOrderList, OrderList& Olist);
+        friend ostream& operator<<(ostream& myOrderList, OrdersList& Olist);
 }; 
+
 
 
 
