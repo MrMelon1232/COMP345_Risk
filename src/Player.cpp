@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Orders.h"
 
 // Constructor
 Player:: Player() {
@@ -21,15 +22,6 @@ Player& Player:: operator=(const Player& other) {
 
 // Stream insertion operator
 std::ostream& operator<<(std::ostream& os, const Player& player) {
-    // Implement the stream insertion operator to output player information
-    os << "Player territories: ";
-    for (Territory* territory : player.territoriesOwned) {
-        os << territory->territoriesOwned() << " ";
-    }
-    os << "\nPlayer orders: ";
-    for (Order* order : player.orders) {
-        os << order->getDescription() << " ";
-    }
     return os;
 }
 
@@ -48,7 +40,30 @@ std::vector<Territory*> Player::toAttack() {
 }
 
 // Function that creates an order object and adds it to the list of orders
-void Player::issueOrder() {
-    Order* newOrder = new Order();
+void Player::issueOrder(OrderType type) {
+    Order* newOrder = nullptr;
+
+    // Check which type of order it is
+    if (type == OrderType::Deploy) {
+        newOrder = new Deploy();
+    } else if (type == OrderType::Advance) {
+        newOrder = new Advance();
+    } else if (type == OrderType::Bomb) {
+        newOrder = new Bomb();
+    } else if (type == OrderType::Blockade) {
+        newOrder = new Blockade();
+    } else if (type == OrderType::Airlift) {
+        newOrder = new Airlift();
+    } else if (type == OrderType::Negotiate) {
+        newOrder = new Negotiate();
+    }
+     
     orders.push_back(newOrder);
+}
+
+Player::~Player() {
+    // Destructor, clean up any allocated memory
+    for (Order* order : orders) {
+        delete order;
+    }
 }

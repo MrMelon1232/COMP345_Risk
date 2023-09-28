@@ -11,6 +11,7 @@ using namespace std;
 // Foward declaration of classes to be used for typing
 class Territory;
 class Order;
+enum class OrderType;
 
 // Declaration of Player class
 class Player 
@@ -46,7 +47,10 @@ class Player
         std::vector<Territory*> toAttack();
 
         // Creates order object and adds it to the list of orders
-        void issueOrder();
+        void issueOrder(OrderType type);
+
+        // Destructor to clean up resources
+        ~Player();
 };
 
 
