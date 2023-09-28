@@ -19,6 +19,4 @@ void testPlayers() {
     // Display player information using the overloaded stream insertion operator
     std::cout << "Player 1 Info:\n" << player1 << std::endl;
     std::cout << "Player 2 Info:\n" << player2 << std::endl;
-
-    test
 }
