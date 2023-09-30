@@ -7,20 +7,24 @@ using namespace std;
 class Order
 {
     public:
-        Order();   
+        Order();
+        //virtual functions must be implemented by all subclasses (They will be overriden)  
         virtual Order* copy() const = 0;
         virtual void execute() = 0; 
         virtual bool validate() = 0; 
         virtual ostream& displayOrder(ostream& myOrder) const = 0;
+        virtual ~Order() = default;
 
     private:
         friend ostream& operator<< (ostream& myOrder, Order& O);
 };
 
+//Deploy is a subclass of Order
 class Deploy : public Order
 {
     public:
         Deploy();
+        ~Deploy() override;
         Deploy* copy() const  override;
         void execute() override;
         bool validate() override;
@@ -29,10 +33,12 @@ class Deploy : public Order
 
 };
 
+//Advance is a subclass of Order
 class Advance : public Order
 {
     public:
         Advance();
+        ~Advance() override;
         Advance* copy() const  override;
         void execute() override;
         bool validate() override; 
@@ -41,10 +47,12 @@ class Advance : public Order
 
 };
 
+//Bomb is a subclass of Order
 class Bomb : public Order
 {
     public:
         Bomb();
+        ~Bomb() override;
         Bomb* copy() const  override; 
         void execute() override;
         bool validate() override;
@@ -52,10 +60,12 @@ class Bomb : public Order
         Bomb& operator=(const Bomb& other);
 };
 
+//Blockade is a subclass of Order
 class Blockade : public Order
 {
     public:
         Blockade();
+        ~Blockade() override;
         Blockade* copy() const  override; 
         void execute() override;
         bool validate() override;
@@ -63,10 +73,12 @@ class Blockade : public Order
         Blockade& operator=(const Blockade& other);
 };
 
+//Airlift is a subclass of Order
 class Airlift : public Order
 {
     public:
         Airlift();
+        ~Airlift() override;
         Airlift* copy() const  override; 
         void execute() override;
         bool validate() override;
@@ -76,10 +88,12 @@ class Airlift : public Order
         int numArmyUnits;
 };
 
+//Negotiate is a subclass of Order
 class Negotiate : public Order
 {
     public:
         Negotiate();
+        ~Negotiate() override;
         Negotiate* copy() const  override; 
         void execute() override;
         bool validate() override;
