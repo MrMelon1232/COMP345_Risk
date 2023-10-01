@@ -5,10 +5,10 @@ using namespace std;
 
 
 //Default constructor for Order (Allows creation of an object even if it is abstract)
- Order::Order()
- {
+Order::Order()
+{
 
- }
+}
 
 //Outputting an object of type Order will behave as follows: 
 ostream& operator<< (ostream& myOrder, Order& O)
@@ -306,13 +306,13 @@ void OrdersList::remove(int i)
 
     if(listSize == 0)
     {
-        cout << "ERROR: The list for Orders is empty. We cannot remove the order!"<<'\n';
+        cout << "ERROR: The list for Orders is empty. We cannot remove the order!\n";
         return; 
     } 
 
     if ((i < 0) || (i >= this -> getSize()))
     {
-        cout << "ERROR: Index out of bound error, order cannot be removed!"<<'\n';
+        cout << "ERROR: Index out of bound error, order cannot be removed!\n";
         return; 
     }
 
@@ -334,13 +334,13 @@ void OrdersList::move(int initial,int final)
 
     if(initial < 0 || final < 0 || initial > listSize -1 || final > listSize -1)
     {
-        cout << "Invalid indices provided, cannot move order!"<< '\n';
+        cout << "Invalid indices provided, cannot move order!\n";
         return;
     }
 
     if(initial == final)
     {
-        cout << "Cannot move order, it is already in destination!"<< '\n';
+        cout << "Cannot move order, it is already in destination!\n";
         return;
     }
 
@@ -355,7 +355,7 @@ ostream& OrdersList::displayOrderList(ostream& myOrderList)
     //we will display the list numbered and we will increment the variable number after each iteration
     int number = 1; 
 
-    myOrderList << "Orders List: " << '\n';
+    myOrderList << "Orders List: \n";
 
     //for loop to go over every order in the list
     for (Order* orderObject: listOfOrders) 
