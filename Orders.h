@@ -84,8 +84,6 @@ class Airlift : public Order
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Airlift& operator=(const Airlift& other);
-    private:
-        int numArmyUnits;
 };
 
 //Negotiate is a subclass of Order
