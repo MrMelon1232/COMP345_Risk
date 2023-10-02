@@ -5,6 +5,7 @@ using namespace std;
 
 void testOrdersList()
 {
+    //Welcome message
     cout<<'\n';
     cout << "--------Testing adding to OrderList----------\n";
 
@@ -47,12 +48,15 @@ void testOrdersList()
     cout<< *list<< '\n';
 
     //Trying to input invalid indices
-    cout << "--------Testing exception handling: moving an order with invalid indices (index -1 and index 10)----------\n";
-    list->move(-1,10);
+    cout << "--------Testing exception handling: moving an order with invalid indices (index -1 and index -2)----------\n";
+    list->move(-1,-2);
     cout<< *list<< '\n'; 
 
     //Swapping between element in first index and elemnt in third index
     cout << "--------Testing moving an order from the OrderList (index 1 and index 3)----------\n";
     list->move(1,3);
     cout<< *list<< '\n'; 
+
+    //Exit message
+    cout << "--------Testing completed for OrderList Class!----------\n";
 }
