@@ -3,20 +3,23 @@
 using namespace std;
 
 Card::Card(){
+    //initialize card to a random card type
     int n = rand() % 5;
     card = cardList[n];
 }
 
 Card::Card(string s){
     bool found = false;
+    //search and set card type
     for(int i = 0; i < cardList->size(); i++){
         if(cardList[i] == s){
             card = cardList[i];
             found = true;
         }
     }
+    //no card matching
     if(!found){
-        //not found
+        cout << "No card of name \'" << s << "\' exists." << endl;
     }
     found = false;
 }
@@ -28,20 +31,22 @@ Card::Card(Card& c){
 
 void Card::play(string s, Hand* h, Deck* d) {
     int n = -1;
+    //look if specified card is in hand
     for (int i = 0; i < h->currentHand.size(); i++) {
         if (s == h->currentHand[i]->card) {
             n = i;
             break;
         }
     }
+    //immediately exit if card is not in hand
     if (n == -1) {
         cout << "Card not in hand." << endl;
         return;
     }
-    //add from deck to hand
-    d->deckList.push_back(new Card());
+    //add card to deck and remove from hand to simulate playing a card
+    d->addDeck(h->currentHand[n]);
     cout << "Played card " << s << " from deck." << endl;
-    h->currentHand.erase(h->currentHand.begin()+n);
+    h->removeHand(n);
 }
 
 
@@ -61,18 +66,33 @@ Deck::Deck(int n){
     }
 }
 
-Deck::Deck(Deck& c)
+Deck::Deck(Deck& d)
 {
-
+    for (int i = 0; i < deckList.size(); i++)
+    {
+        Card* c = new Card(*d.deckList[i]);
+        d.deckList.push_back(c);
+    }
 }
 
 void Deck::draw(Hand* hand) {
+    //draw a random card from deck
     int card = rand() % deckList.size();
     Card* c = deckList[card];
     //add from deck to hand
     hand->addHand(c);
     cout << "Drawn card " << c->card << " from deck." << endl;
-    deckList.erase(deckList.begin()+card);
+    removeDeck(card);
+}
+
+void Deck::addDeck(Card* c)
+{
+    deckList.push_back(c);
+}
+
+void Deck::removeDeck(int i)
+{
+    deckList.erase(deckList.begin() + i);
 }
 
 ostream& operator << (ostream& os, const Deck& deck){
@@ -106,7 +126,7 @@ string Deck::toString() const{
 
 Hand::Hand()
 {
-    //assume the deck size to be 5
+    //assume the hand size to be 5
     for (int i = 0; i < 5; i++) {
         currentHand.push_back(new Card());
     }
@@ -114,7 +134,7 @@ Hand::Hand()
 
 Hand::Hand(int n)
 {
-    //assume the deck size to be 5
+    //assume create a hand of n size
     for (int i = 0; i < n; i++) {
         currentHand.push_back(new Card());
     }
@@ -122,6 +142,11 @@ Hand::Hand(int n)
 
 Hand::Hand(Hand& h)
 {
+    for (int i = 0; i < currentHand.size(); i++)
+    {
+        Card* c = new Card(*h.currentHand[i]);
+        h.currentHand.push_back(c);
+    }
 }
 
 void Hand::addHand(Card* c){
@@ -129,7 +154,7 @@ void Hand::addHand(Card* c){
 }
 
 void Hand::removeHand(int i){
-    delete(currentHand[i]);
+    currentHand.erase(currentHand.begin() + i);
 }
 
 ostream& operator << (ostream& os, const Hand& d) {

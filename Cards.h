@@ -45,13 +45,16 @@ class Deck {
 	public:
 		Deck(); //default constructor
 		Deck(int size); //constructor
-		Deck(Deck& c);
+		Deck(Deck& d);
 		void draw(Hand* hand); //draw cards from a deck
 
 		vector <Card*> deckList;
 		vector <int> test;
 
 		//extra operators
+		void addDeck(Card* c); //add card to deck
+		void removeDeck(int i); //remove card from deck
+
 		friend ostream& operator << (ostream& os, const Deck& deck);
 		virtual string toString() const;
 	private:

@@ -31,6 +31,13 @@ void testCards() {
     //display after play
     cout << d->toString();
     cout << h->toString();
+
+    delete d;
+    d = NULL;
+    delete c;
+    c = NULL;
+    delete h;
+    h = NULL;
 }
 
 int main(){
