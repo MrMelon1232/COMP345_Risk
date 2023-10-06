@@ -11,6 +11,7 @@ using namespace std;
 // Foward declaration of classes to be used for typing
 class Territory;
 class Order;
+class Hand;
 enum class OrderType;
 
 // Declaration of Player class
@@ -24,6 +25,9 @@ class Player
 
         // List of orders owned by the player
         std::vector<Order*> orders;
+
+        // Hand of cards owned by the player
+        Hand* hand;
 
     // Player public methods
     public:
