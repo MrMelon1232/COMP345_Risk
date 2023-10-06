@@ -17,5 +17,5 @@ int main() {
     // testCards();
 
     // Test function for game engine
-    testGameStates();
+    //testGameStates();
 }

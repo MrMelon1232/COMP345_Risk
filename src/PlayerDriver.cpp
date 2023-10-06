@@ -13,8 +13,14 @@ void testPlayers() {
     std::vector<Territory*> player2AttackTerritories = player2.toAttack();
 
     // Issue orders for players
+    std::cout << "Adding order of Deploy type to player1 \n";
     player1.issueOrder(OrderType::Deploy);
-    player2.issueOrder(OrderType::Advance);
+    std::cout << "Displaying player1 information: \n";
+    std::cout << player1;
+    std::cout << "Adding order of Advance type to player1 \n";
+    player1.issueOrder(OrderType::Advance);
+    std::cout << "Displaying player1 information: \n";
+    std::cout << player1;
 
     // Display player information using the overloaded stream insertion operator
     std::cout << "Player 1 Info:\n" << player1 << std::endl;

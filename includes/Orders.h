@@ -16,7 +16,7 @@ class Order
         virtual ~Order() = default;
 
     private:
-        friend ostream& operator<< (ostream& myOrder, Order& O);
+        friend ostream& operator<< (ostream& myOrder, const Order& O);
 };
 
 //Deploy is a subclass of Order

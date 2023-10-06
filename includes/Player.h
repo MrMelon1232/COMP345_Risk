@@ -10,7 +10,7 @@ using namespace std;
 
 // Foward declaration of classes to be used for typing
 class Territory;
-class Order;
+class OrdersList;
 class Hand;
 enum class OrderType;
 
@@ -24,7 +24,7 @@ class Player
         std::vector<Territory*> territoriesOwned;
 
         // List of orders owned by the player
-        std::vector<Order*> orders;
+        OrdersList* orders;
 
         // Hand of cards owned by the player
         Hand* hand;

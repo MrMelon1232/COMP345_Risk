@@ -157,11 +157,14 @@ void Hand::removeHand(int i){
 }
 
 ostream& operator << (ostream& os, const Hand& d) {
-    string str;
     for (int i = 0; i < d.currentHand.size(); i++) {
-        str = str + d.currentHand.at(i)->card + "\n";
+         if (d.currentHand.at(i) != nullptr) {
+            os << d.currentHand.at(i)->card << "\n";
+        } else {
+            os << "Null pointer in hand\n";
+        }
     }
-    return (os << "\nDisplaying current hand:\n" << str);
+    return os;
 }
 string Hand::toString() const {
     stringstream ss;

@@ -11,7 +11,7 @@ Order::Order()
 }
 
 //Outputting an object of type Order will behave as follows: 
-ostream& operator<< (ostream& myOrder, Order& O)
+ostream& operator<< (ostream& myOrder, const Order& O)
 {
     return O.displayOrder(myOrder); 
 }
