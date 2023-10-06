@@ -4,24 +4,41 @@
 using namespace std;
 
 
+//Default constructor for Order (Allows creation of an object even if it is abstract)
+Order::Order()
+{
+
+}
+
+//Outputting an object of type Order will behave as follows: 
+ostream& operator<< (ostream& myOrder, Order& O)
+{
+    return O.displayOrder(myOrder); 
+}
+
+
 //-------Below are function definitions for classes that inherit from Order---------//
 
 
- Order::Order()
- {
- }
-
-//Function Definition for Deploy
+//Default constructor
 Deploy::Deploy()
 {
 
 }
 
+//Default Destructor
+Deploy::~Deploy()
+{
+
+}
+
+//Copy constructor
 Deploy* Deploy::copy() const
 {
     return new Deploy(*this);
 }
 
+//Execute allows the player to deploy, for this function to proceed, it must be validated
 void Deploy::execute()
 {
     if(validate() == true)
@@ -30,6 +47,7 @@ void Deploy::execute()
     }
 }
 
+//Boolean function which returns true if the order is valid
 bool Deploy::validate()
 {
     return true; 
@@ -40,19 +58,23 @@ Deploy& Deploy::operator=(const Deploy &other)
     return *this;
 }
 
+//Format for outputting Deploy
 ostream& Deploy::displayOrder(ostream &myOrder) const 
 {
     myOrder << "Deploy";
     return myOrder;
 }
 
-ostream& operator<< (ostream& myOrder, Order& O)
+
+//For now all other suborders follow the same logic as the deploy suborder
+//Therefore comments are not provided as only the name of the suborder is changed
+
+Advance::Advance()
 {
-    return O.displayOrder(myOrder); 
+
 }
 
-//Function Definition for Advance
-Advance::Advance()
+Advance::~Advance()
 {
 
 }
@@ -93,6 +115,11 @@ Bomb::Bomb()
 
 }
 
+Bomb::~Bomb()
+{
+
+}
+
 Bomb* Bomb::copy() const
 {
     return new Bomb(*this);
@@ -125,6 +152,11 @@ ostream& Bomb::displayOrder(ostream &myOrder) const
 
 //Function Definition for Blockade
 Blockade::Blockade()
+{
+
+}
+
+Blockade::~Blockade()
 {
 
 }
@@ -165,6 +197,11 @@ Airlift::Airlift()
 
 }
 
+Airlift::~Airlift()
+{
+
+}
+
 Airlift* Airlift::copy() const
 {
     return new Airlift(*this);
@@ -197,6 +234,11 @@ ostream& Airlift::displayOrder(ostream &myOrder) const
 
 //Function Definition for Negotiate
 Negotiate::Negotiate()
+{
+
+}
+
+Negotiate::~Negotiate()
 {
 
 }
@@ -234,6 +276,10 @@ ostream& Negotiate::displayOrder(ostream &myOrder) const
 
 //-------OrderList and respective methods definition---------//
 
+/*
+The OrdersList class makes a list of Orders and the corresponding subtypes. 
+Notably it has the method move() and the method remove().
+*/
 
 //Default constructor
 OrdersList::OrdersList()
@@ -241,7 +287,7 @@ OrdersList::OrdersList()
 
 }
 
-//Adds an object of type "Order" to the list
+//Adds an object of type "Order" to the list sequentially
 void OrdersList::add(Order* O)
 {
     listOfOrders.push_back(O); 
@@ -258,15 +304,15 @@ void OrdersList::remove(int i)
 {
     int listSize = this -> getSize();
 
-    if(listSize = 0)
+    if(listSize == 0)
     {
-        cout << "The list for Orders is empty. We cannot remove the order!"<<'\n';
+        cout << "ERROR: The list for Orders is empty. We cannot remove the order!\n";
         return; 
     } 
 
     if ((i < 0) || (i >= this -> getSize()))
     {
-        cout << "Index out of bound error, order cannot be removed!"<<'\n';
+        cout << "ERROR: Index out of bound error, order cannot be removed!\n";
         return; 
     }
 
@@ -281,19 +327,20 @@ void OrdersList::remove(int i)
     listOfOrders.erase(myIterator); 
 }
 
+//Method which allows to move an order from an index (initial) to another index (final)
 void OrdersList::move(int initial,int final)
 {
     int listSize = this -> getSize();
 
     if(initial < 0 || final < 0 || initial > listSize -1 || final > listSize -1)
     {
-        cout << "Invalid indices provided, cannot move order!";
+        cout << "Invalid indices provided, cannot move order!\n";
         return;
     }
 
     if(initial == final)
     {
-        cout << "Cannot move order, it is already in destination!";
+        cout << "Cannot move order, it is already in destination!\n";
         return;
     }
 
@@ -302,12 +349,13 @@ void OrdersList::move(int initial,int final)
     listOfOrders.at(final) = temp;
 }
 
+//Format of outputting an OrdersList
 ostream& OrdersList::displayOrderList(ostream& myOrderList)
 {
     //we will display the list numbered and we will increment the variable number after each iteration
     int number = 1; 
 
-    myOrderList << "Orders List: " << '\n';
+    myOrderList << "Orders List: \n";
 
     //for loop to go over every order in the list
     for (Order* orderObject: listOfOrders) 
@@ -318,6 +366,7 @@ ostream& OrdersList::displayOrderList(ostream& myOrderList)
     return myOrderList;
 }
 
+//Passing a list in the output stream will call "displayOrderList(ostream& myOrderList)"" 
 ostream& operator << (ostream& myOrderList, OrdersList& Olist)
 {
     return Olist.displayOrderList(myOrderList);
@@ -328,9 +377,12 @@ OrdersList& OrdersList::operator=(const OrdersList &other)
     return *this;
 } 
 
+//Destructor (NOT DEFAULT)
 OrdersList::~OrdersList()
 {
-
+    //Clearing memory for each Order 'o' in the list
+    for (int o = 0; o < (this -> getSize()); o++)
+        delete listOfOrders[o];
 }
 
 
