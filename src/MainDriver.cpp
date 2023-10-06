@@ -8,7 +8,7 @@ int main() {
     // Test function for map
 
     // Test function for players
-    //testPlayers();
+    testPlayers();
 
     // Test function for orders
     //testOrdersList();

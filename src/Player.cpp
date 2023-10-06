@@ -59,19 +59,17 @@ Player& Player:: operator=(const Player& other) {
 
 // Stream insertion operator
 std::ostream& operator<<(std::ostream& os, const Player& player) {
-    os << "Territories Owned: ";
+    os << "Territories Owned: \n";
     for (const Territory* territory : player.territoriesOwned) {
 
     }
     
-    os << "\nOrders: ";
     if (player.orders != nullptr) {
         os << *player.orders; // Assuming that your OrdersList class has an operator<<
     } else {
         os << "None";
     }
-
-    os << "\nHand: ";
+    
     if (player.hand != NULL) {
         os << *player.hand; 
     } else {

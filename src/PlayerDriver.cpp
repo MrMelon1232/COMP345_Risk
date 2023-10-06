@@ -17,12 +17,12 @@ void testPlayers() {
     player1.issueOrder(OrderType::Deploy);
     std::cout << "Displaying player1 information: \n";
     std::cout << player1;
-    std::cout << "Adding order of Advance type to player1 \n";
+    std::cout << "\nAdding order of Advance type to player1 \n";
     player1.issueOrder(OrderType::Advance);
-    std::cout << "Displaying player1 information: \n";
+    std::cout << "\nDisplaying player1 information: \n";
     std::cout << player1;
 
     // Display player information using the overloaded stream insertion operator
-    std::cout << "Player 1 Info:\n" << player1 << std::endl;
-    std::cout << "Player 2 Info:\n" << player2 << std::endl;
+    std::cout << "\nPlayer 1 Info:\n" << player1 << std::endl;
+    std::cout << "\nPlayer 2 Info:\n" << player2 << std::endl;
 }
