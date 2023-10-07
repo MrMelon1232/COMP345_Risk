@@ -2,13 +2,15 @@
 #include "CardsDriver.h"
 #include "OrdersDriver.h"
 #include "GameEngineDriver.h"
+#include "MapDriver.h"
 
 int main() {
 
     // Test function for map
+    testLoadMaps();
 
     // Test function for players
-    testPlayers();
+    //testPlayers();
 
     // Test function for orders
     //testOrdersList();

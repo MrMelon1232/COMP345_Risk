@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Orders.h"
 #include "Cards.h"
+#include "Map.h"
 
 // Constructor
 Player::Player() : orders(new OrdersList), hand(new Hand) {
@@ -61,7 +62,7 @@ Player& Player:: operator=(const Player& other) {
 std::ostream& operator<<(std::ostream& os, const Player& player) {
     os << "Territories Owned: \n";
     for (const Territory* territory : player.territoriesOwned) {
-
+        
     }
     
     if (player.orders != nullptr) {
@@ -82,6 +83,8 @@ std::ostream& operator<<(std::ostream& os, const Player& player) {
 // Function that returns a list of territories that are to be defended
 std::vector<Territory*> Player::toDefend() {
     std::vector<Territory*> defendTerritories;
+    defendTerritories.push_back(new Territory("TerritoryA", "ContinentA")); // Example territory
+    defendTerritories.push_back(new Territory("TerritoryB", "ContinentA")); // Example territory
     return defendTerritories;
 }
 
@@ -90,6 +93,9 @@ std::vector<Territory*> Player::toAttack() {
     // Implement toAttack logic, return a list of territories to attack
     std::vector<Territory*> attackTerritories;
     // Populate the list with territories
+    attackTerritories.push_back(new Territory("TerritoryC", "ContinentB")); // Example territory
+    attackTerritories.push_back(new Territory("TerritoryD", "ContinentB")); // Example territory
+
     return attackTerritories;
 }
 
