@@ -25,6 +25,7 @@ public:
 class Territory {
 private:
     string name;
+    int nbArmies;
     string continentName;
     vector<string> adjacentTerritories;
 
@@ -34,6 +35,8 @@ public:
     const string& GetContinentName() const;
     void AddAdjacentTerritory(const string& adjacent);
     const vector<string>& GetAdjacentTerritories() const;
+    const int getNbArmies() const;
+    void setNbArmies(int nbArmies);
 
     // Copy constructor
     Territory(const Territory& other);

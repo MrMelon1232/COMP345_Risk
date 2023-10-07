@@ -62,7 +62,7 @@ Player& Player:: operator=(const Player& other) {
 std::ostream& operator<<(std::ostream& os, const Player& player) {
     os << "Territories Owned: \n";
     for (const Territory* territory : player.territoriesOwned) {
-        
+        os << *territory;
     }
     
     if (player.orders != nullptr) {
@@ -129,8 +129,13 @@ void Player::issueOrder(OrderType type) {
     orders->add(newOrder);
 }
 
+// Function to add territories to the player's possession
+void Player:: addTerritory(Territory* territory) {
+    territoriesOwned.push_back(territory);
+}
+
+// Destructor, clean up any allocated memory
 Player::~Player() {
-    // Destructor, clean up any allocated memory
     delete orders;
     delete hand;
 }

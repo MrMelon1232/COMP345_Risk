@@ -7,7 +7,7 @@
 int main() {
 
     // Test function for map
-    testLoadMaps();
+    //testLoadMaps();
 
     // Test function for players
     //testPlayers();

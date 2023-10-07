@@ -12,7 +12,7 @@ Territory :: Territory(const Territory& other) {
     adjacentTerritories = other.adjacentTerritories;
 };
 // Class assignment operator
-Territory& Territory :: operator=(const Territory& other){
+Territory& Territory :: operator=(const Territory& other) {
     if(this == &other) {
         return *this;
     }
@@ -24,9 +24,21 @@ Territory& Territory :: operator=(const Territory& other){
     return *this;
 };
 // Stream insertion operator
-std::ostream& operator<<(std::ostream& os, const Territory& territory){
+std::ostream& operator<<(std::ostream& os, const Territory& territory) {
+    os << "Territory name: " << territory.GetName() << std::endl;
+    os << "Territory continent name: " << territory.GetContinentName() << std::endl;
+    os << "Territory adjacent territories: ";
+    
+    const std::vector<std::string>& adjacentTerritories = territory.GetAdjacentTerritories();
+    for (const std::string& adjacent : adjacentTerritories) {
+        os << adjacent << ", ";
+    }
+    os << std::endl;
+    
+    os << "Territory number of armies: " << territory.getNbArmies() << std::endl;
+
     return os;
-};
+}
 
 // GetName method
 const string& Continent::GetName() const {
@@ -35,7 +47,7 @@ const string& Continent::GetName() const {
 
 // Territory class constructor
 Territory::Territory(const string& name, const string& continentName)
-    : name(name), continentName(continentName) {}
+    : name(name), continentName(continentName), nbArmies(0) {}
 
 // GetName method
 const string& Territory::GetName() const {
@@ -55,6 +67,16 @@ void Territory::AddAdjacentTerritory(const string& adjacent) {
 // GetAdjacentTerritories method
 const vector<string>& Territory::GetAdjacentTerritories() const {
     return adjacentTerritories;
+}
+
+// Return number of armies from the player owning this territory
+const int Territory::getNbArmies() const {
+    return nbArmies;
+}
+
+// Update the number of armies in the territory
+void Territory::setNbArmies(int nbArmies) {
+    this->nbArmies = nbArmies;
 }
 
 // Map class methods
@@ -82,8 +104,9 @@ Map::Map(const vector<Continent*> continents, const vector<Territory*> territori
 Map :: Map (const Map& other) {
 
 }
+
 Map &Map::operator=(const Map &other){
-    // TODO: insert return statement here
+    return *this;
 }
 
 // Stream insertion operator
@@ -381,9 +404,9 @@ Map::~Map() {
 MapLoader::MapLoader() = default;
 
 // Copy constructor
-MapLoader :: MapLoader(const MapLoader& other) {};
+MapLoader :: MapLoader(const MapLoader& other) = default;
 // Class assignment operator
-MapLoader& MapLoader :: operator=(const MapLoader& other) {};
+MapLoader& MapLoader :: operator=(const MapLoader& other) = default;
 // Stream insertion operator
 std::ostream& operator<<(std::ostream& os, const MapLoader& mapLoader) {
     return os;

@@ -40,6 +40,14 @@ std::ostream& operator<<(std::ostream& output, const State& state) {
     return output;
 }
 
+// Destructor for State class
+State::~State() {
+    // Clean up dynamically allocated memory
+    for (Transition* transition : transitions) {
+        delete transition;
+    }
+}
+
 // Constructor to initialize transition with command name and state to transition to.
 Transition::Transition(string commandName, State* nextState) {
     this->commandName = commandName;
@@ -74,6 +82,12 @@ std::ostream& operator<<(std::ostream& output, const Transition& transition) {
     output << "Command name: " << transition.commandName << 
             ", Next state: " << transition.nextState->getName();
     return output;
+}
+
+// Destructor for Transition class
+Transition::~Transition() {
+    // Clean up dynamically allocated memory
+    delete nextState;
 }
 
 // Variable that holds the current state of the game.

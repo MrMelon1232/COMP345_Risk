@@ -4,6 +4,10 @@
 void testPlayers() {
     Player player1, player2;
 
+    // Add a territory to player1
+    Territory * territory1 = new Territory("territory A", "Continent A");
+    player1.addTerritory(territory1);
+
     // Simulate player 1 defending territories
     std::cout << "Player 1 Territories to be defended: \n";
     std::vector<Territory*> player1DefendTerritories = player1.toDefend();

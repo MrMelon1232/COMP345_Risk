@@ -53,6 +53,9 @@ class Player
         // Creates order object and adds it to the list of orders
         void issueOrder(OrderType type);
 
+        // Add territory
+        void addTerritory(Territory* territory);
+
         // Destructor to clean up resources
         ~Player();
 };

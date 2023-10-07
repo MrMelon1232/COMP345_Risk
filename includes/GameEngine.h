@@ -17,6 +17,7 @@ class State {
         void addTransitions(vector<Transition*> transitions...);
         State& operator=(const State& state);
         friend std::ostream& operator<<(std::ostream& output, const State& state);
+        ~State();
     private:
         string name;
         vector<Transition*> transitions;
@@ -31,6 +32,7 @@ class Transition {
         State* getNextState();
         Transition& operator=(const Transition& transition);
         friend std::ostream& operator<<(std::ostream& output, const Transition& transition);
+        ~Transition();
     private:
         string commandName;
         State* nextState;
