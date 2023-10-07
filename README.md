@@ -1,4 +1,4 @@
-# SOEN345_Risk
+# COMP345_Risk
 
 Project members:
 

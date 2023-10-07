@@ -7,17 +7,17 @@
 int main() {
 
     // Test function for map
-    //testLoadMaps();
+    testLoadMaps();
 
     // Test function for players
-    //testPlayers();
+    testPlayers();
 
     // Test function for orders
-    //testOrdersList();
+    testOrdersList();
 
     // Test function for cards
-    // testCards();
+    testCards();
 
     // Test function for game engine
-    //testGameStates();
+    testGameStates();
 }
