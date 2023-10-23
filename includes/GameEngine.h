@@ -1,4 +1,6 @@
 #pragma once
+#include "Map.h"
+#include "CommandProcessing.h"
 #include <iostream>
 #include <vector>
 
@@ -39,7 +41,11 @@ class Transition {
 };
 
 void initStateAndTransitions();
+bool isCommandValid(string command);
 void findAndTransition(string name);
 void transition(Transition *transition);
 
 extern State* currentState;
+extern MapLoader* mapLoader;
+extern Map* currentMap;
+extern CommandProcessor* commandProcessor;

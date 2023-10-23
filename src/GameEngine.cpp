@@ -91,7 +91,10 @@ Transition::~Transition() {
 }
 
 // Variable that holds the current state of the game.
-State* currentState;
+State* currentState = nullptr;
+MapLoader* mapLoader = new MapLoader();
+Map* currentMap = nullptr;
+CommandProcessor* commandProcessor = new CommandProcessor();
 
 // Function that creates the state and transition objects for the game engine. It also sets the initial state.
 void initStateAndTransitions() {
@@ -127,6 +130,14 @@ void initStateAndTransitions() {
 
     currentState = start;
     std::cout << "Current state is " << *currentState << "." << std::endl;
+}
+
+// Function that indicates if the command is valid in the current state game.
+bool isCommandValid(string command) {
+    vector<Transition*> transitions = currentState->getTransitions();
+    vector<Transition*>::iterator it = std::find_if(transitions.begin(), transitions.end(), 
+                                         [&command](Transition* cmd) { return cmd->getCommandName() == command; });
+    return it != transitions.end();
 }
 
 // Function that finds transition with given command name. If not found, it displays an error. Otherwise, calls function to perform the state transition.
