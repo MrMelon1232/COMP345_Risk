@@ -8,7 +8,7 @@ using std::string;
 class Transition;
 
 // Represents a state of the game with its valid commands
-class State {
+class State : public ILoggable, public Subject {
     public:
         State(string name);
         State(State& state);
@@ -24,7 +24,7 @@ class State {
 };
 
 // Holds the next state to transition to after executing the command with the given name
-class Transition {
+class Transition : public ILoggable, public Subject {
     public:
         Transition(string commandName, State* nextState);
         Transition(Transition& transition);

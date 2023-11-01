@@ -2,9 +2,10 @@
 #include <vector>
 #include <iostream>
 using namespace std;
+#include "LoggingObserver.h"
 
 //----Order and all subclasses of Order----//
-class Order
+class Order : public ILoggable, public Subject
 {
     public:
         Order();
@@ -14,6 +15,7 @@ class Order
         virtual bool validate() = 0; 
         virtual ostream& displayOrder(ostream& myOrder) const = 0;
         virtual ~Order() = default;
+        virtual string logMessage() const = 0;
 
     private:
         friend ostream& operator<< (ostream& myOrder, const Order& O);
@@ -113,7 +115,7 @@ enum class OrderType {
 
 //----OrderList-----//
 
-class OrdersList
+class OrdersList: public ILoggable, public Subject
 {
     public:
         OrdersList();

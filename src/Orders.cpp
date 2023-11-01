@@ -16,7 +16,6 @@ ostream& operator<< (ostream& myOrder, const Order& O)
     return O.displayOrder(myOrder); 
 }
 
-
 //-------Below are function definitions for classes that inherit from Order---------//
 
 
@@ -44,6 +43,7 @@ void Deploy::execute()
     if(validate() == true)
     {
         cout<<"Executing Deploy";
+        notify("text to be added");
     }
 }
 
@@ -290,7 +290,8 @@ OrdersList::OrdersList()
 //Adds an object of type "Order" to the list sequentially
 void OrdersList::add(Order* O)
 {
-    listOfOrders.push_back(O); 
+    listOfOrders.push_back(O);
+    notify(this); 
 }
 
 //Returns the size of the list
