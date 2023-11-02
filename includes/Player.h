@@ -29,6 +29,14 @@ class Player
         // Hand of cards owned by the player
         Hand* hand;
 
+        //NEW: Each player will have a unique ID 
+        static int nextID;
+        int playerID;
+
+        //NEW: Each player will have a reinforcement pool
+        int reinforcementPool;
+
+
     // Player public methods
     public:
 
@@ -58,6 +66,14 @@ class Player
 
         // Destructor to clean up resources
         ~Player();
+
+        //NEW: accessor method which returns the id of a player
+        int getPlayerID();
+
+        //NEW: accessor and mutator method for reinforcement pool
+        int getReinforcementPool();
+        void setReinforcementPool(int reinforcement);
+        bool isAnyAdjacent(Territory* territory);
 };
 
 
