@@ -1,4 +1,6 @@
 #include "Orders.h"
+#include "Player.h"
+#include "Map.h"
 #include <Vector>
 #include <iostream>
 using namespace std;
@@ -11,7 +13,7 @@ Order::Order()
 }
 
 //Outputting an object of type Order will behave as follows: 
-ostream& operator<< (ostream& myOrder, const Order& O)
+ostream& operator<< (ostream& myOrder, Order& O)
 {
     return O.displayOrder(myOrder); 
 }
@@ -23,8 +25,17 @@ ostream& operator<< (ostream& myOrder, const Order& O)
 //Default constructor
 Deploy::Deploy()
 {
-
+    this -> player = nullptr;
+    this -> target = nullptr;
 }
+
+//Non default constructor
+Deploy::Deploy(int armyUnits, Player* player, Territory* target)
+{
+    this -> armyUnits = armyUnits;
+    this -> player = player;
+    this -> target = target;
+}    
 
 //Default Destructor
 Deploy::~Deploy()
@@ -38,19 +49,35 @@ Deploy* Deploy::copy() const
     return new Deploy(*this);
 }
 
+//Boolean function which returns true if the order is valid
+bool Deploy::validate()
+{
+    if (target->getOwnerID() != player->getPlayerID())
+    {
+        cout << "Cannot deploy on a territory that is not owned by the player!\n";
+        return false;
+    }
+
+    //We will always deploy 5 units as reinforcement. This number is arbritary and subject to change. 
+    //We will not deploy if we dont have the minimum amount of units
+    if(player->getReinforcementPool() < 5)
+    {
+        cout << "Cannot deploy, player does not have sufficient units!\n";
+        return false;
+    }
+
+    return true; 
+}
+
 //Execute allows the player to deploy, for this function to proceed, it must be validated
 void Deploy::execute()
 {
     if(validate() == true)
     {
         cout<<"Executing Deploy";
+        target->setNbArmies(5 + target->getNbArmies());
+        player->setReinforcementPool(player->getReinforcementPool() -5); 
     }
-}
-
-//Boolean function which returns true if the order is valid
-bool Deploy::validate()
-{
-    return true; 
 }
 
 Deploy& Deploy::operator=(const Deploy &other)
@@ -84,17 +111,62 @@ Advance* Advance::copy() const
     return new Advance(*this);
 }
 
+bool Advance::validate()
+{
+    if (source->getOwnerID() == player->getPlayerID())
+    {
+        cout << "Cannot advance from a territory that a player doesn not own!\n";
+        cout << "Validation failed!\n";
+        return false;
+    }
+
+    if(target->isAdjacent(source))
+    {
+        cout << "Cannot advance to a territory which is not adjacent!\n";
+        cout << "Validation failed!\n";
+        return false;
+    }
+
+    if(source->getOwnerID() == target->getOwnerID())
+    {
+        cout << "Moving units from source to target...\n";
+        int unitsToBeMoved = source->getNbArmies(); 
+        target->setNbArmies(unitsToBeMoved); 
+        source->setNbArmies(0); 
+        return false; 
+    }
+    
+    return true;
+}
+
+void Advance::simulateAttack()
+{
+    int playerKills = (source->getNbArmies())*0.6; 
+    int enemyKills = (target->getNbArmies())*0.7; 
+
+    source->setNbArmies(source->getNbArmies() - enemyKills);
+    target->setNbArmies(target->getNbArmies() - playerKills); 
+
+    int remainingPlayerUnits = source->getNbArmies();
+    int remainingEnemyUnits = target->getNbArmies(); 
+
+    //Player has taken the target and has moved units to there
+    if(remainingPlayerUnits > 0 && remainingEnemyUnits <=0)
+    {
+        target->setNbArmies(remainingPlayerUnits); 
+        source->setNbArmies(0);
+        target->setOwnerID(source->getOwnerID());
+        cout <<"Player has captured territory and has moved units up.\n";
+    }
+}
+
 void Advance::execute()
 {
     if(validate() == true)
     {
-        cout <<"Executing Advance";
+        cout <<"Executing Advance\n";
+        simulateAttack(); 
     }
-}
-
-bool Advance::validate()
-{
-    return true;
 }
 
 Advance& Advance::operator=(const Advance &other)
@@ -129,13 +201,27 @@ void Bomb::execute()
 {
     if(validate() == true)
     {
-        cout<<"Executing Bomb";
+        cout<<"Executing Bomb\n";
+        target->setNbArmies(0.5*(target->getNbArmies()));
     }
 }
 
 bool Bomb::validate()
 {
-    return true; 
+    if (target->getOwnerID() == player->getPlayerID())
+    {
+        cout << "Cannot bomb, this territory belongs to the player trying to bomb...\n";
+        return false; 
+    }
+
+    if(player->isAnyAdjacent(target))
+    {
+        cout << "Validation successful, ready to bomb!\n";
+        return true;
+    }
+    
+    cout << "Territory is not adjacent, cannot bomb; validatation failed!\n";
+    return false; 
 }
 
 Bomb& Bomb::operator=(const Bomb &other)
@@ -166,17 +252,25 @@ Blockade* Blockade::copy() const
     return new Blockade(*this);
 }
 
+bool Blockade::validate()
+{
+    if(target->getOwnerID() != player->getPlayerID())
+    {
+        cout << "Cannot barricade a territory which the player does not own!\n";
+        cout << "Validation failed!\n";
+        return false;
+    }
+    return true; 
+}
+
 void Blockade::execute()
 {
     if(validate() == true)
     {
-        cout<<"Executing Blockade";
+        cout<<"Executing Blockade\n";
+        target->setNbArmies((target->getNbArmies())*2);
+        //need to add neutral player implementation...
     }
-}
-
-bool Blockade::validate()
-{
-    return true; 
 }
 
 Blockade& Blockade::operator=(const Blockade &other)
@@ -207,18 +301,33 @@ Airlift* Airlift::copy() const
     return new Airlift(*this);
 }
 
+bool Airlift::validate()
+{
+    if(target->getOwnerID() != player->getPlayerID() || source->getOwnerID() != player->getPlayerID() )
+    {
+        cout << "Cannot airlift, player does not have the right to execute this task.!\n";
+        return false;
+    }
+
+    if(source->getNbArmies() < 2)
+    {
+        cout << "Cannot airlift, not enough units present to be airlifted...\n";
+        return false;
+    }
+
+    return true; 
+}
+
 void Airlift::execute()
 {
     if(validate() == true)
     {
         cout<<"Executing Airlift";
+        source->setNbArmies(source->getNbArmies() - 2); 
+        target->setNbArmies(source->getNbArmies() + 2);
     }
 }
 
-bool Airlift::validate()
-{
-    return true; 
-}
 
 Airlift& Airlift::operator=(const Airlift &other)
 {
@@ -248,17 +357,23 @@ Negotiate* Negotiate::copy() const
     return new Negotiate(*this);
 }
 
+bool Negotiate::validate()
+{
+    if(player->getPlayerID() == enemy->getPlayerID())
+    {
+        cout << "Player cannot negotiate with self, validation failed!\n";
+        return false;
+    }
+    return true;
+}
+
 void Negotiate::execute()
 {
     if(validate() == true)
     {
-        cout<<"Executing Negotiate";
-    }
-}
+        cout<<"Executing Negotiate\n";
 
-bool Negotiate::validate()
-{
-    return true;
+    }
 }
 
 Negotiate& Negotiate::operator=(const Negotiate &other)

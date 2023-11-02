@@ -5,12 +5,16 @@ using namespace std;
 // Continent class constructor
 Continent::Continent(const string& name) : name(name) {}
 
+
+
 // Copy constructor
 Territory :: Territory(const Territory& other) {
     name = other.name;
     continentName = other.continentName;
     adjacentTerritories = other.adjacentTerritories;
 };
+
+
 // Class assignment operator
 Territory& Territory :: operator=(const Territory& other) {
     if(this == &other) {
@@ -45,9 +49,13 @@ const string& Continent::GetName() const {
     return name;
 }
 
-// Territory class constructor
+// Territory class constructor (does not belong to any player)
 Territory::Territory(const string& name, const string& continentName)
-    : name(name), continentName(continentName), nbArmies(0) {}
+    : name(name), continentName(continentName), nbArmies(0), ownerID(-1) {}
+
+//NEW: Territory class constructor (belongs to a player)
+Territory::Territory(const string& name, const string& continentName, int playerID) 
+    :name(name), continentName(continentName), nbArmies(0), ownerID(playerID) {}
 
 // GetName method
 const string& Territory::GetName() const {
@@ -77,6 +85,29 @@ const int Territory::getNbArmies() const {
 // Update the number of armies in the territory
 void Territory::setNbArmies(int nbArmies) {
     this->nbArmies = nbArmies;
+}
+
+//NEW: accessor method + mutator method for attribute ownerID
+
+int Territory::getOwnerID() {
+    return ownerID;
+}
+
+void Territory::setOwnerID(int playerID) {
+    ownerID = playerID;
+}
+
+//NEW: boolean method which returns true if the territory passed is adjacent
+bool Territory::isAdjacent(Territory* territory)
+{
+    for (const string& adjacentTerritoryName : adjacentTerritories) 
+    {
+        if (adjacentTerritoryName == territory->GetName()) 
+        {
+            return true;
+        }
+    }    
+    return false;
 }
 
 // Map class methods

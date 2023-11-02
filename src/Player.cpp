@@ -3,9 +3,13 @@
 #include "Cards.h"
 #include "Map.h"
 
+int Player::nextID = 1;
+
 // Constructor
 Player::Player() : orders(new OrdersList), hand(new Hand) {
     // Initialize other members if needed
+    playerID = nextID;
+    nextID++;
 }
 
 // Copy Constructor
@@ -139,3 +143,33 @@ Player::~Player() {
     delete orders;
     delete hand;
 }
+
+//NEW: accessor method which returns the id of a player
+int Player::getPlayerID() {
+    return playerID;
+}
+
+//NEW: accessor and mutator method for reinforcement pool
+int Player::getReinforcementPool()
+{
+    return reinforcementPool; 
+}
+void Player::setReinforcementPool(int reinforcement)
+{
+    reinforcementPool = reinforcement; 
+}
+
+//NEW: the following method checks if a given territory is adjacent with any of the owned territories of the player
+bool Player::isAnyAdjacent(Territory* territory)
+{
+    for (Territory* ownedTerritory : territoriesOwned) 
+    {
+        if (ownedTerritory->isAdjacent(territory)) 
+        {
+            return true; 
+        }
+    }
+    return false; 
+}
+
+
