@@ -1,6 +1,4 @@
 #include "CommandProcessing.h"
-#include "GameEngine.h"
-#include "Map.h"
 #include <iostream>
 
 using std::cin;
@@ -22,6 +20,7 @@ Command& Command::operator=(const Command& command) {
     cmdName = command.cmdName;
     effect = command.effect;
     arg = command.arg;
+    return *this;
 }
 
 // Stream insertion operator overload to display Command information.
@@ -35,10 +34,13 @@ std::ostream& operator<<(std::ostream& output, const Command& command) {
 Command::~Command() {}
 
 // Default constructor of CommandProcessor.
-CommandProcessor::CommandProcessor() {}
+CommandProcessor::CommandProcessor(GameEngine* gameEngine) : gameEngine(gameEngine) {
+    mapLoader = new MapLoader();
+}
 
 // Copy constructor of CommandProcessor.
 CommandProcessor::CommandProcessor(CommandProcessor& commandProcessor) {
+    this->gameEngine = new GameEngine(*(commandProcessor.gameEngine));
     for (Command* command : commands) {
         Command* newCommand = new Command(*command);
         commands.push_back(newCommand);
@@ -77,8 +79,8 @@ Command* CommandProcessor::readCommand() {
 // Sets the effect according to the command type. If the command is invalid, it sets an invalid effect.
 void CommandProcessor::validate(Command* command) {
     string cmdName = command->getName();
-    if (!isCommandValid(cmdName)) {
-        command->saveEffect("Command `" + command->getName() + "` is invalid in state: `" + currentState->getName() + "`.");
+    if (!gameEngine->isCommandValid(cmdName)) {
+        command->saveEffect("Command `" + command->getName() + "` is invalid in state: `" + gameEngine->getCurrentState()->getName() + "`.");
         return;
     }
 
@@ -123,27 +125,27 @@ void CommandProcessor::executeCommand(Command* command) {
     } else if (cmdName == "replay") {
         replay(command);
     } else if (cmdName == "quit") {
-        findAndTransition(command->getName());
+        gameEngine->findAndTransition(command->getName());
     }
 }
 
 // Helper function for the `loadmap <fileName>` command.
 void CommandProcessor::loadMap(Command* command) {
     try {
-        currentMap = mapLoader->LoadMap(command->getArg());
-        findAndTransition(command->getName());
+        gameEngine->setCurrentMap(mapLoader->LoadMap(command->getArg()));
+        gameEngine->findAndTransition(command->getName());
     } catch (const runtime_error& error) {
-        cout << "Could not load map file " + command->getArg() + ". State is still `" + currentState->getName() + "`.";
+        cout << "Could not load map file " + command->getArg() + ". State is still `" + gameEngine->getCurrentState()->getName() + "`.";
     }
 }
 
 // Helper function for the `validatemap` command
 void CommandProcessor::validateMap(Command* command) {
-    if (currentMap->validate())
+    if (gameEngine->getCurrentMap()->validate())
         cout << "Invalid map or map file. Try loading a different one.";
     else
         cout << "Map loaded successfully.";
-    findAndTransition(command->getName());
+    gameEngine->findAndTransition(command->getName());
 }
 
 // Helper function for the `addPlayer <playerName>` command.
@@ -158,9 +160,9 @@ void CommandProcessor::gameStart(Command* command) {
 
 // Helper function to the `replay` command.
 void CommandProcessor::replay(Command* command) {
-    findAndTransition(command->getName()); // cmdName is "replay"
-    delete currentMap;
-    currentMap = nullptr;
+    gameEngine->findAndTransition(command->getName()); // cmdName is "replay"
+    delete gameEngine;
+    gameEngine = nullptr;
     // TODO: reset other GameEngine variables (i.e., players)
 }
 
@@ -171,10 +173,11 @@ CommandProcessor& CommandProcessor::operator=(const CommandProcessor& commandPro
         delete command;
     commands.clear();
 
-    for (Command* command : commands) {
+    for (Command* command : commandProcessor.commands) {
         Command* newCommand = new Command(*command);
         commands.push_back(newCommand);
     }
+    return *this;
 }
 
 // Stream insertion operator overload for the CommandProcessor. Prints all the commands in its list.
@@ -189,6 +192,10 @@ std::ostream& operator<<(std::ostream& output, const CommandProcessor& commandPr
 CommandProcessor::~CommandProcessor() {
     for (Command* command : commands)
         delete command;
+    delete mapLoader;
+
+    // We may want to assign a new CommandProcessor on `replay`, so 
+    // the GameEngine is responsible of deleting itself.
 }
 
 // FileLineReader constructor to initialize with the file to read.
@@ -220,6 +227,7 @@ FileLineReader& FileLineReader::operator=(const FileLineReader& flr) {
     fileName = flr.fileName;
     file.close();
     file.open(fileName);
+    return *this;
 }
 
 // Stream insertion operator of FileLineReader. Displays the file name it's reading from.
@@ -234,7 +242,7 @@ FileLineReader::~FileLineReader() {
 }
 
 // FileCommandProcessorAdapter constructor to initialize with the file name to pass to the FileLineReader.
-FileCommandProcessorAdapter::FileCommandProcessorAdapter(string fileName) {
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(GameEngine* gameEngine, string fileName) : CommandProcessor(gameEngine) {
     flr = new FileLineReader(fileName);
 }
 
@@ -256,6 +264,7 @@ FileCommandProcessorAdapter& FileCommandProcessorAdapter::operator=(const FileCo
     fileName = fileCmdProcAdapter.fileName;
     delete flr;
     flr = new FileLineReader(fileCmdProcAdapter.fileName);
+    return *this;
 }
 
 // Stream insertion operator overload of FileCommandProcessorAdapter. Displays the file name the FileLineReader is reading from.

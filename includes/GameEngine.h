@@ -40,12 +40,31 @@ class Transition {
         State* nextState;
 };
 
-void initStateAndTransitions();
-bool isCommandValid(string command);
-void findAndTransition(string name);
-void transition(Transition *transition);
+class CommandProcessor; // forward declaration
 
-extern State* currentState;
-extern MapLoader* mapLoader;
-extern Map* currentMap;
-extern CommandProcessor* commandProcessor;
+class GameEngine {
+    public:
+        GameEngine();
+        GameEngine(vector<State*> states);
+        GameEngine(GameEngine& gameEngine);
+
+        vector<State*> getStates() { return states; };
+        State* getCurrentState() { return currentState; };
+        Map* getCurrentMap() { return currentMap; };
+        void setCurrentMap(Map* map) { this->currentMap = map; };
+        void setCommandProcessor(CommandProcessor* commandProcessor) {this->commandProcessor = commandProcessor; };
+
+        bool isCommandValid(string command);
+        void findAndTransition(string name);
+        void transition(Transition *transition);
+        
+        GameEngine& operator=(const GameEngine& gameEngine);
+        friend std::ostream& operator<<(std::ostream& output, const GameEngine& gameEngine);
+
+        ~GameEngine();
+    private:
+        vector<State*> states;
+        State* currentState;
+        Map* currentMap;
+        CommandProcessor* commandProcessor;
+};

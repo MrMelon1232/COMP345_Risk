@@ -1,4 +1,6 @@
 #pragma once
+#include "GameEngine.h"
+#include "Map.h"
 #include <iostream>
 #include <vector>
 
@@ -28,10 +30,12 @@ class Command {
         string arg;
 };
 
+class GameEngine; // forward declaration
+
 // Manages game commands including creation, validation and execution.
 class CommandProcessor {
     public:
-        CommandProcessor();
+        CommandProcessor(GameEngine* gameEngine);
         CommandProcessor(CommandProcessor& commandProcessor);
 
         Command* getCommand();
@@ -53,7 +57,9 @@ class CommandProcessor {
         void gameStart(Command* command);
         void replay(Command* command);
 
+        GameEngine* gameEngine;
         vector<Command*> commands;
+        MapLoader* mapLoader;
 };
 
 // File reader adapted to create commands.
@@ -74,9 +80,9 @@ class FileLineReader {
 };
 
 // Adapter of the CommandProcessor to read commands from a file.
-class FileCommandProcessorAdapter : CommandProcessor {
+class FileCommandProcessorAdapter : public CommandProcessor {
     public:
-        FileCommandProcessorAdapter(string fileName);
+        FileCommandProcessorAdapter(GameEngine* gameEngine, string fileName);
         FileCommandProcessorAdapter(FileCommandProcessorAdapter& fileCmdProcAdapter);
 
         Command* readCommand();
