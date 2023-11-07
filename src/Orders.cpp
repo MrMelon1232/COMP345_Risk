@@ -1,6 +1,7 @@
 #include "Orders.h"
 #include "Player.h"
 #include "Map.h"
+#include "Cards.h"
 #include <Vector>
 #include <iostream>
 using namespace std;
@@ -18,16 +19,15 @@ ostream& operator<< (ostream& myOrder, Order& O)
     return O.displayOrder(myOrder); 
 }
 
-
 //-------Below are function definitions for classes that inherit from Order---------//
 
 
 //Default constructor
-Deploy::Deploy()
+Deploy:: Deploy() : armyUnits(0)
 {
     this -> player = nullptr;
     this -> target = nullptr;
-}
+};
 
 //Non default constructor
 Deploy::Deploy(int armyUnits, Player* player, Territory* target)
@@ -120,11 +120,18 @@ bool Advance::validate()
         return false;
     }
 
-    if(target->isAdjacent(source))
+    if(!(target->isAdjacent(source)))
     {
         cout << "Cannot advance to a territory which is not adjacent!\n";
         cout << "Validation failed!\n";
         return false;
+    }
+
+    if(player->isAllyPresent(target->getOwnerID()))
+    {
+        cout << "Cannot advance to a territory owned by a player which is an ally until the end of this turn!\n";
+        cout << "Validation failed!\n";
+        return false; 
     }
 
     if(source->getOwnerID() == target->getOwnerID())
@@ -156,7 +163,10 @@ void Advance::simulateAttack()
         target->setNbArmies(remainingPlayerUnits); 
         source->setNbArmies(0);
         target->setOwnerID(source->getOwnerID());
+        Card* newCard = new Card(); 
+        player->addCardToHand(newCard); 
         cout <<"Player has captured territory and has moved units up.\n";
+        cout <<"Player has earned a card for conquering a territory.\n";
     }
 }
 
@@ -242,6 +252,9 @@ Blockade::Blockade()
 
 }
 
+//The game requires that one neutral player exists. In our implementation, this player always exists.
+static auto* neutralPlayer = new Player();
+
 Blockade::~Blockade()
 {
 
@@ -269,7 +282,8 @@ void Blockade::execute()
     {
         cout<<"Executing Blockade\n";
         target->setNbArmies((target->getNbArmies())*2);
-        //need to add neutral player implementation...
+        target->setOwnerID(neutralPlayer->getPlayerID());
+        cout << "Units have been transferred to \n";
     }
 }
 
@@ -372,7 +386,8 @@ void Negotiate::execute()
     if(validate() == true)
     {
         cout<<"Executing Negotiate\n";
-
+        player->addAlly(enemy->getPlayerID());
+        enemy->addAlly(player->getPlayerID()); 
     }
 }
 

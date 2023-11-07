@@ -172,4 +172,36 @@ bool Player::isAnyAdjacent(Territory* territory)
     return false; 
 }
 
+void Player::addCardToHand(Card* c)
+{
+    hand->addHand(c);
+}
+
+void Player::addAlly(int allyID) 
+{
+    myAlliesForTheTurn.push_back(allyID); 
+}
+
+//Player must call this method at the end of each of their turn
+void Player::clearAllies() 
+{
+    myAlliesForTheTurn.clear();
+}
+
+bool Player::isAllyPresent(int allyID) 
+{
+    for (int value : myAlliesForTheTurn) 
+    {
+        if (value == allyID) 
+        {
+            return true; 
+        }
+    }
+    return false; 
+}
+
+
+
+
+
 
