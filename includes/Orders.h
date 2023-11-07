@@ -24,7 +24,7 @@ class Order
 class Deploy : public Order
 {
     public:
-        Deploy() : armyUnits(0){};
+        Deploy();
         Deploy(int armyUnits, Player* player, Territory* target);
         ~Deploy() override;
         Deploy* copy() const  override;
