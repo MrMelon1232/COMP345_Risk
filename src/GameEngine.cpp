@@ -239,3 +239,114 @@ GameEngine::~GameEngine() {
     delete currentMap;
     delete commandProcessor;
 }
+
+
+
+
+// FOR ASSIGNMENT 2
+
+void GameEngine::addPlayer(Player* player) {
+    players.push_back(player);
+}
+
+
+
+
+void listFilesInDirectory() {
+    std::string directoryPath = "Maps";  // Use "Maps" as the directory path
+
+    if (fs::exists(directoryPath) && fs::is_directory(directoryPath)) {
+        std::cout << "List of map files in the directory:" << std::endl;
+        for (const auto& entry : fs::directory_iterator(directoryPath)) {
+            if (fs::is_regular_file(entry)) {
+                std::cout  << entry.path().filename() << std::endl;
+            }
+        }
+    }
+    else {
+        std::cerr << "Directory not found or is not a directory." << std::endl;
+    }
+}
+
+
+
+void GameEngine::distributeTerritories(int numPlayers) {
+
+    // Create a list of all territories
+    std::vector<Territory*> allTerritories = currentMap->getTerritories();
+
+    // Shuffle the territories randomly
+    std::random_device rd;
+    std::default_random_engine rng(rd());
+    std::shuffle(allTerritories.begin(), allTerritories.end(), rng);
+
+    int playerIndex = 0;
+    for (Territory* territory : allTerritories) {
+        Player* currentPlayer = players[playerIndex];
+        currentPlayer->addTerritory(territory);
+        territory->setOwner(currentPlayer);
+        playerIndex = (playerIndex + 1) % numPlayers;
+    }
+}
+
+void GameEngine::startupPhase() {
+
+    listFilesInDirectory();
+
+    // Create a CommandProcessor for console input
+    CommandProcessor consoleCommandProcessor(this);
+
+    // Load a map
+    Command* loadMapCommand = consoleCommandProcessor.getCommand();
+    while (loadMapCommand->getName() != "loadmap") {
+        cout << "Invalid command. Please enter 'loadmap <filename>' to load the map." << endl;
+        delete loadMapCommand;
+        loadMapCommand = consoleCommandProcessor.getCommand();
+    }
+
+
+    string mapFileName = loadMapCommand->getArg();
+    delete loadMapCommand;
+
+    if (!mapLoader->LoadMap(mapFileName)) {
+        cout << "Failed to load the map. Exiting startup phase." << endl;
+        return;
+    }
+
+    // Validate the map
+    Command* validateMapCommand = consoleCommandProcessor.getCommand();
+    while (validateMapCommand->getName() != "validatemap") {
+        cout << "Invalid command. Please enter 'validatemap' to validate the map." << endl;
+        delete validateMapCommand;
+        validateMapCommand = consoleCommandProcessor.getCommand();
+    }
+
+    // Execute the validate map command using CommandProcessor
+    consoleCommandProcessor.executeCommand(validateMapCommand);
+    delete validateMapCommand;
+
+
+    // Create a CommandProcessor for player input
+    CommandProcessor playerCommandProcessor(this);
+
+    // add Players
+    int numPlayers;
+    do {
+        cout << "Enter the number of players (2-6): ";
+        cin >> numPlayers;
+    } while (numPlayers < 2 || numPlayers > 6);
+
+    for (int i = 1; i <= numPlayers; i++) {
+        cout << "Enter the name of Player " << i << ": ";
+        string playerName;
+        cin >> playerName;
+
+        // Construct the "addPlayer" command in the correct format
+        string addPlayerCommand = "addplayer " + playerName;
+
+        // Create and execute the command
+        Command* addPlayerCmd = new Command(addPlayerCommand);
+        playerCommandProcessor.executeCommand(addPlayerCmd);
+        delete addPlayerCmd; // Clean up the command object
+    }
+}
