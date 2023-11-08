@@ -7,7 +7,7 @@ using std::endl;
 
 void testCommandProcessor() {
     string mode;
-    cout << "Type -console or -file <filename> to specify how to read the commands" << endl;
+    cout << "Type -console or -file to specify how to read the commands." << endl;
     cin >> mode;
 
     State* start = new State("start");
@@ -20,8 +20,8 @@ void testCommandProcessor() {
     Transition* loadMap = new Transition("loadmap", mapLoaded);
     Transition* validateMap = new Transition("validatemap", mapValidated);
     Transition* addPlayer = new Transition("addplayer", playersAdded);
-    Transition* gameStart = new Transition("gameStart", assignReinforcements);
-    Transition* endGame = new Transition("endGame", win); // Skipping the main game loop to test all commands.
+    Transition* gameStart = new Transition("gamestart", assignReinforcements);
+    Transition* endGame = new Transition("endgame", win); // Skipping the main game loop to test all commands.
     Transition* replay = new Transition("replay", start);
     Transition* quit = new Transition("quit", nullptr);
 
@@ -37,21 +37,28 @@ void testCommandProcessor() {
 
     if (mode.find("-console") != std::string::npos) {
         gameEngine->setCommandProcessor(new CommandProcessor(gameEngine));
-
         int nbCommands;
         cout << "How many commands would you like to add?" << endl;
         cin >> nbCommands;
-        for (int i = 0; i < nbCommands; i++) {
+
+        for (int i = 0; i < nbCommands; i++)
             gameEngine->getCommandProcessor()->getCommand();
-        }
     } else if (mode.find("-file") != std::string::npos) {
-        string fileName = mode.substr(6);
+        string fileName;
+        cout << "Enter the file name to read." << endl;
+        cin >> fileName;
+
         FileLineReader* flr = new FileLineReader(fileName);
         gameEngine->setCommandProcessor(new FileCommandProcessorAdapter(gameEngine, flr));
-    }
 
+        Command* command = nullptr;
+        do
+            command = gameEngine->getCommandProcessor()->getCommand();
+        while (command);
+    }
+    
     cout << "-------------------------------" << endl;
-    cout << "Proceeding to commands execution." << endl;
+    cout << "PROCEEDING TO COMMANDS EXECUTION" << endl;
 
     CommandProcessor* commandProcessor = gameEngine->getCommandProcessor();
     for (Command* command : commandProcessor->getCommands()) {

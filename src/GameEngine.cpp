@@ -136,17 +136,22 @@ GameEngine::GameEngine() {
     states = {start, mapLoaded, mapValidated, playersAdded, assignReinforcements, issueOrders, executeOrders, win};
     currentState = start;
 
+    currentMap = nullptr;
+    commandProcessor = nullptr;
     std::cout << "Current state is " << *currentState << "." << std::endl;
 }
 
+// Game Engine constructor to initialize with states. Mainly used for testing.
 GameEngine::GameEngine(vector<State*> states) {
     currentState = states.front();
-    for (State* state : states) {
+    for (State* state : states)
         this->states.push_back(state);
-    }
+    currentMap = nullptr;
+    commandProcessor = nullptr;
     std::cout << "Current state is " << *currentState << "." << std::endl;
 }
 
+// Game Engine copy constructor
 GameEngine::GameEngine(GameEngine& gameEngine) {
     for (State* state : states) {
         State* newState = new State(*state);
@@ -155,8 +160,15 @@ GameEngine::GameEngine(GameEngine& gameEngine) {
 
     currentState = states.front();
     currentMap = new Map(*(gameEngine.currentMap));
-    // TODO: check if commandProcessor is the derived class.
-    commandProcessor = new CommandProcessor(*(gameEngine.commandProcessor));
+
+    FileCommandProcessorAdapter* fileCmdProcAdapter = dynamic_cast<FileCommandProcessorAdapter*>(gameEngine.commandProcessor);
+    if (fileCmdProcAdapter) {
+        FileLineReader* flr = new FileLineReader(*(fileCmdProcAdapter->getFileLineReader()));
+        commandProcessor = new FileCommandProcessorAdapter(this, flr);
+    } else {
+        commandProcessor = new CommandProcessor(this);
+    }
+    
 }
 
 // Function that indicates if the command is valid in the current state game.
@@ -191,7 +203,6 @@ void GameEngine::transition(Transition* transition) {
 GameEngine::~GameEngine() {
     for (State* state : states) // deletes the `currentState` too.
         delete state;
-
     delete currentMap;
     delete commandProcessor;
 }

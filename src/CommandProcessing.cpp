@@ -45,12 +45,14 @@ CommandProcessor::CommandProcessor(CommandProcessor& commandProcessor) {
         Command* newCommand = new Command(*command);
         commands.push_back(newCommand);
     }
+    mapLoader = new MapLoader(*(commandProcessor.mapLoader));
 }
 
 // Returns a pointer to the newly created command (validation and save included).
 Command* CommandProcessor::getCommand() {
     Command* command = readCommand();
-    saveCommand(command);
+    if (command)
+        saveCommand(command);
     return command;
 }
 
@@ -95,6 +97,8 @@ void CommandProcessor::validate(Command* command) {
         command->saveEffect("Restarting the game.");
     } else if (cmdName == "quit") {
         command->saveEffect("Quitting the game");
+    } else { // if command behavior undefined, simply transition state.
+        command->saveEffect("Transitioning to another state.");
     }
 }
 
@@ -123,6 +127,8 @@ void CommandProcessor::executeCommand(Command* command) {
     } else if (cmdName == "replay") {
         replay(command);
     } else if (cmdName == "quit") {
+        gameEngine->findAndTransition(command->getName());
+    } else { // if command behavior undefined, simply transition state.
         gameEngine->findAndTransition(command->getName());
     }
 }
@@ -162,10 +168,9 @@ void CommandProcessor::gameStart(Command* command) {
 
 // Helper function to the `replay` command.
 void CommandProcessor::replay(Command* command) {
+    cout << "replay()" << endl;
     gameEngine->findAndTransition(command->getName()); // cmdName is "replay"
-    delete gameEngine;
-    gameEngine = nullptr;
-    // TODO: reset other GameEngine variables (i.e., players)
+    // TODO: reset GameEngine variables (i.e., players)
 }
 
 // Assignment operator of the CommandProcessor.
@@ -211,12 +216,16 @@ FileLineReader::FileLineReader(FileLineReader& flr) {
     this->file.open(fileName);
 }
 
-// Returns a pointer to the newly craeted command from the next line in the file.
+// Returns a string containing command information from the next line in the file.
 string FileLineReader::readLineFromFile() {
     string commandLine;
     getline(file, commandLine, '\n');
     return commandLine;
-    // TODO: check if no more lines to read?
+}
+
+// Indicates whether the eof flag is set in the ifstream object.
+bool FileLineReader::isEof() { 
+    return file.eof(); 
 }
 
 // Assignment operator of FileLineReader.
@@ -245,17 +254,22 @@ FileCommandProcessorAdapter::FileCommandProcessorAdapter(GameEngine* gameEngine,
 
 // Copy constructor of FileCommandProcessorAdapter.
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(FileCommandProcessorAdapter& fileCmdProcAdapter) : CommandProcessor(fileCmdProcAdapter) {
-    this->flr = new FileLineReader(fileCmdProcAdapter.flr->getFileName());
+    this->flr = new FileLineReader(*(fileCmdProcAdapter.flr));
 }
 
 // Returns a pointer to the newly created command by the FileLineReader.
 Command* FileCommandProcessorAdapter::readCommand() {
     string commandLine = flr->readLineFromFile();
-    string cmdName = commandLine.substr(0, commandLine.find(' '));
+
+    if (flr->isEof()) // No more commands to read.
+        return nullptr;
+
+    int spaceIndex = commandLine.find(' ');
+    string cmdName = commandLine.substr(0, spaceIndex);
 
     Command* command = new Command(cmdName);
     if (cmdName == "loadmap" || cmdName == "addPlayer")
-        command->setArg(commandLine.substr(1));
+        command->setArg(commandLine.substr(spaceIndex + 1));
     return command;
 }
 
@@ -263,7 +277,7 @@ Command* FileCommandProcessorAdapter::readCommand() {
 FileCommandProcessorAdapter& FileCommandProcessorAdapter::operator=(const FileCommandProcessorAdapter& fileCmdProcAdapter) {    
     CommandProcessor::operator=(fileCmdProcAdapter);
     delete flr;
-    flr = new FileLineReader(fileCmdProcAdapter.flr->getFileName());
+    flr = new FileLineReader(*(fileCmdProcAdapter.flr));
     return *this;
 }
 
@@ -276,5 +290,4 @@ std::ostream& operator<<(std::ostream& output, const FileCommandProcessorAdapter
 // FileCommandProcessorAdapter's destructor.
 FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
     delete flr;
-    flr = nullptr;
 }

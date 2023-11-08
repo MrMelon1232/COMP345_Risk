@@ -69,8 +69,9 @@ class FileLineReader {
         FileLineReader(string fileName);
         FileLineReader(FileLineReader& flr);
 
-        string readLineFromFile();
         string getFileName() { return fileName; };
+        string readLineFromFile();
+        bool isEof();
 
         FileLineReader& operator=(const FileLineReader& flr);
         friend std::ostream& operator<<(std::ostream& output, const FileLineReader& flr);
@@ -87,6 +88,7 @@ class FileCommandProcessorAdapter : public CommandProcessor {
         FileCommandProcessorAdapter(GameEngine* gameEngine, FileLineReader* flr);
         FileCommandProcessorAdapter(FileCommandProcessorAdapter& fileCmdProcAdapter);
 
+        FileLineReader* getFileLineReader() { return flr; };
         Command* readCommand();
 
         FileCommandProcessorAdapter& operator=(const FileCommandProcessorAdapter& fileCmdProcAdapter);
