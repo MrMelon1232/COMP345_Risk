@@ -99,6 +99,19 @@ std::vector<Territory*> Player::toAttack() {
     return attackTerritories;
 }
 
+Player::Player(const string& name) : playerName(name) {
+}
+
+// Getter for player name
+string Player::getName() const {
+    return playerName;
+}
+
+// Setter for player name
+void Player::setName(const string& name) {
+    playerName = name;
+}
+
 // Function that creates an order object and adds it to the list of orders
 void Player::issueOrder(OrderType type) {
     Order* newOrder = nullptr;
