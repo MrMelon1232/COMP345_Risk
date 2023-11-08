@@ -41,6 +41,7 @@ class CommandProcessor {
         Command* getCommand();
         void validate(Command* command);
         void executeCommand(Command* command);
+        vector<Command*> getCommands() { return commands; };
 
         CommandProcessor& operator=(const CommandProcessor& commandProcessor);
         friend std::ostream& operator<<(std::ostream& output, const CommandProcessor& commandProcessor);
@@ -68,7 +69,8 @@ class FileLineReader {
         FileLineReader(string fileName);
         FileLineReader(FileLineReader& flr);
 
-        Command* readLineFromFile();
+        string readLineFromFile();
+        string getFileName() { return fileName; };
 
         FileLineReader& operator=(const FileLineReader& flr);
         friend std::ostream& operator<<(std::ostream& output, const FileLineReader& flr);
@@ -82,7 +84,7 @@ class FileLineReader {
 // Adapter of the CommandProcessor to read commands from a file.
 class FileCommandProcessorAdapter : public CommandProcessor {
     public:
-        FileCommandProcessorAdapter(GameEngine* gameEngine, string fileName);
+        FileCommandProcessorAdapter(GameEngine* gameEngine, FileLineReader* flr);
         FileCommandProcessorAdapter(FileCommandProcessorAdapter& fileCmdProcAdapter);
 
         Command* readCommand();
@@ -92,6 +94,5 @@ class FileCommandProcessorAdapter : public CommandProcessor {
 
         ~FileCommandProcessorAdapter();
     private:
-        string fileName;
         FileLineReader* flr;
 };

@@ -7,7 +7,7 @@ using std::endl;
 
 void testCommandProcessor() {
     string mode;
-    cout << "Type -console or -file <filename> to specify how to read the commands";
+    cout << "Type -console or -file <filename> to specify how to read the commands" << endl;
     cin >> mode;
 
     State* start = new State("start");
@@ -35,16 +35,28 @@ void testCommandProcessor() {
     vector<State*> states = {start, mapLoaded, mapValidated, playersAdded, assignReinforcements, win};
     GameEngine* gameEngine = new GameEngine(states);
 
-    if (mode.find("-console")) {
+    if (mode.find("-console") != std::string::npos) {
         gameEngine->setCommandProcessor(new CommandProcessor(gameEngine));
 
-        cout << "Please enter the ";
-
-        string commandLine;
-        cin >> commandLine;
-        
-    } else if (mode.find("-file")) {
+        int nbCommands;
+        cout << "How many commands would you like to add?" << endl;
+        cin >> nbCommands;
+        for (int i = 0; i < nbCommands; i++) {
+            gameEngine->getCommandProcessor()->getCommand();
+        }
+    } else if (mode.find("-file") != std::string::npos) {
         string fileName = mode.substr(6);
-        gameEngine->setCommandProcessor(new FileCommandProcessorAdapter(gameEngine, fileName));
+        FileLineReader* flr = new FileLineReader(fileName);
+        gameEngine->setCommandProcessor(new FileCommandProcessorAdapter(gameEngine, flr));
+    }
+
+    cout << "-------------------------------" << endl;
+    cout << "Proceeding to commands execution." << endl;
+
+    CommandProcessor* commandProcessor = gameEngine->getCommandProcessor();
+    for (Command* command : commandProcessor->getCommands()) {
+        cout << "-------------------------------" << endl;
+        commandProcessor->executeCommand(command);
+        cout << *command << endl;
     }
 }

@@ -50,7 +50,6 @@ CommandProcessor::CommandProcessor(CommandProcessor& commandProcessor) {
 // Returns a pointer to the newly created command (validation and save included).
 Command* CommandProcessor::getCommand() {
     Command* command = readCommand();
-    validate(command);
     saveCommand(command);
     return command;
 }
@@ -63,12 +62,12 @@ Command* CommandProcessor::readCommand() {
 
     Command* command = new Command(cmdName);
 
-    if (cmdName == "loadmap" || cmdName == "addPlayer") {
+    if (cmdName == "loadmap" || cmdName == "addplayer") {
         string arg;
         if (cmdName == "loadmap")
-            cout << "Please enter a map file to load.";
+            cout << "Please enter a map file to load." << endl;
         else
-            cout << "Please enter the player's name.";
+            cout << "Please enter the player's name." << endl;
         cin >> arg;
         command->setArg(arg);
     }
@@ -106,14 +105,13 @@ void CommandProcessor::saveCommand(Command* command) {
 
 // Executes the given command. If command is invalid, it just outputs the effect.
 void CommandProcessor::executeCommand(Command* command) {
-    string effect = command->getEffect();
-    cout << effect << endl;
-    if (effect.find("invalid") != string::npos) {
+    validate(command);
+    if (command->getEffect().find("invalid") != string::npos) {
+        cout << command->getEffect() << endl;
         return;
     }
 
     string cmdName = command->getName();
-    
     if (cmdName == "loadmap") {
         loadMap(command);
     } else if (cmdName == "validatemap") {
@@ -135,27 +133,31 @@ void CommandProcessor::loadMap(Command* command) {
         gameEngine->setCurrentMap(mapLoader->LoadMap(command->getArg()));
         gameEngine->findAndTransition(command->getName());
     } catch (const runtime_error& error) {
-        cout << "Could not load map file " + command->getArg() + ". State is still `" + gameEngine->getCurrentState()->getName() + "`.";
+        command->saveEffect("Map file not found.");
+        cout << "Could not load map file " + command->getArg() + ". State is still `" + gameEngine->getCurrentState()->getName() + "`." << endl;
     }
 }
 
 // Helper function for the `validatemap` command
 void CommandProcessor::validateMap(Command* command) {
-    if (gameEngine->getCurrentMap()->validate())
-        cout << "Invalid map or map file. Try loading a different one.";
-    else
-        cout << "Map loaded successfully.";
-    gameEngine->findAndTransition(command->getName());
+    if (gameEngine->getCurrentMap()->validate()) {
+        cout << "Map loaded successfully." << endl;
+        gameEngine->findAndTransition(command->getName());
+    } else {
+        cout << "Invalid map or map file. Try loading a different one." << endl;
+    }
 }
 
 // Helper function for the `addPlayer <playerName>` command.
 void CommandProcessor::addPlayer(Command* command) {
-
+    cout << "addPlayer()" << endl;
+    gameEngine->findAndTransition(command->getName());
 }
 
 // Helper function to the `gameStart` command.
 void CommandProcessor::gameStart(Command* command) {
-
+    cout << "gameStart()" << endl;
+    gameEngine->findAndTransition(command->getName());
 }
 
 // Helper function to the `replay` command.
@@ -210,16 +212,11 @@ FileLineReader::FileLineReader(FileLineReader& flr) {
 }
 
 // Returns a pointer to the newly craeted command from the next line in the file.
-Command* FileLineReader::readLineFromFile() {
+string FileLineReader::readLineFromFile() {
     string commandLine;
     getline(file, commandLine, '\n');
+    return commandLine;
     // TODO: check if no more lines to read?
-    string cmdName = commandLine.substr(0, commandLine.find(' '));
-
-    Command* command = new Command(cmdName);
-    if (cmdName == "loadmap" || cmdName == "addPlayer")
-        command->setArg(commandLine.substr(1));
-    return command;
 }
 
 // Assignment operator of FileLineReader.
@@ -242,34 +239,37 @@ FileLineReader::~FileLineReader() {
 }
 
 // FileCommandProcessorAdapter constructor to initialize with the file name to pass to the FileLineReader.
-FileCommandProcessorAdapter::FileCommandProcessorAdapter(GameEngine* gameEngine, string fileName) : CommandProcessor(gameEngine) {
-    flr = new FileLineReader(fileName);
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(GameEngine* gameEngine,  FileLineReader* flr) : CommandProcessor(gameEngine) {
+    this->flr = flr;
 }
 
 // Copy constructor of FileCommandProcessorAdapter.
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(FileCommandProcessorAdapter& fileCmdProcAdapter) : CommandProcessor(fileCmdProcAdapter) {
-    this->fileName = fileCmdProcAdapter.fileName;
-    this->flr = new FileLineReader(fileName);
+    this->flr = new FileLineReader(fileCmdProcAdapter.flr->getFileName());
 }
 
 // Returns a pointer to the newly created command by the FileLineReader.
 Command* FileCommandProcessorAdapter::readCommand() {
-    // TODO: check if no more lines to read?
-    return flr->readLineFromFile();
+    string commandLine = flr->readLineFromFile();
+    string cmdName = commandLine.substr(0, commandLine.find(' '));
+
+    Command* command = new Command(cmdName);
+    if (cmdName == "loadmap" || cmdName == "addPlayer")
+        command->setArg(commandLine.substr(1));
+    return command;
 }
 
 // Assignment operator of FileCommandProcessorAdapter.
 FileCommandProcessorAdapter& FileCommandProcessorAdapter::operator=(const FileCommandProcessorAdapter& fileCmdProcAdapter) {    
     CommandProcessor::operator=(fileCmdProcAdapter);
-    fileName = fileCmdProcAdapter.fileName;
     delete flr;
-    flr = new FileLineReader(fileCmdProcAdapter.fileName);
+    flr = new FileLineReader(fileCmdProcAdapter.flr->getFileName());
     return *this;
 }
 
 // Stream insertion operator overload of FileCommandProcessorAdapter. Displays the file name the FileLineReader is reading from.
 std::ostream& operator<<(std::ostream& output, const FileCommandProcessorAdapter& fileCmdProcAdapter) {
-    output << "File name: " << fileCmdProcAdapter.fileName;
+    output << *(fileCmdProcAdapter.flr);
     return output;
 }
 

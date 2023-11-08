@@ -52,6 +52,7 @@ class GameEngine {
         State* getCurrentState() { return currentState; };
         Map* getCurrentMap() { return currentMap; };
         void setCurrentMap(Map* map) { this->currentMap = map; };
+        CommandProcessor* getCommandProcessor() { return commandProcessor; };
         void setCommandProcessor(CommandProcessor* commandProcessor) {this->commandProcessor = commandProcessor; };
 
         bool isCommandValid(string command);
