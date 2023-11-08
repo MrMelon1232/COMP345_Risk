@@ -103,6 +103,48 @@ Transition::~Transition() {
 
 // GameEngine default constructor. Creates the state and transition objects for the game. It also sets the initial state.
 GameEngine::GameEngine() {
+    setDefaultGameStates();
+    currentMap = nullptr;
+    selectMode();
+    std::cout << "Current state is " << *currentState << "." << std::endl;
+}
+
+GameEngine::GameEngine(string mode) {
+    setDefaultGameStates();
+    currentMap = nullptr;
+    this->mode = mode;
+    initProcessor();
+    std::cout << "Current state is " << *currentState << "." << std::endl;
+}
+
+// Game Engine constructor to initialize with states. Mainly used for testing.
+GameEngine::GameEngine(vector<State*> states) {
+    currentState = states.front();
+    for (State* state : states)
+        this->states.push_back(state);
+    currentMap = nullptr;
+    selectMode();
+    std::cout << "Current state is " << *currentState << "." << std::endl;
+}
+
+// Game Engine copy constructor
+GameEngine::GameEngine(GameEngine& gameEngine) {
+    this->states = gameEngine.states; // To simplify circular data dependency, reuse same states and transitions.
+    currentState = states.front();
+    currentMap = new Map(*(gameEngine.currentMap));
+    mode = gameEngine.mode;
+
+    FileCommandProcessorAdapter* fileCmdProcAdapter = dynamic_cast<FileCommandProcessorAdapter*>(gameEngine.commandProcessor);
+    if (fileCmdProcAdapter) {
+        FileLineReader* flr = new FileLineReader(*(fileCmdProcAdapter->getFileLineReader()));
+        commandProcessor = new FileCommandProcessorAdapter(this, flr);
+    } else {
+        commandProcessor = new CommandProcessor(this);
+    }
+}
+
+// Utility method to use the default game states.
+void GameEngine::setDefaultGameStates() {
     State* start = new State("start");
     State* mapLoaded = new State("maploaded");
     State* mapValidated = new State("mapvalidated");
@@ -135,40 +177,31 @@ GameEngine::GameEngine() {
 
     states = {start, mapLoaded, mapValidated, playersAdded, assignReinforcements, issueOrders, executeOrders, win};
     currentState = start;
-
-    currentMap = nullptr;
-    commandProcessor = nullptr;
-    std::cout << "Current state is " << *currentState << "." << std::endl;
 }
 
-// Game Engine constructor to initialize with states. Mainly used for testing.
-GameEngine::GameEngine(vector<State*> states) {
-    currentState = states.front();
-    for (State* state : states)
-        this->states.push_back(state);
-    currentMap = nullptr;
-    commandProcessor = nullptr;
-    std::cout << "Current state is " << *currentState << "." << std::endl;
+// Utility method to select the game's mode.
+void GameEngine::selectMode() {
+    string mode;
+    do {
+        cout << "Type -console or -file to specify how to read the commands." << endl;
+        cin >> mode;
+    } while(mode != "-console" && mode != "-file");
+    this->mode = mode;
+    initProcessor();
 }
 
-// Game Engine copy constructor
-GameEngine::GameEngine(GameEngine& gameEngine) {
-    for (State* state : states) {
-        State* newState = new State(*state);
-        states.push_back(newState);
-    }
-
-    currentState = states.front();
-    currentMap = new Map(*(gameEngine.currentMap));
-
-    FileCommandProcessorAdapter* fileCmdProcAdapter = dynamic_cast<FileCommandProcessorAdapter*>(gameEngine.commandProcessor);
-    if (fileCmdProcAdapter) {
-        FileLineReader* flr = new FileLineReader(*(fileCmdProcAdapter->getFileLineReader()));
-        commandProcessor = new FileCommandProcessorAdapter(this, flr);
-    } else {
+// Utility method to set the correct command processor. Assumes the mode is valid.
+void GameEngine::initProcessor() {
+    if (mode == "-console") {
         commandProcessor = new CommandProcessor(this);
+    } else { // mode is -file
+        string fileName;
+        cout << "Enter the file name to read." << endl;
+        cin >> fileName;
+
+        FileLineReader* flr = new FileLineReader(fileName);
+        commandProcessor = new FileCommandProcessorAdapter(this, flr);
     }
-    
 }
 
 // Function that indicates if the command is valid in the current state game.

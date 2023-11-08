@@ -6,10 +6,6 @@ using std::cin;
 using std::endl;
 
 void testCommandProcessor() {
-    string mode;
-    cout << "Type -console or -file to specify how to read the commands." << endl;
-    cin >> mode;
-
     State* start = new State("start");
     State* mapLoaded = new State("maploaded");
     State* mapValidated = new State("mapvalidated");
@@ -35,26 +31,18 @@ void testCommandProcessor() {
     vector<State*> states = {start, mapLoaded, mapValidated, playersAdded, assignReinforcements, win};
     GameEngine* gameEngine = new GameEngine(states);
 
-    if (mode.find("-console") != std::string::npos) {
-        gameEngine->setCommandProcessor(new CommandProcessor(gameEngine));
+    if (gameEngine->getMode() == "-console") {
         int nbCommands;
         cout << "How many commands would you like to add?" << endl;
         cin >> nbCommands;
 
         for (int i = 0; i < nbCommands; i++)
             gameEngine->getCommandProcessor()->getCommand();
-    } else if (mode.find("-file") != std::string::npos) {
-        string fileName;
-        cout << "Enter the file name to read." << endl;
-        cin >> fileName;
-
-        FileLineReader* flr = new FileLineReader(fileName);
-        gameEngine->setCommandProcessor(new FileCommandProcessorAdapter(gameEngine, flr));
-
+    } else { // Mode is -file.
         Command* command = nullptr;
-        do
+        do {
             command = gameEngine->getCommandProcessor()->getCommand();
-        while (command);
+        } while (command);
     }
     
     cout << "-------------------------------" << endl;

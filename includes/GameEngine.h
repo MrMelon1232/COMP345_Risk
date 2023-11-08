@@ -45,15 +45,18 @@ class CommandProcessor; // forward declaration
 class GameEngine {
     public:
         GameEngine();
+        GameEngine(string mode);
         GameEngine(vector<State*> states);
         GameEngine(GameEngine& gameEngine);
 
-        vector<State*> getStates() { return states; };
-        State* getCurrentState() { return currentState; };
-        Map* getCurrentMap() { return currentMap; };
-        void setCurrentMap(Map* map) { this->currentMap = map; };
-        CommandProcessor* getCommandProcessor() { return commandProcessor; };
-        void setCommandProcessor(CommandProcessor* commandProcessor) {this->commandProcessor = commandProcessor; };
+        // Getters and setters.
+        string getMode() { return mode; }
+        void setMode(string mode) { this->mode = mode; }
+        State* getCurrentState() { return currentState; }
+        Map* getCurrentMap() { return currentMap; }
+        void setCurrentMap(Map* map) { this->currentMap = map; }
+        CommandProcessor* getCommandProcessor() { return commandProcessor; }
+        void setCommandProcessor(CommandProcessor* commandProcessor) {this->commandProcessor = commandProcessor; }
 
         bool isCommandValid(string command);
         void findAndTransition(string name);
@@ -64,8 +67,13 @@ class GameEngine {
 
         ~GameEngine();
     private:
+        void initProcessor();
+        void setDefaultGameStates();
+        void selectMode();
+
         vector<State*> states;
         State* currentState;
         Map* currentMap;
         CommandProcessor* commandProcessor;
+        string mode;
 };
