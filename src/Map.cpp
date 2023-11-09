@@ -45,6 +45,22 @@ const string& Continent::GetName() const {
     return name;
 }
 
+void Continent::addTerritory(Territory* t)
+{
+    territoryList.push_back(t);
+}
+
+vector<Territory*> Continent::getTerritory()
+{
+    return territoryList;
+}
+
+int Continent::getBonusValue()
+{
+    return bonusValue;
+}
+
+
 // Territory class constructor
 Territory::Territory(const string& name, const string& continentName)
     : name(name), continentName(continentName), nbArmies(0) {}
@@ -227,6 +243,7 @@ void Map::dfsContinent(size_t continentIndex, vector<bool>& visitedContinents) c
     for (size_t i = 0; i < territories.size(); ++i) {
         if (territories[i]->GetContinentName() == continentName) {
             continentTerritories.push_back(i);
+            continents[continentIndex]->addTerritory(territories.at(i));
         }
     }
 
@@ -291,6 +308,11 @@ bool Map::territoriesBelongToOneContinent() const {
     }
 
     return true; // All territories belong to one and only one continent
+}
+
+vector<Continent*> Map::getContinents()
+{
+    return continents;
 }
 
 

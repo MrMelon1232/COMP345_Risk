@@ -3,6 +3,9 @@
 #define PLAYER_H
 
 // Includes
+#include "Orders.h"
+#include "Cards.h"
+#include "Map.h"
 #include <vector>
 using namespace std;
 #include <iostream> 
@@ -19,10 +22,11 @@ class Player
 {
     // Players' possessions
     private:
+        string name;
 
         // List of territories owned by the player
-        std::vector<Territory*> territoriesOwned;
-
+        vector<Territory*> territoriesOwned;
+        
         // List of orders owned by the player
         OrdersList* orders;
 
@@ -42,13 +46,13 @@ class Player
         Player& operator=(const Player& other);
 
         // Stream insertion operator
-        friend std::ostream& operator<<(std::ostream& os, const Player& player);
+        friend ostream& operator<<(ostream& os, const Player& player);
 
         // Returns a list of territories that are to be defended
-        std::vector<Territory*> toDefend();
+        vector<Territory*> toDefend();
         
         // Returns a list of territories that are to be attacked
-        std::vector<Territory*> toAttack();
+        vector<Territory*> toAttack();
 
         // Creates order object and adds it to the list of orders
         void issueOrder(OrderType type);
@@ -58,7 +62,17 @@ class Player
 
         // Destructor to clean up resources
         ~Player();
+
+        //A2
+        string getName();
+
+        void setName(string n);
+        
+        vector<Territory*> getTerritories();
 };
 
 
+
+//test methods
+void testPlayers();
 #endif

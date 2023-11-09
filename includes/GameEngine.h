@@ -3,11 +3,13 @@
 #include "CommandProcessing.h"
 #include <iostream>
 #include <vector>
+#include <Player.h>
 
 using std::vector;
 using std::string;
 
 class Transition;
+class Player;
 
 // Represents a state of the game with its valid commands
 class State {
@@ -35,9 +37,19 @@ class Transition {
         Transition& operator=(const Transition& transition);
         friend std::ostream& operator<<(std::ostream& output, const Transition& transition);
         ~Transition();
+
+        //A2
+        void mainGameLoop();
+        bool gameResultCheck();
+        void reinforcementPhase();
+        void issueOrdersPhase();
+        void executeOrdersPhase();
     private:
         string commandName;
-        State* nextState;
+        State* nextState; 
+        vector<Player*> playersList;
+        Map* gameMap;
+        
 };
 
 class CommandProcessor; // forward declaration

@@ -1,6 +1,8 @@
 #include "GameEngine.h"
 #include <algorithm>
 #include <set>
+#include <cmath>
+#include "Map.h"
 
 // Constructor to initialize a state with a name.
 State::State(string name) { 
@@ -287,4 +289,83 @@ GameEngine::~GameEngine() {
         
     delete currentMap;
     delete commandProcessor;
+    
+//addition for A2: main game loop
+void Transition::mainGameLoop() {
+    bool gameEnd = false;
+    while (!gameEnd) {
+        //run game loop
+        reinforcementPhase();
+        issueOrdersPhase();
+        executeOrdersPhase();
+
+        gameEnd =  gameResultCheck();
+    }
+    cout << "Winner: " << playersList.at(0)->getName() << endl;
+
+}
+
+bool Transition::gameResultCheck() {
+    //check if a player has no territories owned, then eliminate him
+    auto iterator = playersList.begin();
+    while (iterator != playersList.end()) {
+        if ((*iterator)->getTerritories().size() < 1) {
+            iterator = playersList.erase(iterator);
+            continue;
+        }
+        ++iterator;
+    }
+
+    //check if a player owns all the territories
+    if (playersList.size() == 1) {
+        int numberTerritoriesOwned = playersList.at(0)->getTerritories().size();
+        int numberTerritories = 0;
+        for (int i = 0; i < gameMap->getContinents().size(); i++) {
+            numberTerritories += gameMap->getContinents().at(i)->getTerritory().size();
+        }
+
+        if (numberTerritoriesOwned == numberTerritories) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void Transition::reinforcementPhase() {
+    int reinforcement = 0;
+    auto iterator = playersList.begin();
+    while (iterator != playersList.end()) {
+        //number of territories owned by players
+        int territoryQuantity = 0; 
+        territoryQuantity = (*iterator)->getTerritories().size();
+        //reinforcement amount
+        reinforcement = floor(territoryQuantity/3);
+
+        int totalTerritories = 0;
+        //check if player owns all territories in a continent
+        for (int i = 0; i < gameMap->getContinents().size(); i++) {
+            //count territories own per continent
+            for (int j = 0; j < (*iterator)->getTerritories().size(); j++) {
+                if ((*iterator)->getTerritories().at(j)->GetContinentName() == gameMap->getContinents().at(i)->GetName()) {
+                    totalTerritories++;
+                }
+            }
+            if (totalTerritories == gameMap->getContinents().at(i)->getTerritory().size()) {
+                reinforcement += gameMap->getContinents().at(i)->getBonusValue();
+            }
+        }
+
+        if (reinforcement < 3) {
+            reinforcement = 3;
+        }
+    }
+}
+
+void Transition::issueOrdersPhase() {
+
+}
+
+void Transition::executeOrdersPhase() {
+
 }
