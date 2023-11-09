@@ -45,6 +45,21 @@ const string& Continent::GetName() const {
     return name;
 }
 
+void Continent::addTerritory(Territory* t)
+{
+    territoryList.push_back(t);
+}
+
+vector<Territory*> Continent::getTerritory()
+{
+    return territoryList;
+}
+
+int Continent::getBonusValue()
+{
+    return bonusValue;
+}
+
 
 // Territory class constructor
 Territory::Territory(const string& name, const string& continentName)
@@ -228,6 +243,7 @@ void Map::dfsContinent(size_t continentIndex, vector<bool>& visitedContinents) c
     for (size_t i = 0; i < territories.size(); ++i) {
         if (territories[i]->GetContinentName() == continentName) {
             continentTerritories.push_back(i);
+            continents[continentIndex]->addTerritory(territories.at(i));
         }
     }
 

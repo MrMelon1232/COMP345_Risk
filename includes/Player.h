@@ -26,7 +26,7 @@ class Player
 
         // List of territories owned by the player
         vector<Territory*> territoriesOwned;
-
+        
         // List of orders owned by the player
         OrdersList* orders;
 

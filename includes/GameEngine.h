@@ -46,7 +46,7 @@ class Transition {
         string commandName;
         State* nextState; 
         vector<Player*> playersList;
-        Map* continent;
+        Map* gameMap;
         
 };
 

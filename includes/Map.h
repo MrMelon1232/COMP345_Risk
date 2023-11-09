@@ -10,16 +10,20 @@
 #include <stack>
 
 using namespace std; 
+class Territory;
 
 // Continent Class
 class Continent {
 private:
     string name;
     vector<Territory*> territoryList;
+    int bonusValue;
 public:
     Continent(const string& name);
     const string& GetName() const;
-    int bonusValue;
+    void addTerritory(Territory* t);
+    vector<Territory*> getTerritory();
+    int getBonusValue();
 };
 
 // Territory Class
