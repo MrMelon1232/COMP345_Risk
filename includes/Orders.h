@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <iostream>
+#include "Player.h"
 using namespace std;
 
 //----Order and all subclasses of Order----//
@@ -16,7 +17,7 @@ class Order
         virtual ~Order() = default;
 
     private:
-        friend ostream& operator<< (ostream& myOrder, const Order& O);
+        friend ostream& operator<< (ostream& myOrder, Order& O);
 };
 
 //Deploy is a subclass of Order
@@ -24,13 +25,18 @@ class Deploy : public Order
 {
     public:
         Deploy();
+        Deploy(int armyUnits, Player* player, Territory* target);
         ~Deploy() override;
         Deploy* copy() const  override;
         void execute() override;
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Deploy& operator=(const Deploy& other);
-
+    
+    private:
+        int armyUnits; 
+        Player* player; 
+        Territory* target; 
 };
 
 //Advance is a subclass of Order
@@ -38,13 +44,20 @@ class Advance : public Order
 {
     public:
         Advance();
+        Advance(int armyUnits,Player* player,Territory* target, Territory* source);
         ~Advance() override;
         Advance* copy() const  override;
         void execute() override;
         bool validate() override; 
         ostream& displayOrder(ostream& myOrder) const override;
         Advance& operator=(const Advance& other);
-
+        void simulateAttack(); 
+    
+    private:
+        int armyUnits;
+        Player* player;
+        Territory* target; 
+        Territory* source;
 };
 
 //Bomb is a subclass of Order
@@ -52,12 +65,17 @@ class Bomb : public Order
 {
     public:
         Bomb();
+        Bomb(Player* player,Territory* target); 
         ~Bomb() override;
         Bomb* copy() const  override; 
         void execute() override;
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Bomb& operator=(const Bomb& other);
+    
+    private:
+        Player* player;
+        Territory* target; 
 };
 
 //Blockade is a subclass of Order
@@ -65,12 +83,17 @@ class Blockade : public Order
 {
     public:
         Blockade();
+        Blockade(Player* player, Territory* target);
         ~Blockade() override;
         Blockade* copy() const  override; 
         void execute() override;
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Blockade& operator=(const Blockade& other);
+    
+    private:
+        Player* player;
+        Territory* target; 
 };
 
 //Airlift is a subclass of Order
@@ -78,12 +101,19 @@ class Airlift : public Order
 {
     public:
         Airlift();
+        Airlift(Player* player,Territory* target,Territory* source, int movingUnits); 
         ~Airlift() override;
         Airlift* copy() const  override; 
         void execute() override;
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Airlift& operator=(const Airlift& other);
+    
+    private:
+        Player* player;
+        Territory* target; 
+        Territory* source;
+        int movingUnits; 
 };
 
 //Negotiate is a subclass of Order
@@ -91,12 +121,17 @@ class Negotiate : public Order
 {
     public:
         Negotiate();
+        Negotiate(Player* player,Player* enemy);
         ~Negotiate() override;
         Negotiate* copy() const  override; 
         void execute() override;
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Negotiate& operator=(const Negotiate& other);
+    
+    private:
+        Player* player;
+        Player* enemy; 
 };
 
 // Enum for order types

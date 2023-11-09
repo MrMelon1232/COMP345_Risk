@@ -12,6 +12,7 @@ using namespace std;
 class Territory;
 class OrdersList;
 class Hand;
+class Card; 
 enum class OrderType;
 
 // Declaration of Player class
@@ -28,6 +29,17 @@ class Player
 
         // Hand of cards owned by the player
         Hand* hand;
+
+        //NEW: Each player will have a unique ID 
+        static int nextID;
+        int playerID;
+
+        //NEW: Each player will have a reinforcement pool
+        int reinforcementPool;
+
+        //NEW: each player will have a vector of integers for players which they have an alliance with
+        std::vector<int> myAlliesForTheTurn;
+
 
     // Player public methods
     public:
@@ -58,7 +70,18 @@ class Player
 
         // Destructor to clean up resources
         ~Player();
+
+        //NEW methods for a2-part4
+        int getPlayerID();
+        int getReinforcementPool();
+        void setReinforcementPool(int reinforcement);
+        bool isAnyAdjacent(Territory* territory);
+        void addCardToHand(Card* c);
+        void addAlly(int allyID);
+        void clearAllies();
+        bool isAllyPresent(int allyID);
 };
+
 
 
 #endif
