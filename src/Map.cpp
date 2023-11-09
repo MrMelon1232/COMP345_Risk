@@ -89,10 +89,12 @@ void Territory::setNbArmies(int nbArmies) {
 
 //NEW: accessor method + mutator method for attribute ownerID
 
+//returns the ownerID of the territory
 int Territory::getOwnerID() {
     return ownerID;
 }
 
+//set the ownerID of the territory
 void Territory::setOwnerID(int playerID) {
     ownerID = playerID;
 }

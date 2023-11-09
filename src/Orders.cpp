@@ -60,12 +60,12 @@ bool Deploy::validate()
 
     //We will always deploy 5 units as reinforcement. This number is arbritary and subject to change. 
     //We will not deploy if we dont have the minimum amount of units
-    if(player->getReinforcementPool() < 5)
+    if(player->getReinforcementPool() < armyUnits)
     {
         cout << "Cannot deploy, player does not have sufficient units!\n";
         return false;
     }
-
+    cout << "Deploy has been validated!\n";
     return true; 
 }
 
@@ -74,9 +74,11 @@ void Deploy::execute()
 {
     if(validate() == true)
     {
-        cout<<"Executing Deploy";
-        target->setNbArmies(5 + target->getNbArmies());
-        player->setReinforcementPool(player->getReinforcementPool() -5); 
+        cout<<"Executing Deploy\n";
+        target->setNbArmies(armyUnits + target->getNbArmies());
+        player->setReinforcementPool(player->getReinforcementPool() - armyUnits); 
+        cout<<armyUnits<<" units have been deployed to "<<target->GetName()<<".\n";
+        cout<<target->GetName()<<" now has "<<target->getNbArmies()<<" units.\n";
     }
 }
 
@@ -101,6 +103,14 @@ Advance::Advance()
 
 }
 
+Advance::Advance(int armyUnits, Player* player, Territory* target, Territory* source)
+{
+    this->armyUnits = armyUnits; 
+    this->player = player; 
+    this->target = target; 
+    this->source = source; 
+}
+
 Advance::~Advance()
 {
 
@@ -113,9 +123,9 @@ Advance* Advance::copy() const
 
 bool Advance::validate()
 {
-    if (source->getOwnerID() == player->getPlayerID())
+    if (source->getOwnerID() != player->getPlayerID())
     {
-        cout << "Cannot advance from a territory that a player doesn not own!\n";
+        cout << "Cannot advance from a territory that a player does not own!\n";
         cout << "Validation failed!\n";
         return false;
     }
@@ -134,6 +144,7 @@ bool Advance::validate()
         return false; 
     }
 
+    //If the source and the target belong to the same player, execute will not trigger an attack simulation
     if(source->getOwnerID() == target->getOwnerID())
     {
         cout << "Moving units from source to target...\n";
@@ -142,15 +153,19 @@ bool Advance::validate()
         source->setNbArmies(0); 
         return false; 
     }
-    
+    cout << "Advance has been validated!\n";
     return true;
 }
 
 void Advance::simulateAttack()
 {
+    cout <<"Attack simulation has begun!\n";
+
+    //We calculate the amount of units each player will kill
     int playerKills = (source->getNbArmies())*0.6; 
     int enemyKills = (target->getNbArmies())*0.7; 
 
+    //We make adjustments to the number of units on both sides
     source->setNbArmies(source->getNbArmies() - enemyKills);
     target->setNbArmies(target->getNbArmies() - playerKills); 
 
@@ -168,6 +183,7 @@ void Advance::simulateAttack()
         cout <<"Player has captured territory and has moved units up.\n";
         cout <<"Player has earned a card for conquering a territory.\n";
     }
+    cout <<"Attack simulation has ended!\n";
 }
 
 void Advance::execute()
@@ -197,6 +213,12 @@ Bomb::Bomb()
 
 }
 
+Bomb::Bomb(Player* player, Territory* target)
+{
+    this->player=player; 
+    this->target=target; 
+}
+
 Bomb::~Bomb()
 {
 
@@ -213,6 +235,8 @@ void Bomb::execute()
     {
         cout<<"Executing Bomb\n";
         target->setNbArmies(0.5*(target->getNbArmies()));
+        cout<<"The bomb has dropped on " <<target->GetName()<<".\n";
+        cout<<target->GetName()<<" now has "<<target->getNbArmies()<<" units remaining.\n";
     }
 }
 
@@ -224,6 +248,15 @@ bool Bomb::validate()
         return false; 
     }
 
+    //Cannot bomb a territory owned by a player which is an ally until the end of the turn
+    if(player->isAllyPresent(target->getOwnerID()))
+    {
+        cout << "Cannot bomb ally!\n";
+        cout << "Validation failed!\n";
+        return false; 
+    }
+
+    //To bomb the target, the player must have at least one territory which is adjacent to the target.
     if(player->isAnyAdjacent(target))
     {
         cout << "Validation successful, ready to bomb!\n";
@@ -252,6 +285,12 @@ Blockade::Blockade()
 
 }
 
+Blockade::Blockade(Player* player, Territory* target)
+{
+    this->player = player;
+    this->target = target; 
+}
+
 //The game requires that one neutral player exists. In our implementation, this player always exists.
 static auto* neutralPlayer = new Player();
 
@@ -273,6 +312,7 @@ bool Blockade::validate()
         cout << "Validation failed!\n";
         return false;
     }
+    cout << "Validation complete, proceeding to blockade!\n";
     return true; 
 }
 
@@ -281,9 +321,18 @@ void Blockade::execute()
     if(validate() == true)
     {
         cout<<"Executing Blockade\n";
+
+        //doubling units
         target->setNbArmies((target->getNbArmies())*2);
+
+        //transferring ownership to neutral player
         target->setOwnerID(neutralPlayer->getPlayerID());
-        cout << "Units have been transferred to \n";
+        neutralPlayer->addTerritory(target); 
+
+        cout << "Units have been transferred to the neutral player\n";
+        cout << "Displaying neutral player below...\n";
+        cout<< *neutralPlayer; 
+        cout << "\n";
     }
 }
 
@@ -305,6 +354,14 @@ Airlift::Airlift()
 
 }
 
+Airlift::Airlift(Player* player,Territory* target,Territory* source, int movingUnits)
+{
+    this->player = player; 
+    this->target = target;
+    this->source = source;
+    this->movingUnits = movingUnits;  
+}
+
 Airlift::~Airlift()
 {
 
@@ -317,18 +374,19 @@ Airlift* Airlift::copy() const
 
 bool Airlift::validate()
 {
+    //Both territories involved must belong to the same players
     if(target->getOwnerID() != player->getPlayerID() || source->getOwnerID() != player->getPlayerID() )
     {
         cout << "Cannot airlift, player does not have the right to execute this task.!\n";
         return false;
     }
 
-    if(source->getNbArmies() < 2)
+    if(source->getNbArmies() < movingUnits)
     {
         cout << "Cannot airlift, not enough units present to be airlifted...\n";
         return false;
     }
-
+    cout << "Validated, ready to airlift!\n";
     return true; 
 }
 
@@ -336,9 +394,18 @@ void Airlift::execute()
 {
     if(validate() == true)
     {
-        cout<<"Executing Airlift";
-        source->setNbArmies(source->getNbArmies() - 2); 
-        target->setNbArmies(source->getNbArmies() + 2);
+        cout<<"After Airlift is completed: \n";
+        cout<<source->GetName()<<" has "<<source->getNbArmies()<<" units.\n";
+        cout<<target->GetName()<<" has "<<target->getNbArmies()<<" units.\n\n";
+        cout<<"Executing Airlift\n";
+
+        //Moving from source to target
+        source->setNbArmies(source->getNbArmies() - movingUnits); 
+        target->setNbArmies(source->getNbArmies() + movingUnits);
+
+        cout<<"After Airlift is completed: \n";
+        cout<<source->GetName()<<" has "<<source->getNbArmies()<<" units.\n";
+        cout<<target->GetName()<<" has "<<target->getNbArmies()<<" units.\n\n";
     }
 }
 
@@ -361,6 +428,12 @@ Negotiate::Negotiate()
 
 }
 
+Negotiate::Negotiate(Player* player,Player* enemy)
+{
+    this->player = player;
+    this->enemy = enemy;
+}
+
 Negotiate::~Negotiate()
 {
 
@@ -378,6 +451,7 @@ bool Negotiate::validate()
         cout << "Player cannot negotiate with self, validation failed!\n";
         return false;
     }
+    cout << "Negotiation validated!";
     return true;
 }
 
@@ -386,8 +460,12 @@ void Negotiate::execute()
     if(validate() == true)
     {
         cout<<"Executing Negotiate\n";
+
+        //both players are allies of eachother
         player->addAlly(enemy->getPlayerID());
         enemy->addAlly(player->getPlayerID()); 
+
+        cout<<"Both players can no longer attack each other until end of turn now\n";
     }
 }
 
