@@ -70,9 +70,9 @@ class GameEngine : public Subject, public ILoggable {
         //Part 2 Logging
         string stringToLog() override;
     private:
-        void initProcessor();
         void setDefaultGameStates();
         void selectMode();
+        void initProcessor();
 
         vector<State*> states;
         State* currentState;

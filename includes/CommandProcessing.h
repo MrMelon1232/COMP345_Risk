@@ -20,7 +20,7 @@ class Command: public ILoggable, public Subject {
         void saveEffect(string effect) { this->effect = effect; };
         string getName() { return cmdName; };
         string getArg() { return arg; };
-        void setArg(string arg) { this-> arg = arg; };
+        void setArg(string arg) { this->arg = arg; };
 
         Command& operator=(const Command& command);
         friend std::ostream& operator<<(std::ostream& output, const Command& command);
@@ -70,7 +70,7 @@ class CommandProcessor: public ILoggable, public Subject {
         MapLoader* mapLoader;
 };
 
-// File reader adapted to create commands.
+// File reader responsible of reading text-based commands.
 class FileLineReader {
     public:
         FileLineReader(string fileName);

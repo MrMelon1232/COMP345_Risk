@@ -1,5 +1,6 @@
 #include "CommandProcessing.h"
 #include <iostream>
+#include <stdexcept>
 
 using std::cin;
 using std::cout;
@@ -48,7 +49,7 @@ CommandProcessor::CommandProcessor(CommandProcessor& commandProcessor) {
     mapLoader = new MapLoader(*(commandProcessor.mapLoader));
 }
 
-// Returns a pointer to the newly created command (validation and save included).
+// Returns a pointer to the newly created command (saved too if not nullprt).
 Command* CommandProcessor::getCommand() {
     Command* command = readCommand();
     if (command)
@@ -75,6 +76,11 @@ Command* CommandProcessor::readCommand() {
     }
 
     return command;
+}
+
+// Saves the command into the CommandProcessor's commands list.
+void CommandProcessor::saveCommand(Command* command) {
+    commands.push_back(command);
 }
 
 // Sets the effect according to the command type. If the command is invalid, it sets an invalid effect.
@@ -180,7 +186,7 @@ void CommandProcessor::gameStart(Command* command) {
 void CommandProcessor::replay(Command* command) {
     cout << "replay()" << endl;
     gameEngine->findAndTransition(command->getName()); // cmdName is "replay"
-    // TODO: reset GameEngine variables (i.e., players)
+    // TODO: reset GameEngine variables (i.e., current map, players)
 }
 
 // Assignment operator of the CommandProcessor.
@@ -218,12 +224,14 @@ CommandProcessor::~CommandProcessor() {
 // FileLineReader constructor to initialize with the file to read.
 FileLineReader::FileLineReader(string fileName) : fileName(fileName) {
     file.open(fileName);
+    if (file.fail())
+        throw std::invalid_argument("Cannot open specified file");
 }
 
 // Copy constructor of FileLineReader.
 FileLineReader::FileLineReader(FileLineReader& flr) {
     this->fileName = flr.fileName;
-    this->file.open(fileName);
+    this->file.open(fileName); // We assume the file is valid.
 }
 
 // Returns a string containing command information from the next line in the file.
@@ -242,7 +250,7 @@ bool FileLineReader::isEof() {
 FileLineReader& FileLineReader::operator=(const FileLineReader& flr) {
     fileName = flr.fileName;
     file.close();
-    file.open(fileName);
+    file.open(fileName); // We assume the file is valid.
     return *this;
 }
 
@@ -257,7 +265,7 @@ FileLineReader::~FileLineReader() {
     file.close();
 }
 
-// FileCommandProcessorAdapter constructor to initialize with the file name to pass to the FileLineReader.
+// FileCommandProcessorAdapter constructor to initialize with the given FileLineReader.
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(GameEngine* gameEngine,  FileLineReader* flr) : CommandProcessor(gameEngine) {
     this->flr = flr;
 }
