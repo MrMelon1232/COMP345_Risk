@@ -18,7 +18,7 @@ class Command {
         void saveEffect(string effect) { this->effect = effect; };
         string getName() { return cmdName; };
         string getArg() { return arg; };
-        void setArg(string arg) { this-> arg = arg; };
+        void setArg(string arg) { this->arg = arg; };
 
         Command& operator=(const Command& command);
         friend std::ostream& operator<<(std::ostream& output, const Command& command);
