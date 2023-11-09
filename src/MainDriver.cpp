@@ -14,6 +14,7 @@ int main() {
 
     // Test function for orders
     testOrdersList();
+    testOrderExecution();
 
     // Test function for cards
     testCards();
