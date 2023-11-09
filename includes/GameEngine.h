@@ -1,4 +1,6 @@
 #pragma once
+#include "Map.h"
+#include "CommandProcessing.h"
 #include <iostream>
 #include <vector>
 #include <Player.h>
@@ -50,12 +52,41 @@ class Transition {
         
 };
 
-void initStateAndTransitions();
-void findAndTransition(string name);
-void transition(Transition *transition);
+class CommandProcessor; // forward declaration
 
-extern State* currentState;
+// Manages the game setup and execution.
+class GameEngine {
+    public:
+        GameEngine();
+        GameEngine(string mode);
+        GameEngine(vector<State*> states);
+        GameEngine(GameEngine& gameEngine);
 
-//test methods
-void testGameStates();
-void testMainGameLoop();
+        // Getters and setters.
+        string getMode() { return mode; }
+        void setMode(string mode) { this->mode = mode; }
+        State* getCurrentState() { return currentState; }
+        Map* getCurrentMap() { return currentMap; }
+        void setCurrentMap(Map* map) { this->currentMap = map; }
+        CommandProcessor* getCommandProcessor() { return commandProcessor; }
+        void setCommandProcessor(CommandProcessor* commandProcessor) {this->commandProcessor = commandProcessor; }
+
+        bool isCommandValid(string command);
+        void findAndTransition(string name);
+        void transition(Transition *transition);
+        
+        GameEngine& operator=(const GameEngine& gameEngine);
+        friend std::ostream& operator<<(std::ostream& output, const GameEngine& gameEngine);
+
+        ~GameEngine();
+    private:
+        void setDefaultGameStates();
+        void selectMode();
+        void initProcessor();
+
+        vector<State*> states;
+        State* currentState;
+        Map* currentMap;
+        CommandProcessor* commandProcessor;
+        string mode;
+};

@@ -1,3 +1,5 @@
+
+#include "CommandProcessing.h"
 #include "Map.h"
 #include "Player.h"
 #include "Orders.h"
@@ -20,4 +22,7 @@ int main() {
 
     // Test function for game engine
     testGameStates();
+
+    // Test function for command processor
+    testCommandProcessor();
 }
