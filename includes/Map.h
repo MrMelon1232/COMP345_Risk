@@ -40,9 +40,8 @@ public:
     const int getNbArmies() const;
     void setNbArmies(int nbArmies);
 
-    //new method added, checks if a territory is adjacent
+    //new method added for a2-part4
     bool isAdjacent(Territory* territory);
-    
     int getOwnerID();
     void setOwnerID(int playerID);
 

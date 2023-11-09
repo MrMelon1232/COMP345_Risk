@@ -71,10 +71,8 @@ class Player
         // Destructor to clean up resources
         ~Player();
 
-        //NEW: accessor method which returns the id of a player
+        //NEW methods for a2-part4
         int getPlayerID();
-
-        //NEW: accessor and mutator method for reinforcement pool
         int getReinforcementPool();
         void setReinforcementPool(int reinforcement);
         bool isAnyAdjacent(Territory* territory);
