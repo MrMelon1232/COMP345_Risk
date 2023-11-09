@@ -1,11 +1,13 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <Player.h>
 
 using std::vector;
 using std::string;
 
 class Transition;
+class Player;
 
 // Represents a state of the game with its valid commands
 class State {
@@ -33,9 +35,19 @@ class Transition {
         Transition& operator=(const Transition& transition);
         friend std::ostream& operator<<(std::ostream& output, const Transition& transition);
         ~Transition();
+
+        //A2
+        void mainGameLoop();
+        bool gameResultCheck();
+        void reinforcementPhase();
+        void issueOrdersPhase();
+        void executeOrdersPhase();
     private:
         string commandName;
-        State* nextState;
+        State* nextState; 
+        vector<Player*> playersList;
+        Map* continent;
+        
 };
 
 void initStateAndTransitions();
@@ -43,3 +55,7 @@ void findAndTransition(string name);
 void transition(Transition *transition);
 
 extern State* currentState;
+
+//test methods
+void testGameStates();
+void testMainGameLoop();

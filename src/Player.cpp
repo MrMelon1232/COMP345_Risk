@@ -1,7 +1,4 @@
 #include "Player.h"
-#include "Orders.h"
-#include "Cards.h"
-#include "Map.h"
 
 // Constructor
 Player::Player() : orders(new OrdersList), hand(new Hand) {
@@ -59,7 +56,7 @@ Player& Player:: operator=(const Player& other) {
 }
 
 // Stream insertion operator
-std::ostream& operator<<(std::ostream& os, const Player& player) {
+ostream& operator<<(ostream& os, const Player& player) {
     os << "Territories Owned: \n";
     for (const Territory* territory : player.territoriesOwned) {
         os << *territory;
@@ -81,17 +78,17 @@ std::ostream& operator<<(std::ostream& os, const Player& player) {
 }
 
 // Function that returns a list of territories that are to be defended
-std::vector<Territory*> Player::toDefend() {
-    std::vector<Territory*> defendTerritories;
+vector<Territory*> Player::toDefend() {
+    vector<Territory*> defendTerritories;
     defendTerritories.push_back(new Territory("TerritoryA", "ContinentA")); // Example territory
     defendTerritories.push_back(new Territory("TerritoryB", "ContinentA")); // Example territory
     return defendTerritories;
 }
 
 // Function that returns a list of territories that are to be attacked
-std::vector<Territory*> Player::toAttack() {
+vector<Territory*> Player::toAttack() {
     // Implement toAttack logic, return a list of territories to attack
-    std::vector<Territory*> attackTerritories;
+    vector<Territory*> attackTerritories;
     // Populate the list with territories
     attackTerritories.push_back(new Territory("TerritoryC", "ContinentB")); // Example territory
     attackTerritories.push_back(new Territory("TerritoryD", "ContinentB")); // Example territory
@@ -139,3 +136,24 @@ Player::~Player() {
     delete orders;
     delete hand;
 }
+
+
+//A2
+
+string Player::getName()
+{
+    return name;
+}
+
+void Player::setName(string n)
+{
+    name = n;
+}
+
+vector<Territory*> Player::getTerritories()
+{
+    return territoriesOwned;
+}
+
+//test methods
+void testPlayers();

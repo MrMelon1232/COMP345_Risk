@@ -168,3 +168,7 @@ string Hand::toString() const {
     ss << (*this);
     return ss.str();
 }
+
+
+//test methods
+void testCards();

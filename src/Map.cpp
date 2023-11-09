@@ -45,6 +45,7 @@ const string& Continent::GetName() const {
     return name;
 }
 
+
 // Territory class constructor
 Territory::Territory(const string& name, const string& continentName)
     : name(name), continentName(continentName), nbArmies(0) {}
@@ -291,6 +292,11 @@ bool Map::territoriesBelongToOneContinent() const {
     }
 
     return true; // All territories belong to one and only one continent
+}
+
+vector<Continent*> Map::getContinents()
+{
+    return continents;
 }
 
 

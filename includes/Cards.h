@@ -59,3 +59,5 @@ class Deck {
 		virtual string toString() const;
 	private:
 };
+
+void testCards();

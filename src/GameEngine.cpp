@@ -1,5 +1,6 @@
 #include "GameEngine.h"
 #include <algorithm>
+#include "Map.h"
 
 // Constructor to initialize a state with a name.
 State::State(string name) { 
@@ -148,4 +149,60 @@ void transition(Transition* transition) {
         std::cout << "Current state is now " << *currentState  << "." << std::endl;
     else
         std::cout << "The game cycle has been completed." << std::endl; 
+}
+
+//addition for A2: main game loop
+void Transition::mainGameLoop() {
+    bool gameEnd = false;
+    while (!gameEnd) {
+        //run game loop
+        reinforcementPhase();
+        issueOrdersPhase();
+        executeOrdersPhase();
+
+        gameEnd =  gameResultCheck();
+    }
+    cout << "Winner: " << playersList.at(0)->getName() << endl;
+
+}
+
+bool Transition::gameResultCheck() {
+    //check if a player has no territories owned, then eliminate him
+    auto iterator = playersList.begin();
+    while (iterator != playersList.end()) {
+        if ((*iterator)->getTerritories().size() < 1) {
+            iterator = playersList.erase(iterator);
+            continue;
+        }
+        ++iterator;
+    }
+
+    //check if a player owns all the territories
+    if (playersList.size() == 1) {
+        int numberTerritoriesOwned = playersList.at(0)->getTerritories().size();
+        
+    }
+
+    return false;
+}
+
+void Transition::reinforcementPhase() {
+    auto iterator = playersList.begin();
+    while (iterator != playersList.end()) {
+        //number of territories owned by players
+        int territoryQuantity = 0;
+        territoryQuantity = (*iterator)->getTerritories().size();
+
+        //check if player owns all territories in a continent
+
+    }
+
+}
+
+void Transition::issueOrdersPhase() {
+
+}
+
+void Transition::executeOrdersPhase() {
+
 }

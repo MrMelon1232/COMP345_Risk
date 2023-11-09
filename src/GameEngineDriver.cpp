@@ -1,4 +1,4 @@
-#include "GameEngineDriver.h"
+#include "GameEngine.h"
 #include <string>
 
 // Allows the user to test the GameEngine's states and transitions in a console-driven application
@@ -10,4 +10,8 @@ void testGameStates() {
         std::cin >> cmdName;
         findAndTransition(cmdName);
     }
+}
+
+void testMainGameLoop() {
+
 }
