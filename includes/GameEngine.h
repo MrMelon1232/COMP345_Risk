@@ -10,7 +10,7 @@ using std::string;
 class Transition;
 
 // Represents a state of the game with its valid commands
-class State : public ILoggable, public Subject {
+class State {
     public:
         State(string name);
         State(State& state);
@@ -26,7 +26,7 @@ class State : public ILoggable, public Subject {
 };
 
 // Holds the next state to transition to after executing the command with the given name
-class Transition : public ILoggable, public Subject {
+class Transition {
     public:
         Transition(string commandName, State* nextState);
         Transition(Transition& transition);
@@ -42,7 +42,7 @@ class Transition : public ILoggable, public Subject {
 
 class CommandProcessor; // forward declaration
 
-class GameEngine {
+class GameEngine : public Subject, public ILoggable {
     public:
         GameEngine();
         GameEngine(string mode);
@@ -66,6 +66,9 @@ class GameEngine {
         friend std::ostream& operator<<(std::ostream& output, const GameEngine& gameEngine);
 
         ~GameEngine();
+
+        //Part 2 Logging
+        string stringToLog() override;
     private:
         void initProcessor();
         void setDefaultGameStates();

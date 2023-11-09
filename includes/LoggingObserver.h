@@ -36,8 +36,7 @@ class LogObserver: public Observer {
         LogObserver(const string& logFileName);
         ~LogObserver();
         void update(const ILoggable& loggable) override;
-        void logtoFileName(const string& log);
-
+        
     private:
         ofstream logFile;
 }

@@ -231,6 +231,7 @@ void GameEngine::transition(Transition* transition) {
         std::cout << "Current state is now " << *currentState  << "." << std::endl;
     else
         std::cout << "The game cycle has been completed." << std::endl; 
+    notify(*this);
 }
 
 GameEngine::~GameEngine() {
@@ -238,4 +239,8 @@ GameEngine::~GameEngine() {
         delete state;
     delete currentMap;
     delete commandProcessor;
+}
+
+GameEngine::stringToLog() {
+    return "Game state changed to " + currentState->getName();
 }

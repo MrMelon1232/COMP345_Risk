@@ -32,7 +32,8 @@ class Deploy : public Order
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Deploy& operator=(const Deploy& other);
-
+        // Part 2 Logging
+        string stringtoLog() override;
 };
 
 //Advance is a subclass of Order
@@ -46,7 +47,8 @@ class Advance : public Order
         bool validate() override; 
         ostream& displayOrder(ostream& myOrder) const override;
         Advance& operator=(const Advance& other);
-
+        // Part 2 Logging
+        string stringtoLog() override;
 };
 
 //Bomb is a subclass of Order
@@ -60,6 +62,8 @@ class Bomb : public Order
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Bomb& operator=(const Bomb& other);
+        // Part 2 Logging
+        string stringtoLog() override;
 };
 
 //Blockade is a subclass of Order
@@ -73,6 +77,8 @@ class Blockade : public Order
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Blockade& operator=(const Blockade& other);
+        // Part 2 Logging
+        string stringtoLog() override;
 };
 
 //Airlift is a subclass of Order
@@ -86,6 +92,8 @@ class Airlift : public Order
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Airlift& operator=(const Airlift& other);
+        // Part 2 Logging
+        string stringtoLog() override;
 };
 
 //Negotiate is a subclass of Order
@@ -99,6 +107,8 @@ class Negotiate : public Order
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Negotiate& operator=(const Negotiate& other);
+        // Part 2 Logging
+        string stringtoLog() override;
 };
 
 // Enum for order types
@@ -126,6 +136,9 @@ class OrdersList: public ILoggable, public Subject
         ostream& displayOrderList(ostream& myOrderList);
         OrdersList& operator=(const OrdersList& other);
         ~OrdersList(); 
+
+        // Part 2 Logging
+        string stringToLog() override;
 
     private: 
         std::vector<Order*> listOfOrders;

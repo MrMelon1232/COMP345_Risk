@@ -43,7 +43,7 @@ void Deploy::execute()
     if(validate() == true)
     {
         cout<<"Executing Deploy";
-        notify("text to be added");
+        notify(*this);
     }
 }
 
@@ -89,6 +89,7 @@ void Advance::execute()
     if(validate() == true)
     {
         cout <<"Executing Advance";
+        notify(*this);
     }
 }
 
@@ -130,6 +131,7 @@ void Bomb::execute()
     if(validate() == true)
     {
         cout<<"Executing Bomb";
+        notify(*this);
     }
 }
 
@@ -171,6 +173,7 @@ void Blockade::execute()
     if(validate() == true)
     {
         cout<<"Executing Blockade";
+        notify(*this);
     }
 }
 
@@ -212,6 +215,7 @@ void Airlift::execute()
     if(validate() == true)
     {
         cout<<"Executing Airlift";
+        notify(*this);
     }
 }
 
@@ -253,6 +257,7 @@ void Negotiate::execute()
     if(validate() == true)
     {
         cout<<"Executing Negotiate";
+        notify(*this);
     }
 }
 
@@ -291,7 +296,7 @@ OrdersList::OrdersList()
 void OrdersList::add(Order* O)
 {
     listOfOrders.push_back(O);
-    notify(this); 
+    notify(*this); 
 }
 
 //Returns the size of the list
@@ -387,6 +392,24 @@ OrdersList::~OrdersList()
 }
 
 
-    
+// Part 2 Logging
+Deploy::stringtoLog() {
+    return "Deploy order executed";
+}
+
+Advance::stringtoLog() {
+    return "Advance order executed";
+}
+
+Bomb::stringtoLog() {
+    return "Bomb order executed";
+}
+
+OrdersList::stringToLog() {
+    string logMessage;
+    for (Order* order: listOfOrders) {
+        logMessage += order->displayOrder()
+    }
+}
          
     

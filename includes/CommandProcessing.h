@@ -3,12 +3,14 @@
 #include "Map.h"
 #include <iostream>
 #include <vector>
+#include "LoggingObserver.h"
+
 
 using std::string;
 using std::vector;
 
 // Represents an in-game command.
-class Command {
+class Command: public ILoggable, public Subject {
     public:
         Command(string cmdName);
         Command(Command& command);
@@ -24,6 +26,7 @@ class Command {
         friend std::ostream& operator<<(std::ostream& output, const Command& command);
 
         ~Command();
+
     private:
         string cmdName;
         string effect;
@@ -33,7 +36,7 @@ class Command {
 class GameEngine; // forward declaration
 
 // Manages game commands including creation, validation and execution.
-class CommandProcessor {
+class CommandProcessor: public ILoggable, public Subject {
     public:
         CommandProcessor(GameEngine* gameEngine);
         CommandProcessor(CommandProcessor& commandProcessor);
@@ -47,6 +50,10 @@ class CommandProcessor {
         friend std::ostream& operator<<(std::ostream& output, const CommandProcessor& commandProcessor);
 
         virtual ~CommandProcessor();
+
+        // Part 2 Logging
+        string stringtoLog() override;
+
     private:
         virtual Command* readCommand();
         void saveCommand(Command* command);

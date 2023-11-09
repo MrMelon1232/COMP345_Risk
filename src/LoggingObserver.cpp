@@ -5,13 +5,15 @@ void Subject::attach(Observer * observer) {
 }
 
 void Subject::detach(Observer * observer) {
-    auto it = find(observers.begin(), observer.end(), observerda)
-
+   auto it = std::find(observers.begin(), observers.end(), observer);
+    if (it != observers.end()) {
+        observers.erase(it);
+    }
 }
 
 void Subject::notify(const ILoggable& loggable) {
-    for (Observer * observer : observers) {
-        observer.update(loggable);
+   for (Observer* observer : observers) {
+        observer->update(loggable);
     }
 }
 
@@ -24,5 +26,5 @@ LogObsever::~LogObserver() {
 }
 
 void LogObserver::update(ILoggable& loggable) override {
-    logFile << loggable->stringToLog() << std::endl;
+    logFile << loggable.stringToLog() << std::endl;
 } 
