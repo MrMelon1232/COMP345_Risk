@@ -211,6 +211,11 @@ void GameEngine::initProcessor() {
     }
 }
 
+void GameEngine::setPlayer(vector<Player*> player)
+{
+    playersList = player;
+}
+
 // Function that indicates if the command is valid in the current state game.
 bool GameEngine::isCommandValid(string command) {
     vector<Transition*> transitions = currentState->getTransitions();
@@ -281,19 +286,21 @@ GameEngine::~GameEngine() {
     for (State* state : states) { // Deletes the `currentState` too.
         for (Transition* transition : state->getTransitions())
             transitions.insert(transition);
-        delete state;
+            delete state;
     }
 
     for (Transition* transition : transitions)
-            delete transition;
-        
+        delete transition;
+
     delete currentMap;
     delete commandProcessor;
-    
+}
 //addition for A2: main game loop
-void Transition::mainGameLoop() {
+void GameEngine::mainGameLoop() {
+    cout << "\n\nentering main game loop" << endl;
     bool gameEnd = false;
     while (!gameEnd) {
+        cout << "inside while loop" << endl;
         //run game loop
         reinforcementPhase();
         issueOrdersPhase();
@@ -301,14 +308,19 @@ void Transition::mainGameLoop() {
 
         gameEnd =  gameResultCheck();
     }
-    cout << "Winner: " << playersList.at(0)->getName() << endl;
+    cout << "Winner: " << (*playersList.at(0)) << endl;
 
 }
 
-bool Transition::gameResultCheck() {
+bool GameEngine::gameResultCheck() {
+
+    cout << "\nVerifying current game result:" << endl;
     //check if a player has no territories owned, then eliminate him
+
     auto iterator = playersList.begin();
     while (iterator != playersList.end()) {
+        //cout << "getting player data: " << playersList.at(0) << " " << playersList.at(1) << " " << playersList.at(2) << endl;
+        cout << "check player" << endl;
         if ((*iterator)->getTerritories().size() < 1) {
             iterator = playersList.erase(iterator);
             continue;
@@ -320,22 +332,26 @@ bool Transition::gameResultCheck() {
     if (playersList.size() == 1) {
         int numberTerritoriesOwned = playersList.at(0)->getTerritories().size();
         int numberTerritories = 0;
-        for (int i = 0; i < gameMap->getContinents().size(); i++) {
-            numberTerritories += gameMap->getContinents().at(i)->getTerritory().size();
+        for (int i = 0; i < currentMap->getContinents().size(); i++) {
+            cout << "territories in continent: " << currentMap->getContinents().at(i)->getTerritory().size() << endl;
+            numberTerritories += currentMap->getContinents().at(i)->getTerritory().size();
         }
 
         if (numberTerritoriesOwned == numberTerritories) {
             return true;
         }
     }
-
+    cout << "Game still in progress, starting new turn." << endl;
     return false;
 }
 
-void Transition::reinforcementPhase() {
+void GameEngine::reinforcementPhase() {
+    cout << "\nEntering reinforcement phase." << endl;
     int reinforcement = 0;
     auto iterator = playersList.begin();
+    
     while (iterator != playersList.end()) {
+        cout << "\n-----------------debug line--------------------" << endl;
         //number of territories owned by players
         int territoryQuantity = 0; 
         territoryQuantity = (*iterator)->getTerritories().size();
@@ -344,28 +360,29 @@ void Transition::reinforcementPhase() {
 
         int totalTerritories = 0;
         //check if player owns all territories in a continent
-        for (int i = 0; i < gameMap->getContinents().size(); i++) {
+        for (int i = 0; i < currentMap->getContinents().size(); i++) {
             //count territories own per continent
             for (int j = 0; j < (*iterator)->getTerritories().size(); j++) {
-                if ((*iterator)->getTerritories().at(j)->GetContinentName() == gameMap->getContinents().at(i)->GetName()) {
+                if ((*iterator)->getTerritories().at(j)->GetContinentName() == currentMap->getContinents().at(i)->GetName()) {
                     totalTerritories++;
                 }
             }
-            if (totalTerritories == gameMap->getContinents().at(i)->getTerritory().size()) {
-                reinforcement += gameMap->getContinents().at(i)->getBonusValue();
+            if (totalTerritories == currentMap->getContinents().at(i)->getTerritory().size()) {
+                reinforcement += currentMap->getContinents().at(i)->getBonusValue();
             }
         }
 
         if (reinforcement < 3) {
             reinforcement = 3;
         }
+        ++iterator;
     }
 }
 
-void Transition::issueOrdersPhase() {
+void GameEngine::issueOrdersPhase() {
 
 }
 
-void Transition::executeOrdersPhase() {
+void GameEngine::executeOrdersPhase() {
 
 }

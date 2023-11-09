@@ -6,8 +6,8 @@
 #include "Cards.h"
 #include "GameEngine.h"
 
-int main() {
 
+void testA1() {
     // Test function for map
     testLoadMaps();
 
@@ -22,7 +22,21 @@ int main() {
 
     // Test function for game engine
     testGameStates();
+}
 
+void testA2() {
     // Test function for command processor
-    testCommandProcessor();
+    //testCommandProcessor();
+
+
+    //Test function for main game loop
+    testMainGameLoop();
+}
+
+int main() {
+    //Assignment 1
+    //testA1();
+
+    //Assignment 2
+    testA2();
 }

@@ -15,12 +15,13 @@ void testGameStates() {
 }
 
 void testMainGameLoop() {
-	cout << "\n\n\n-------------------- TEST FOR MAIN GAME LOOP ------------------------\n" << endl;
+	cout << "\n\n---- TEST FOR MAIN GAME LOOP ----\n" << endl;
 
 	vector<Player*> players;
 	vector<Continent*> continents;
 	vector<Territory*> territories;
-	{
+	
+	cout << "Creating necessary dummy values for test" << endl;
 	//create new players
 	Player* p1 = new Player();
 	Player* p2 = new Player();
@@ -56,14 +57,37 @@ void testMainGameLoop() {
 	territories.push_back(t8);
 	territories.push_back(t9);
 	territories.push_back(t10);
+	//assign territories to continents
+	for (int i = 0; i < territories.size(); i++) {
+		if (i < 4) {
+			c1->addTerritory(territories.at(i));
+		}
+		else if (i > 3 && i < territories.size()) {
+			c2->addTerritory(territories.at(i));
+		}
+		else {
+			c3->addTerritory(territories.at(i));
+		}
 	}
 	//assign territories to players
 	for (int i = 0; i < territories.size(); i++) {
-		if (i < 4) {
+		if (i < 50) {
 			players.at(0)->addTerritory(territories.at(i));
 		}
 		else {
-			players.at(1)->addTerritory(territories.at(i));
+			//players.at(1)->addTerritory(territories.at(i));
 		}
 	}
+	Map* map = new Map(continents, territories);
+
+	
+	cout << "creating game engine" << endl;
+	//create game engine
+	GameEngine* game = new GameEngine();
+
+	//setup
+	game->setPlayer(players);
+	game->setCurrentMap(map);
+	game->mainGameLoop();
+
 }

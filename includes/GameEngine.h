@@ -37,18 +37,9 @@ class Transition {
         Transition& operator=(const Transition& transition);
         friend std::ostream& operator<<(std::ostream& output, const Transition& transition);
         ~Transition();
-
-        //A2
-        void mainGameLoop();
-        bool gameResultCheck();
-        void reinforcementPhase();
-        void issueOrdersPhase();
-        void executeOrdersPhase();
     private:
         string commandName;
         State* nextState; 
-        vector<Player*> playersList;
-        Map* gameMap;
         
 };
 
@@ -68,6 +59,7 @@ class GameEngine {
         State* getCurrentState() { return currentState; }
         Map* getCurrentMap() { return currentMap; }
         void setCurrentMap(Map* map) { this->currentMap = map; }
+        void setPlayer(vector<Player*> player);
         CommandProcessor* getCommandProcessor() { return commandProcessor; }
         void setCommandProcessor(CommandProcessor* commandProcessor) {this->commandProcessor = commandProcessor; }
 
@@ -77,6 +69,14 @@ class GameEngine {
         
         GameEngine& operator=(const GameEngine& gameEngine);
         friend std::ostream& operator<<(std::ostream& output, const GameEngine& gameEngine);
+
+
+        //A2
+        void mainGameLoop();
+        bool gameResultCheck();
+        void reinforcementPhase();
+        void issueOrdersPhase();
+        void executeOrdersPhase();
 
         ~GameEngine();
     private:
@@ -89,4 +89,9 @@ class GameEngine {
         Map* currentMap;
         CommandProcessor* commandProcessor;
         string mode;
+        vector<Player*> playersList;
 };
+
+//test methods
+void testGameStates();
+void testMainGameLoop();
