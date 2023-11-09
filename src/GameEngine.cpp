@@ -1,5 +1,6 @@
 #include "GameEngine.h"
 #include <algorithm>
+#include <set>
 
 // Constructor to initialize a state with a name.
 State::State(string name) { 
@@ -46,12 +47,9 @@ std::ostream& operator<<(std::ostream& output, const State& state) {
 
 // Destructor for State class
 State::~State() {
-    for(Transition* transition : transitions) {
-        if (transition) {
-            delete transition;
-            transition = nullptr;
-        }
-    }
+    // The `transitions` are part of the GameEngine.
+    // As the "owner", the GameEngine is responsible of deleting the transitions.
+    // Therefore, nothing to do here.
 }
 
 // Constructor to initialize transition with command name and state to transition to.
@@ -101,7 +99,7 @@ Transition::~Transition() {
     // Therefore, nothing to do here.
 }
 
-// GameEngine default constructor. Creates the state and transition objects for the game. It also sets the initial state.
+// Game Engine default constructor. Creates the state and transition objects for the game. It also sets the initial state.
 GameEngine::GameEngine() {
     setDefaultGameStates();
     currentMap = nullptr;
@@ -109,6 +107,7 @@ GameEngine::GameEngine() {
     std::cout << "Current state is " << *currentState << "." << std::endl;
 }
 
+// Game Engine constructor to initialize with given mode. Mainly used for testing.
 GameEngine::GameEngine(string mode) {
     setDefaultGameStates();
     currentMap = nullptr;
@@ -127,10 +126,10 @@ GameEngine::GameEngine(vector<State*> states) {
     std::cout << "Current state is " << *currentState << "." << std::endl;
 }
 
-// Game Engine copy constructor
+// Game Engine copy constructor.
 GameEngine::GameEngine(GameEngine& gameEngine) {
     this->states = gameEngine.states; // To simplify circular data dependency, reuse same states and transitions.
-    currentState = states.front();
+    currentState = gameEngine.currentState;
     currentMap = new Map(*(gameEngine.currentMap));
     mode = gameEngine.mode;
 
@@ -195,12 +194,18 @@ void GameEngine::initProcessor() {
     if (mode == "-console") {
         commandProcessor = new CommandProcessor(this);
     } else { // mode is -file
-        string fileName;
-        cout << "Enter the file name to read." << endl;
-        cin >> fileName;
-
-        FileLineReader* flr = new FileLineReader(fileName);
-        commandProcessor = new FileCommandProcessorAdapter(this, flr);
+        commandProcessor = nullptr;
+        do {
+            string fileName;
+            cout << "Enter a valid file name to read." << endl;
+            cin >> fileName;
+            try {
+                FileLineReader* flr = new FileLineReader(fileName);
+                commandProcessor = new FileCommandProcessorAdapter(this, flr);
+            } catch (const std::invalid_argument& e) {
+                cout << "Could not open file: " << fileName << endl;
+            }
+        } while(!commandProcessor);
     }
 }
 
@@ -233,9 +238,53 @@ void GameEngine::transition(Transition* transition) {
         std::cout << "The game cycle has been completed." << std::endl; 
 }
 
-GameEngine::~GameEngine() {
-    for (State* state : states) // deletes the `currentState` too.
+// Game Engine's assignment operator overload.
+GameEngine& GameEngine::operator=(const GameEngine& gameEngine) {
+    // Deallocating existing dynamic memory
+    std::set<Transition*> transitions; // Retrieving all unique transitions before deleting states to avoid deleting an already deleted transition.
+    for (State* state : states) { // Deletes the `currentState` too.
+        for (Transition* transition : state->getTransitions())
+            transitions.insert(transition);
         delete state;
+    }
+    states.clear();
+
+    for (Transition* transition : transitions)
+            delete transition;
+
+    this->states = gameEngine.states; // To simplify circular data dependency, reuse same states and transitions.
+    currentState = gameEngine.currentState;
+    currentMap = new Map(*(gameEngine.currentMap));
+    mode = gameEngine.mode;
+
+    FileCommandProcessorAdapter* fileCmdProcAdapter = dynamic_cast<FileCommandProcessorAdapter*>(gameEngine.commandProcessor);
+    if (fileCmdProcAdapter) {
+        FileLineReader* flr = new FileLineReader(*(fileCmdProcAdapter->getFileLineReader()));
+        commandProcessor = new FileCommandProcessorAdapter(this, flr);
+    } else {
+        commandProcessor = new CommandProcessor(this);
+    }
+    return *this;
+}
+
+// Game Engine's stream operator overload to display the game's mode.
+std::ostream& operator<<(std::ostream& output, const GameEngine& gameEngine) {
+    output << "Game engine mode: " << gameEngine.mode;
+    return output;
+}
+
+// Game Engine's destructor.
+GameEngine::~GameEngine() {
+    std::set<Transition*> transitions; // Retrieving all unique transitions before deleting states to avoid deleting an already deleted transition.
+    for (State* state : states) { // Deletes the `currentState` too.
+        for (Transition* transition : state->getTransitions())
+            transitions.insert(transition);
+        delete state;
+    }
+
+    for (Transition* transition : transitions)
+            delete transition;
+        
     delete currentMap;
     delete commandProcessor;
 }

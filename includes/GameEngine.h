@@ -42,6 +42,7 @@ class Transition {
 
 class CommandProcessor; // forward declaration
 
+// Manages the game setup and execution.
 class GameEngine {
     public:
         GameEngine();
@@ -67,9 +68,9 @@ class GameEngine {
 
         ~GameEngine();
     private:
-        void initProcessor();
         void setDefaultGameStates();
         void selectMode();
+        void initProcessor();
 
         vector<State*> states;
         State* currentState;

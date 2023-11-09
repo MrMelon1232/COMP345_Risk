@@ -63,7 +63,7 @@ class CommandProcessor {
         MapLoader* mapLoader;
 };
 
-// File reader adapted to create commands.
+// File reader responsible of reading text-based commands.
 class FileLineReader {
     public:
         FileLineReader(string fileName);
