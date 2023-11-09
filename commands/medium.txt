@@ -1,0 +1,8 @@
+loadmap ../Maps/Africa.map
+validatemap
+addplayer John
+addplayer Jane
+addplayer Rick
+gamestart
+endgame
+quit

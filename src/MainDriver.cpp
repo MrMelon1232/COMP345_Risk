@@ -3,6 +3,7 @@
 #include "OrdersDriver.h"
 #include "GameEngineDriver.h"
 #include "MapDriver.h"
+#include "CommandProcessingDriver.h"
 
 int main() {
 
@@ -20,4 +21,7 @@ int main() {
 
     // Test function for game engine
     testGameStates();
+
+    // Test function for command processor
+    testCommandProcessor();
 }
