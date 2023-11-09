@@ -8,6 +8,9 @@ Player::Player() : orders(new OrdersList), hand(new Hand) {
     // Initialize other members if needed
 }
 
+Player::Player(const string& name) : playerName(name) {
+}
+
 // Copy Constructor
 Player:: Player(const Player& other) {
     // Copy territoriesOwned (assuming Territory objects are not dynamically allocated)
@@ -132,6 +135,16 @@ void Player::issueOrder(OrderType type) {
 // Function to add territories to the player's possession
 void Player:: addTerritory(Territory* territory) {
     territoriesOwned.push_back(territory);
+}
+
+// Getter for player name
+string Player::getName() const {
+    return playerName;
+}
+
+// Setter for player name
+void Player::setName(const string& name) {
+    playerName = name;
 }
 
 // Destructor, clean up any allocated memory

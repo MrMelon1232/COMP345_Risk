@@ -29,11 +29,15 @@ class Player
         // Hand of cards owned by the player
         Hand* hand;
 
+        string playerName;
+
     // Player public methods
     public:
 
         // Constructor
         Player();
+
+        Player(const string& name);
 
         // Copy constructor
         Player(const Player& other);
@@ -55,6 +59,12 @@ class Player
 
         // Add territory
         void addTerritory(Territory* territory);
+
+        // Getter for player name
+        string getName() const;
+
+        // Setter for player name
+        void setName(const string& name);
 
         // Destructor to clean up resources
         ~Player();

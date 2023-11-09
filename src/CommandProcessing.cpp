@@ -157,7 +157,12 @@ void CommandProcessor::validateMap(Command* command) {
 
 // Helper function for the `addPlayer <playerName>` command.
 void CommandProcessor::addPlayer(Command* command) {
-    cout << "addPlayer()" << endl;
+    string playerName = command->getArg();
+    // Create and add a new player to the game
+    Player* newPlayer = new Player(playerName);
+    gameEngine->addPlayer(newPlayer);
+
+    command->saveEffect("Player " + playerName + " added successfully.");
     gameEngine->findAndTransition(command->getName());
 }
 

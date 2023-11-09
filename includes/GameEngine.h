@@ -1,6 +1,7 @@
 #pragma once
 #include "Map.h"
 #include "CommandProcessing.h"
+#include "Player.h"
 #include <iostream>
 #include <vector>
 
@@ -59,6 +60,9 @@ class GameEngine {
         CommandProcessor* getCommandProcessor() { return commandProcessor; }
         void setCommandProcessor(CommandProcessor* commandProcessor) {this->commandProcessor = commandProcessor; }
 
+        void addPlayer(Player* player);
+        void startupPhase();
+        void distributeTerritories(int num);
         bool isCommandValid(string command);
         void findAndTransition(string name);
         void transition(Transition *transition);
@@ -76,5 +80,6 @@ class GameEngine {
         State* currentState;
         Map* currentMap;
         CommandProcessor* commandProcessor;
+        vector<Player*> players;
         string mode;
 };

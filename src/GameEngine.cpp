@@ -1,6 +1,8 @@
 #include "GameEngine.h"
 #include <algorithm>
 #include <set>
+#include <random>
+#include <filesystem>
 
 // Constructor to initialize a state with a name.
 State::State(string name) { 
@@ -206,6 +208,86 @@ void GameEngine::initProcessor() {
                 cout << "Could not open file: " << fileName << endl;
             }
         } while(!commandProcessor);
+    }
+}
+
+void GameEngine::addPlayer(Player* player) {
+    players.push_back(player);
+}
+
+void listFilesInDirectory() {
+    std::string directoryPath = "Maps";  // Use "Maps" as the directory path
+
+    if (std::filesystem::exists(directoryPath) && std::filesystem::is_directory(directoryPath)) {
+        std::cout << "List of map files in the directory:" << std::endl;
+        for (const auto& entry : std::filesystem::directory_iterator(directoryPath)) {
+            if (std::filesystem::is_regular_file(entry)) {
+                std::cout  << entry.path().filename() << std::endl;
+            }
+        }
+    }
+    else {
+        std::cerr << "Directory not found or is not a directory." << std::endl;
+    }
+}
+
+void GameEngine::distributeTerritories(int numPlayers) {
+
+    // Create a list of all territories
+    std::vector<Territory*> allTerritories = currentMap->territories;
+
+    // Shuffle the territories randomly
+    std::random_device rd;
+    std::default_random_engine rng(rd());
+    std::shuffle(allTerritories.begin(), allTerritories.end(), rng);
+
+    int playerIndex = 0;
+    for (Territory* territory : allTerritories) {
+        Player* currentPlayer = players[playerIndex];
+        currentPlayer->addTerritory(territory);
+        //territory->setOwner(currentPlayer); // TODO: add owner field to Territory class?
+        playerIndex = (playerIndex + 1) % numPlayers;
+    }
+}
+
+void GameEngine::startupPhase() {
+
+    listFilesInDirectory();
+
+    // Create a CommandProcessor for console input
+    CommandProcessor consoleCommandProcessor(this);
+
+    // Load a map
+    while (currentState->getName() != "maploaded") {
+        Command* loadMapCommand = consoleCommandProcessor.getCommand();
+        commandProcessor->executeCommand(loadMapCommand);
+    }
+
+    // Load another map (optional) and validate the map
+    while (currentState->getName() != "mapvalidated") {
+        Command* command = consoleCommandProcessor.getCommand();
+        commandProcessor->executeCommand(command);
+    }
+
+    // add Players
+    int numPlayers;
+    do {
+        cout << "Enter the number of players (2-6): ";
+        cin >> numPlayers;
+    } while (numPlayers < 2 || numPlayers > 6);
+
+    for (int i = 1; i <= numPlayers; i++) {
+        cout << "Enter the name of Player " << i << ": ";
+        string playerName;
+        cin >> playerName;
+
+        // Construct the "addPlayer" command in the correct format
+        string addPlayerCommand = "addplayer " + playerName;
+
+        // Create and execute the command
+        Command* addPlayerCmd = new Command(addPlayerCommand);
+        commandProcessor->executeCommand(addPlayerCmd);
+        delete addPlayerCmd; // Clean up the command object
     }
 }
 
