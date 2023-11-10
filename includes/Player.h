@@ -71,6 +71,8 @@ public:
     // Add territory
     void addTerritory(Territory* territory);
 
+    Hand* getHand() const {return hand;}
+
     // Destructor to clean up resources
     ~Player();
 
