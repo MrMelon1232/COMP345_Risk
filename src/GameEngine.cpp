@@ -380,9 +380,28 @@ void GameEngine::reinforcementPhase() {
 }
 
 void GameEngine::issueOrdersPhase() {
+    //vector value for round-robin
+    vector<int> turn;
+    for (int i = 0; i < playersList.size(); i++) {
+        turn.push_back(i);
+    }
 
+    int playerIndex;
+    //round-robin loop
+    while (!turn.empty()) {
+        
+
+        //remove player from roundrobin
+        if (true) {
+            ;
+        }
+    }
 }
 
 void GameEngine::executeOrdersPhase() {
+    auto iterator = playersList.begin();
 
+    while (iterator != playersList.end()) {
+
+    }
 }
