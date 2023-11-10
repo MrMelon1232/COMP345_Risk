@@ -21,7 +21,6 @@ public:
     State& operator=(const State& state);
     friend std::ostream& operator<<(std::ostream& output, const State& state);
     ~State();
-    
 private:
     string name;
     vector<Transition*> transitions;
@@ -44,37 +43,47 @@ private:
 
 class CommandProcessor; // forward declaration
 
+// Manages the game setup and execution.
 class GameEngine {
 public:
     GameEngine();
+    GameEngine(string mode);
     GameEngine(vector<State*> states);
     GameEngine(GameEngine& gameEngine);
-    vector<Player*> players;
 
-    MapLoader* mapLoader;
+    // Getters and setters.
+    string getMode() { return mode; }
+    void setMode(string mode) { this->mode = mode; }
+    State* getCurrentState() { return currentState; }
+    Map* getCurrentMap() { return currentMap; }
+    void setCurrentMap(Map* map) { this->currentMap = map; }
+    CommandProcessor* getCommandProcessor() { return commandProcessor; }
+    void setCommandProcessor(CommandProcessor* commandProcessor) { this->commandProcessor = commandProcessor; }
 
-
-    vector<State*> getStates() { return states; };
-    State* getCurrentState() { return currentState; };
-    Map* getCurrentMap() { return currentMap; };
-    void setCurrentMap(Map* map) { this->currentMap = map; };
-    void setCommandProcessor(CommandProcessor* commandProcessor) { this->commandProcessor = commandProcessor; };
     void addPlayer(Player* player);
-
+    void startupPhase();
+    void distributeTerritories(int num);
     bool isCommandValid(string command);
     void findAndTransition(string name);
     void transition(Transition* transition);
+    vector<Player*>& getPlayers();
+    void setNumOfPlayers(int num);
+    int getNumOfPlayers() const;
 
     GameEngine& operator=(const GameEngine& gameEngine);
     friend std::ostream& operator<<(std::ostream& output, const GameEngine& gameEngine);
 
     ~GameEngine();
-    void startupPhase();
-    void distributeTerritories(int num);
 private:
+    void setDefaultGameStates();
+    void selectMode();
+    void initProcessor();
+
     vector<State*> states;
     State* currentState;
     Map* currentMap;
     CommandProcessor* commandProcessor;
     vector<Player*> players;
+    string mode;
+    int numOfPlayers;
 };
