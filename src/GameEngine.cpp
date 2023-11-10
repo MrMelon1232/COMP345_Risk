@@ -252,24 +252,6 @@ void listFilesInDirectory() {
     }
 }
 
-void GameEngine::distributeTerritories(int numPlayers) {
-
-    // Create a list of all territories
-    std::vector<Territory*> allTerritories = currentMap->territories;
-
-    // Shuffle the territories randomly
-    std::random_device rd;
-    std::default_random_engine rng(rd());
-    std::shuffle(allTerritories.begin(), allTerritories.end(), rng);
-
-    int playerIndex = 0;
-    for (Territory* territory : allTerritories) {
-        Player* currentPlayer = players[playerIndex];
-        currentPlayer->addTerritory(territory);
-        territory->setOwner(currentPlayer); 
-        playerIndex = (playerIndex + 1) % numPlayers;
-    }
-}
 
 void GameEngine::startupPhase() {
 
