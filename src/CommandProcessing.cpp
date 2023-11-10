@@ -199,7 +199,10 @@ void CommandProcessor::gameStart(Command* command) {
     }
 
     // 4.b determine randomly the order of play of the players in the game
-    
+    // Randomize the order of the how the player is accessed by rnadomizing the vector
+    random_device rd;
+    default_random_engine rng(rd());
+    shuffle(gameEngine->getPlayers().begin(), gameEngine->getPlayers().end(), rng);
 
     // 4.c give 50 initial army units to the players, which are placed in their respective reinforcement pool
     for (Player* player : gameEngine->getPlayers()) {
