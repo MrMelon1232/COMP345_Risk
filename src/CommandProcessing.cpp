@@ -210,6 +210,10 @@ void CommandProcessor::gameStart(Command* command) {
     }
 
     // 4.d let each player draw 2 initial cards from the deck using the deck’s draw() method
+    for (Player* player : gameEngine->getPlayers()) {
+        gameEngine->getGameDeck().draw(player->getHand());
+        gameEngine->getGameDeck().draw(player->getHand());
+    }
 
     // 4.e switch the game to the play phase
     gameEngine->findAndTransition(command->getName());
