@@ -384,19 +384,23 @@ void GameEngine::issueOrdersPhase() {
     vector<int> turn;
     for (int i = 0; i < playersList.size(); i++) {
         turn.push_back(i);
+        //setting reinforcement pool
+        
     }
 
     //round-robin loop
     int iteration = 0;
     while (!turn.empty()) {
-        
+        //issue order
+
+
 
         //remove player from roundrobin
         if (true) {
             ;
         }
 
-        //return to first player
+        //return to first iteration
         if (iteration >= turn.size()) {
             iteration = 0;
         }
@@ -414,12 +418,21 @@ void GameEngine::executeOrdersPhase() {
     }
 
     //round-robin loop
+    int iteration = 0;
     while (!turn.empty()) {
 
 
         //remove player from roundrobin
         if (true) {
             ;
+        }
+
+        //return to first iteration
+        if (iteration >= turn.size()) {
+            iteration = 0;
+        }
+        else {
+            iteration++;
         }
     }
 }
