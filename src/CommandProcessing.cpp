@@ -1,5 +1,7 @@
 #include "CommandProcessing.h"
 #include <iostream>
+#include <stdexcept>
+#include <random>
 
 using std::cin;
 using std::cout;
@@ -48,7 +50,7 @@ CommandProcessor::CommandProcessor(CommandProcessor& commandProcessor) {
     mapLoader = new MapLoader(*(commandProcessor.mapLoader));
 }
 
-// Returns a pointer to the newly created command (validation and save included).
+// Returns a pointer to the newly created command (saved too if not nullprt).
 Command* CommandProcessor::getCommand() {
     Command* command = readCommand();
     if (command)
@@ -77,6 +79,11 @@ Command* CommandProcessor::readCommand() {
     return command;
 }
 
+// Saves the command into the CommandProcessor's commands list.
+void CommandProcessor::saveCommand(Command* command) {
+    commands.push_back(command);
+}
+
 // Sets the effect according to the command type. If the command is invalid, it sets an invalid effect.
 void CommandProcessor::validate(Command* command) {
     string cmdName = command->getName();
@@ -87,24 +94,25 @@ void CommandProcessor::validate(Command* command) {
 
     if (cmdName == "loadmap") {
         command->saveEffect("Loading map.");
-    } else if (cmdName == "validatemap") {
+    }
+    else if (cmdName == "validatemap") {
         command->saveEffect("Validating map.");
-    } else if (cmdName == "addplayer") {
+    }
+    else if (cmdName == "addplayer") {
         command->saveEffect("Adding player.");
-    } else if (cmdName == "gamestart") {
+    }
+    else if (cmdName == "gamestart") {
         command->saveEffect("Ending startup phase. Starting play phase.");
-    } else if (cmdName == "replay") {
+    }
+    else if (cmdName == "replay") {
         command->saveEffect("Restarting the game.");
-    } else if (cmdName == "quit") {
-        command->saveEffect("Quitting the game");
-    } else { // if command behavior undefined, simply transition state.
+    }
+    else if (cmdName == "quit") {
+        command->saveEffect("Quitting the game.");
+    }
+    else { // if command behavior undefined, simply transition state.
         command->saveEffect("Transitioning to another state.");
     }
-}
-
-// Saves the command into the CommandProcessor's commands list.
-void CommandProcessor::saveCommand(Command* command) {
-    commands.push_back(command);
 }
 
 // Executes the given command. If command is invalid, it just outputs the effect.
@@ -118,17 +126,23 @@ void CommandProcessor::executeCommand(Command* command) {
     string cmdName = command->getName();
     if (cmdName == "loadmap") {
         loadMap(command);
-    } else if (cmdName == "validatemap") {
+    }
+    else if (cmdName == "validatemap") {
         validateMap(command);
-    } else if (cmdName == "addplayer") {
+    }
+    else if (cmdName == "addplayer") {
         addPlayer(command);
-    } else if (cmdName == "gamestart") {
+    }
+    else if (cmdName == "gamestart") {
         gameStart(command);
-    } else if (cmdName == "replay") {
+    }
+    else if (cmdName == "replay") {
         replay(command);
-    } else if (cmdName == "quit") {
+    }
+    else if (cmdName == "quit") {
         gameEngine->findAndTransition(command->getName());
-    } else { // if command behavior undefined, simply transition state.
+    }
+    else { // if command behavior undefined, simply transition state.
         gameEngine->findAndTransition(command->getName());
     }
 }
@@ -138,7 +152,8 @@ void CommandProcessor::loadMap(Command* command) {
     try {
         gameEngine->setCurrentMap(mapLoader->LoadMap(command->getArg()));
         gameEngine->findAndTransition(command->getName());
-    } catch (const runtime_error& error) {
+    }
+    catch (const runtime_error& error) {
         command->saveEffect("Map file not found.");
         cout << "Could not load map file " + command->getArg() + ". State is still `" + gameEngine->getCurrentState()->getName() + "`." << endl;
     }
@@ -149,35 +164,59 @@ void CommandProcessor::validateMap(Command* command) {
     if (gameEngine->getCurrentMap()->validate()) {
         cout << "Map loaded successfully." << endl;
         gameEngine->findAndTransition(command->getName());
-    } else {
+    }
+    else {
         cout << "Invalid map or map file. Try loading a different one." << endl;
     }
 }
 
 // Helper function for the `addPlayer <playerName>` command.
 void CommandProcessor::addPlayer(Command* command) {
-   
     string playerName = command->getArg();
-
-    // Create and add a new player to the game
     Player* newPlayer = new Player(playerName);
     gameEngine->addPlayer(newPlayer);
-
-    command->saveEffect("Player " + playerName + " added successfully.");
+    cout << "Player " << playerName << " added successfully.";
     gameEngine->findAndTransition(command->getName());
 }
 
-
 // Helper function to the `gameStart` command.
 void CommandProcessor::gameStart(Command* command) {
+
+    // 4.a fairly distribute all the territories to the players
+    vector<Territory*> allTerritories = gameEngine->getCurrentMap()->territories;
+
+    // Shuffle the territories randomly
+    random_device rd;
+    default_random_engine rng(rd());
+    shuffle(allTerritories.begin(), allTerritories.end(), rng);
+
+    int playerIndex = 0;
+    for (Territory* territory : allTerritories) {
+        Player* currentPlayer = gameEngine->getPlayers()[playerIndex];
+        currentPlayer->addTerritory(territory);
+        territory->setOwner(currentPlayer);
+        playerIndex = (playerIndex + 1) % gameEngine->getNumOfPlayers();
+    }
+
+    // 4.b determine randomly the order of play of the players in the game
     
+
+    // 4.c give 50 initial army units to the players, which are placed in their respective reinforcement pool
+    for (Player* player : gameEngine->getPlayers()) {
+        player->setReinforcementPool(50);
+    }
+
+    // 4.d let each player draw 2 initial cards from the deck using the deck’s draw() method
+
+    // 4.e switch the game to the play phase
+    gameEngine->findAndTransition(command->getName());
 }
 
 // Helper function to the `replay` command.
 void CommandProcessor::replay(Command* command) {
     cout << "replay()" << endl;
     gameEngine->findAndTransition(command->getName()); // cmdName is "replay"
-    // TODO: reset GameEngine variables (i.e., players)
+    // TODO: reset GameEngine variables (i.e., current map, players)
 }
 
 // Assignment operator of the CommandProcessor.
@@ -215,12 +254,14 @@ CommandProcessor::~CommandProcessor() {
 // FileLineReader constructor to initialize with the file to read.
 FileLineReader::FileLineReader(string fileName) : fileName(fileName) {
     file.open(fileName);
+    if (file.fail())
+        throw std::invalid_argument("Cannot open specified file");
 }
 
 // Copy constructor of FileLineReader.
 FileLineReader::FileLineReader(FileLineReader& flr) {
     this->fileName = flr.fileName;
-    this->file.open(fileName);
+    this->file.open(fileName); // We assume the file is valid.
 }
 
 // Returns a string containing command information from the next line in the file.
@@ -231,15 +272,15 @@ string FileLineReader::readLineFromFile() {
 }
 
 // Indicates whether the eof flag is set in the ifstream object.
-bool FileLineReader::isEof() { 
-    return file.eof(); 
+bool FileLineReader::isEof() {
+    return file.eof();
 }
 
 // Assignment operator of FileLineReader.
 FileLineReader& FileLineReader::operator=(const FileLineReader& flr) {
     fileName = flr.fileName;
     file.close();
-    file.open(fileName);
+    file.open(fileName); // We assume the file is valid.
     return *this;
 }
 
@@ -254,8 +295,8 @@ FileLineReader::~FileLineReader() {
     file.close();
 }
 
-// FileCommandProcessorAdapter constructor to initialize with the file name to pass to the FileLineReader.
-FileCommandProcessorAdapter::FileCommandProcessorAdapter(GameEngine* gameEngine,  FileLineReader* flr) : CommandProcessor(gameEngine) {
+// FileCommandProcessorAdapter constructor to initialize with the given FileLineReader.
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(GameEngine* gameEngine, FileLineReader* flr) : CommandProcessor(gameEngine) {
     this->flr = flr;
 }
 
@@ -281,7 +322,7 @@ Command* FileCommandProcessorAdapter::readCommand() {
 }
 
 // Assignment operator of FileCommandProcessorAdapter.
-FileCommandProcessorAdapter& FileCommandProcessorAdapter::operator=(const FileCommandProcessorAdapter& fileCmdProcAdapter) {    
+FileCommandProcessorAdapter& FileCommandProcessorAdapter::operator=(const FileCommandProcessorAdapter& fileCmdProcAdapter) {
     CommandProcessor::operator=(fileCmdProcAdapter);
     delete flr;
     flr = new FileLineReader(*(fileCmdProcAdapter.flr));
