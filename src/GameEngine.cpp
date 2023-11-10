@@ -1,9 +1,12 @@
 #include "GameEngine.h"
 #include <algorithm>
+#include <set>
+#include <random>
+#include <filesystem>
 
 // Constructor to initialize a state with a name.
-State::State(string name) { 
-    this->name = name; 
+State::State(string name) {
+    this->name = name;
 };
 
 // Copy constructor for State class.
@@ -46,12 +49,9 @@ std::ostream& operator<<(std::ostream& output, const State& state) {
 
 // Destructor for State class
 State::~State() {
-    for(Transition* transition : transitions) {
-        if (transition) {
-            delete transition;
-            transition = nullptr;
-        }
-    }
+    // The `transitions` are part of the GameEngine.
+    // As the "owner", the GameEngine is responsible of deleting the transitions.
+    // Therefore, nothing to do here.
 }
 
 // Constructor to initialize transition with command name and state to transition to.
@@ -89,8 +89,8 @@ Transition& Transition::operator=(const Transition& transition) {
 
 // Ouput stream operator overload to return Transition's command name and next state.
 std::ostream& operator<<(std::ostream& output, const Transition& transition) {
-    output << "Command name: " << transition.commandName << 
-            ", Next state: " << transition.nextState->getName();
+    output << "Command name: " << transition.commandName <<
+        ", Next state: " << transition.nextState->getName();
     return output;
 }
 
@@ -101,7 +101,7 @@ Transition::~Transition() {
     // Therefore, nothing to do here.
 }
 
-// GameEngine default constructor. Creates the state and transition objects for the game. It also sets the initial state.
+// Game Engine default constructor. Creates the state and transition objects for the game. It also sets the initial state.
 GameEngine::GameEngine() {
     setDefaultGameStates();
     currentMap = nullptr;
@@ -109,6 +109,7 @@ GameEngine::GameEngine() {
     std::cout << "Current state is " << *currentState << "." << std::endl;
 }
 
+// Game Engine constructor to initialize with given mode. Mainly used for testing.
 GameEngine::GameEngine(string mode) {
     setDefaultGameStates();
     currentMap = nullptr;
@@ -127,10 +128,10 @@ GameEngine::GameEngine(vector<State*> states) {
     std::cout << "Current state is " << *currentState << "." << std::endl;
 }
 
-// Game Engine copy constructor
+// Game Engine copy constructor.
 GameEngine::GameEngine(GameEngine& gameEngine) {
     this->states = gameEngine.states; // To simplify circular data dependency, reuse same states and transitions.
-    currentState = states.front();
+    currentState = gameEngine.currentState;
     currentMap = new Map(*(gameEngine.currentMap));
     mode = gameEngine.mode;
 
@@ -138,7 +139,8 @@ GameEngine::GameEngine(GameEngine& gameEngine) {
     if (fileCmdProcAdapter) {
         FileLineReader* flr = new FileLineReader(*(fileCmdProcAdapter->getFileLineReader()));
         commandProcessor = new FileCommandProcessorAdapter(this, flr);
-    } else {
+    }
+    else {
         commandProcessor = new CommandProcessor(this);
     }
 }
@@ -166,16 +168,16 @@ void GameEngine::setDefaultGameStates() {
     Transition* play = new Transition("replay", start);
     Transition* quit = new Transition("quit", nullptr);
 
-    start->addTransitions({loadMap});
-    mapLoaded->addTransitions({loadMap, validateMap});
-    mapValidated->addTransitions({addPlayer});
-    playersAdded->addTransitions({addPlayer, gamestart});
-    assignReinforcements->addTransitions({issueOrder});
-    issueOrders->addTransitions({issueOrder, issueOrdersEnd});
-    executeOrders->addTransitions({execOrder, winTrans, endExecOrders});
-    win->addTransitions({play, quit});
+    start->addTransitions({ loadMap });
+    mapLoaded->addTransitions({ loadMap, validateMap });
+    mapValidated->addTransitions({ addPlayer });
+    playersAdded->addTransitions({ addPlayer, gamestart });
+    assignReinforcements->addTransitions({ issueOrder });
+    issueOrders->addTransitions({ issueOrder, issueOrdersEnd });
+    executeOrders->addTransitions({ execOrder, winTrans, endExecOrders });
+    win->addTransitions({ play, quit });
 
-    states = {start, mapLoaded, mapValidated, playersAdded, assignReinforcements, issueOrders, executeOrders, win};
+    states = { start, mapLoaded, mapValidated, playersAdded, assignReinforcements, issueOrders, executeOrders, win };
     currentState = start;
 }
 
@@ -185,7 +187,7 @@ void GameEngine::selectMode() {
     do {
         cout << "Type -console or -file to specify how to read the commands." << endl;
         cin >> mode;
-    } while(mode != "-console" && mode != "-file");
+    } while (mode != "-console" && mode != "-file");
     this->mode = mode;
     initProcessor();
 }
@@ -194,29 +196,136 @@ void GameEngine::selectMode() {
 void GameEngine::initProcessor() {
     if (mode == "-console") {
         commandProcessor = new CommandProcessor(this);
-    } else { // mode is -file
-        string fileName;
-        cout << "Enter the file name to read." << endl;
-        cin >> fileName;
-
-        FileLineReader* flr = new FileLineReader(fileName);
-        commandProcessor = new FileCommandProcessorAdapter(this, flr);
     }
+    else { // mode is -file
+        commandProcessor = nullptr;
+        do {
+            string fileName;
+            cout << "Enter a valid file name to read." << endl;
+            cin >> fileName;
+            try {
+                FileLineReader* flr = new FileLineReader(fileName);
+                commandProcessor = new FileCommandProcessorAdapter(this, flr);
+            }
+            catch (const std::invalid_argument& e) {
+                cout << "Could not open file: " << fileName << endl;
+            }
+        } while (!commandProcessor);
+    }
+}
+
+
+
+
+
+// getter and setter for numOfArmies
+int GameEngine::getNumOfPlayers() const {
+    return numOfPlayers;
+}
+
+void GameEngine::setNumOfPlayers(int num) {
+    numOfPlayers = num;
+}
+
+vector<Player*>& GameEngine::getPlayers() {
+    return players;
+}
+
+
+void GameEngine::addPlayer(Player* player) {
+    players.push_back(player);
+}
+
+void listFilesInDirectory() {
+    std::string directoryPath = "Maps"; 
+
+    if (std::filesystem::exists(directoryPath) && std::filesystem::is_directory(directoryPath)) {
+        std::cout << "List of map files in the directory:" << std::endl;
+        for (const auto& entry : std::filesystem::directory_iterator(directoryPath)) {
+            if (std::filesystem::is_regular_file(entry)) {
+                std::cout << entry.path().filename() << std::endl;
+            }
+        }
+    }
+    else {
+        std::cerr << "Directory not found or is not a directory." << std::endl;
+    }
+}
+
+void GameEngine::distributeTerritories(int numPlayers) {
+
+    // Create a list of all territories
+    std::vector<Territory*> allTerritories = currentMap->territories;
+
+    // Shuffle the territories randomly
+    std::random_device rd;
+    std::default_random_engine rng(rd());
+    std::shuffle(allTerritories.begin(), allTerritories.end(), rng);
+
+    int playerIndex = 0;
+    for (Territory* territory : allTerritories) {
+        Player* currentPlayer = players[playerIndex];
+        currentPlayer->addTerritory(territory);
+        territory->setOwner(currentPlayer); 
+        playerIndex = (playerIndex + 1) % numPlayers;
+    }
+}
+
+void GameEngine::startupPhase() {
+
+    listFilesInDirectory();
+
+    CommandProcessor consoleCommandProcessor(this);
+
+    // Load a map
+    while (currentState->getName() != "maploaded") {
+        Command* loadMapCommand = consoleCommandProcessor.getCommand();
+        commandProcessor->executeCommand(loadMapCommand);
+    }
+
+    // Load another map (optional) and validate the map
+    while (currentState->getName() != "mapvalidated") {
+        Command* validateMapcommand = consoleCommandProcessor.getCommand();
+        commandProcessor->executeCommand(validateMapcommand);
+    }
+
+    // add players
+    int numPlayers;
+    do {
+        cout << "Enter the number of players (2-6): ";
+        cin >> numPlayers;
+        setNumOfPlayers(numPlayers);
+    } while (numPlayers < 2 || numPlayers > 6);
+
+    for (int i = 1; i <= numPlayers; i++) {
+        Command* addPlayerCommand = consoleCommandProcessor.getCommand();
+        commandProcessor -> executeCommand(addPlayerCommand);
+    }
+
+
+    // gamestart
+    while (currentState->getName() != "assignreinforcement") {
+        Command* gameStartcommand = consoleCommandProcessor.getCommand();
+        commandProcessor->executeCommand(gameStartcommand);
+    }
+
+
+
 }
 
 // Function that indicates if the command is valid in the current state game.
 bool GameEngine::isCommandValid(string command) {
     vector<Transition*> transitions = currentState->getTransitions();
-    vector<Transition*>::iterator it = std::find_if(transitions.begin(), transitions.end(), 
-                                         [&command](Transition* cmd) { return cmd->getCommandName() == command; });
+    vector<Transition*>::iterator it = std::find_if(transitions.begin(), transitions.end(),
+        [&command](Transition* cmd) { return cmd->getCommandName() == command; });
     return it != transitions.end();
 }
 
 // Function that finds transition with given command name. If not found, it displays an error. Otherwise, calls function to perform the state transition.
 void GameEngine::findAndTransition(string name) {
     vector<Transition*> transitions = currentState->getTransitions();
-    vector<Transition*>::iterator it = std::find_if(transitions.begin(), transitions.end(), 
-                                         [&name](Transition* cmd) { return cmd->getCommandName() == name; });
+    vector<Transition*>::iterator it = std::find_if(transitions.begin(), transitions.end(),
+        [&name](Transition* cmd) { return cmd->getCommandName() == name; });
     if (it != transitions.end())
         transition(*it);
     else
@@ -228,125 +337,59 @@ void GameEngine::transition(Transition* transition) {
     currentState = transition->getNextState();
     std::cout << "Command `" << transition->getCommandName() << "` has been executed. ";
     if (currentState)
-        std::cout << "Current state is now " << *currentState  << "." << std::endl;
+        std::cout << "Current state is now " << *currentState << "." << std::endl;
     else
-        std::cout << "The game cycle has been completed." << std::endl; 
+        std::cout << "The game cycle has been completed." << std::endl;
 }
 
-GameEngine::~GameEngine() {
-    for (State* state : states) // deletes the `currentState` too.
+// Game Engine's assignment operator overload.
+GameEngine& GameEngine::operator=(const GameEngine& gameEngine) {
+    // Deallocating existing dynamic memory
+    std::set<Transition*> transitions; // Retrieving all unique transitions before deleting states to avoid deleting an already deleted transition.
+    for (State* state : states) { // Deletes the `currentState` too.
+        for (Transition* transition : state->getTransitions())
+            transitions.insert(transition);
         delete state;
-    delete currentMap;
-    delete commandProcessor;
-}
+    }
+    states.clear();
 
+    for (Transition* transition : transitions)
+        delete transition;
 
+    this->states = gameEngine.states; // To simplify circular data dependency, reuse same states and transitions.
+    currentState = gameEngine.currentState;
+    currentMap = new Map(*(gameEngine.currentMap));
+    mode = gameEngine.mode;
 
-
-// FOR ASSIGNMENT 2
-
-void GameEngine::addPlayer(Player* player) {
-    players.push_back(player);
-}
-
-
-
-
-void listFilesInDirectory() {
-    std::string directoryPath = "Maps";  // Use "Maps" as the directory path
-
-    if (fs::exists(directoryPath) && fs::is_directory(directoryPath)) {
-        std::cout << "List of map files in the directory:" << std::endl;
-        for (const auto& entry : fs::directory_iterator(directoryPath)) {
-            if (fs::is_regular_file(entry)) {
-                std::cout  << entry.path().filename() << std::endl;
-            }
-        }
+    FileCommandProcessorAdapter* fileCmdProcAdapter = dynamic_cast<FileCommandProcessorAdapter*>(gameEngine.commandProcessor);
+    if (fileCmdProcAdapter) {
+        FileLineReader* flr = new FileLineReader(*(fileCmdProcAdapter->getFileLineReader()));
+        commandProcessor = new FileCommandProcessorAdapter(this, flr);
     }
     else {
-        std::cerr << "Directory not found or is not a directory." << std::endl;
+        commandProcessor = new CommandProcessor(this);
     }
+    return *this;
 }
 
-
-
-void GameEngine::distributeTerritories(int numPlayers) {
-
-    // Create a list of all territories
-    std::vector<Territory*> allTerritories = currentMap->getTerritories();
-
-    // Shuffle the territories randomly
-    std::random_device rd;
-    std::default_random_engine rng(rd());
-    std::shuffle(allTerritories.begin(), allTerritories.end(), rng);
-
-    int playerIndex = 0;
-    for (Territory* territory : allTerritories) {
-        Player* currentPlayer = players[playerIndex];
-        currentPlayer->addTerritory(territory);
-        territory->setOwner(currentPlayer);
-        playerIndex = (playerIndex + 1) % numPlayers;
-    }
+// Game Engine's stream operator overload to display the game's mode.
+std::ostream& operator<<(std::ostream& output, const GameEngine& gameEngine) {
+    output << "Game engine mode: " << gameEngine.mode;
+    return output;
 }
 
-void GameEngine::startupPhase() {
-
-    listFilesInDirectory();
-
-    // Create a CommandProcessor for console input
-    CommandProcessor consoleCommandProcessor(this);
-
-    // Load a map
-    Command* loadMapCommand = consoleCommandProcessor.getCommand();
-    while (loadMapCommand->getName() != "loadmap") {
-        cout << "Invalid command. Please enter 'loadmap <filename>' to load the map." << endl;
-        delete loadMapCommand;
-        loadMapCommand = consoleCommandProcessor.getCommand();
+// Game Engine's destructor.
+GameEngine::~GameEngine() {
+    std::set<Transition*> transitions; // Retrieving all unique transitions before deleting states to avoid deleting an already deleted transition.
+    for (State* state : states) { // Deletes the `currentState` too.
+        for (Transition* transition : state->getTransitions())
+            transitions.insert(transition);
+        delete state;
     }
 
+    for (Transition* transition : transitions)
+        delete transition;
 
-    string mapFileName = loadMapCommand->getArg();
-    delete loadMapCommand;
-
-    if (!mapLoader->LoadMap(mapFileName)) {
-        cout << "Failed to load the map. Exiting startup phase." << endl;
-        return;
-    }
-
-    // Validate the map
-    Command* validateMapCommand = consoleCommandProcessor.getCommand();
-    while (validateMapCommand->getName() != "validatemap") {
-        cout << "Invalid command. Please enter 'validatemap' to validate the map." << endl;
-        delete validateMapCommand;
-        validateMapCommand = consoleCommandProcessor.getCommand();
-    }
-
-    // Execute the validate map command using CommandProcessor
-    consoleCommandProcessor.executeCommand(validateMapCommand);
-    delete validateMapCommand;
-
-
-    // Create a CommandProcessor for player input
-    CommandProcessor playerCommandProcessor(this);
-
-    // add Players
-    int numPlayers;
-    do {
-        cout << "Enter the number of players (2-6): ";
-        cin >> numPlayers;
-    } while (numPlayers < 2 || numPlayers > 6);
-
-    for (int i = 1; i <= numPlayers; i++) {
-        cout << "Enter the name of Player " << i << ": ";
-        string playerName;
-        cin >> playerName;
-
-        // Construct the "addPlayer" command in the correct format
-        string addPlayerCommand = "addplayer " + playerName;
-
-        // Create and execute the command
-        Command* addPlayerCmd = new Command(addPlayerCommand);
-        playerCommandProcessor.executeCommand(addPlayerCmd);
-        delete addPlayerCmd; // Clean up the command object
-    }
+    delete currentMap;
+    delete commandProcessor;
 }
