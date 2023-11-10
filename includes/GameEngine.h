@@ -69,6 +69,7 @@ public:
     vector<Player*>& getPlayers();
     void setNumOfPlayers(int num);
     int getNumOfPlayers() const;
+    Deck& getGameDeck() {return gameDeck;}
 
     GameEngine& operator=(const GameEngine& gameEngine);
     friend std::ostream& operator<<(std::ostream& output, const GameEngine& gameEngine);
@@ -86,4 +87,5 @@ private:
     vector<Player*> players;
     string mode;
     int numOfPlayers;
+    Deck gameDeck;
 };
