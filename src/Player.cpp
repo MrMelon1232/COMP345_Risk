@@ -1,8 +1,13 @@
 #include "Player.h"
 
+int Player::nextID = 0;
+
 // Constructor
 Player::Player() : orders(new OrdersList), hand(new Hand) {
     // Initialize other members if needed
+    playerID = nextID;
+    nextID++;
+    reinforcementPool = 10;
 }
 
 // Copy Constructor
@@ -56,7 +61,12 @@ Player& Player:: operator=(const Player& other) {
 }
 
 // Stream insertion operator
-ostream& operator<<(ostream& os, const Player& player) {
+std::ostream& operator<<(std::ostream& os, const Player& player) {
+
+    os << "-------------------------------------------------------------\n";
+    //displays playerID
+    os << "Player" <<player.playerID<<": \n";
+
     os << "Territories Owned: \n";
     for (const Territory* territory : player.territoriesOwned) {
         os << *territory;
@@ -73,7 +83,7 @@ ostream& operator<<(ostream& os, const Player& player) {
     } else {
         os << "None";
     }
-
+    os << "-------------------------------------------------------------\n";
     return os;
 }
 
@@ -137,6 +147,64 @@ Player::~Player() {
     delete hand;
 }
 
+//Accessor method which returns the id of a player
+int Player::getPlayerID() {
+    return playerID;
+}
+
+//Accessor and mutator method for reinforcement pool
+int Player::getReinforcementPool()
+{
+    return reinforcementPool; 
+}
+void Player::setReinforcementPool(int reinforcement)
+{
+    reinforcementPool = reinforcement; 
+}
+
+//The following method checks if a given territory is adjacent with any of the owned territories of the player
+bool Player::isAnyAdjacent(Territory* territory)
+{
+    for (Territory* ownedTerritory : territoriesOwned) 
+    {
+        if (ownedTerritory->isAdjacent(territory)) 
+        {
+            return true; 
+        }
+    }
+    return false; 
+}
+
+//adds a card to the hand of the player
+void Player::addCardToHand(Card* c)
+{
+    hand->addHand(c);
+}
+
+//adds an ally
+void Player::addAlly(int allyID) 
+{
+    myAlliesForTheTurn.push_back(allyID); 
+}
+
+//Player must call this method at the end of each of their turn
+void Player::clearAllies() 
+{
+    myAlliesForTheTurn.clear();
+}
+
+//Checks if the player has the passed ally in their vector
+bool Player::isAllyPresent(int allyID) 
+{
+    for (int value : myAlliesForTheTurn) 
+    {
+        if (value == allyID) 
+        {
+            return true; 
+        }
+    }
+    return false; 
+}
 
 //A2
 
@@ -153,16 +221,6 @@ void Player::setName(string n)
 vector<Territory*> Player::getTerritories()
 {
     return territoriesOwned;
-}
-
-int Player::getReinforcement()
-{
-    return reinforcement;
-}
-
-void Player::setReinforcement(int army)
-{
-    reinforcement = army;
 }
 
 //test methods

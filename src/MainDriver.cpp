@@ -16,6 +16,7 @@ void testA1() {
 
     // Test function for orders
     testOrdersList();
+    testOrderExecution();
 
     // Test function for cards
     testCards();
