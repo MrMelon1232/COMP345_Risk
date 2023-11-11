@@ -80,6 +80,7 @@ void Deploy::execute()
         cout<<armyUnits<<" units have been deployed to "<<target->GetName()<<".\n";
         cout<<target->GetName()<<" now has "<<target->getNbArmies()<<" units.\n";
         notify(*this);
+
     }
 }
 
@@ -430,7 +431,6 @@ ostream& Airlift::displayOrder(ostream &myOrder) const
 //Function Definition for Negotiate
 Negotiate::Negotiate()
 {
-
 }
 
 Negotiate::Negotiate(Player* player,Player* enemy)
@@ -505,7 +505,6 @@ OrdersList::OrdersList()
 void OrdersList::add(Order* O)
 {
     listOfOrders.push_back(O); 
-    notify(*this);
 }
 
 //Returns the size of the list
@@ -600,6 +599,10 @@ OrdersList::~OrdersList()
         delete listOfOrders[o];
 }
 
+Order* OrdersList::getOrder(int i)
+{
+    return listOfOrders.at(i);
+}
 
 // Part 2: Logging
 string Deploy::stringToLog() const {
@@ -634,7 +637,6 @@ string Negotiate::stringToLog() const {
 string OrdersList::stringToLog() const {
     return "Order " + listOfOrders.back()->getName() + " has been added to the player's list of orders.";
 }
-
 
     
          

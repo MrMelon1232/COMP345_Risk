@@ -1,10 +1,16 @@
 #include "GameEngine.h"
 #include <algorithm>
 #include <set>
+#include <cmath>
+#include "Map.h"
+#include <random>
+#include <filesystem>
+
+using namespace std;
 
 // Constructor to initialize a state with a name.
-State::State(string name) { 
-    this->name = name; 
+State::State(string name) {
+    this->name = name;
 };
 
 // Copy constructor for State class.
@@ -87,8 +93,8 @@ Transition& Transition::operator=(const Transition& transition) {
 
 // Ouput stream operator overload to return Transition's command name and next state.
 std::ostream& operator<<(std::ostream& output, const Transition& transition) {
-    output << "Command name: " << transition.commandName << 
-            ", Next state: " << transition.nextState->getName();
+    output << "Command name: " << transition.commandName <<
+        ", Next state: " << transition.nextState->getName();
     return output;
 }
 
@@ -103,6 +109,7 @@ Transition::~Transition() {
 GameEngine::GameEngine() {
     setDefaultGameStates();
     currentMap = nullptr;
+    gameDeck = new Deck();
     selectMode();
     std::cout << "Current state is " << *currentState << "." << std::endl;
 }
@@ -111,6 +118,7 @@ GameEngine::GameEngine() {
 GameEngine::GameEngine(string mode) {
     setDefaultGameStates();
     currentMap = nullptr;
+    gameDeck = new Deck();
     this->mode = mode;
     initProcessor();
     std::cout << "Current state is " << *currentState << "." << std::endl;
@@ -119,6 +127,7 @@ GameEngine::GameEngine(string mode) {
 // Game Engine constructor to initialize with states. Mainly used for testing.
 GameEngine::GameEngine(vector<State*> states) {
     currentState = states.front();
+    gameDeck = new Deck();
     for (State* state : states)
         this->states.push_back(state);
     currentMap = nullptr;
@@ -130,6 +139,7 @@ GameEngine::GameEngine(vector<State*> states) {
 GameEngine::GameEngine(GameEngine& gameEngine) {
     this->states = gameEngine.states; // To simplify circular data dependency, reuse same states and transitions.
     currentState = gameEngine.currentState;
+    gameDeck = new Deck(*(gameEngine.gameDeck));
     currentMap = new Map(*(gameEngine.currentMap));
     mode = gameEngine.mode;
 
@@ -137,7 +147,8 @@ GameEngine::GameEngine(GameEngine& gameEngine) {
     if (fileCmdProcAdapter) {
         FileLineReader* flr = new FileLineReader(*(fileCmdProcAdapter->getFileLineReader()));
         commandProcessor = new FileCommandProcessorAdapter(this, flr);
-    } else {
+    }
+    else {
         commandProcessor = new CommandProcessor(this);
     }
 }
@@ -165,16 +176,16 @@ void GameEngine::setDefaultGameStates() {
     Transition* play = new Transition("replay", start);
     Transition* quit = new Transition("quit", nullptr);
 
-    start->addTransitions({loadMap});
-    mapLoaded->addTransitions({loadMap, validateMap});
-    mapValidated->addTransitions({addPlayer});
-    playersAdded->addTransitions({addPlayer, gamestart});
-    assignReinforcements->addTransitions({issueOrder});
-    issueOrders->addTransitions({issueOrder, issueOrdersEnd});
-    executeOrders->addTransitions({execOrder, winTrans, endExecOrders});
-    win->addTransitions({play, quit});
+    start->addTransitions({ loadMap });
+    mapLoaded->addTransitions({ loadMap, validateMap });
+    mapValidated->addTransitions({ addPlayer });
+    playersAdded->addTransitions({ addPlayer, gamestart });
+    assignReinforcements->addTransitions({ issueOrder });
+    issueOrders->addTransitions({ issueOrder, issueOrdersEnd });
+    executeOrders->addTransitions({ execOrder, winTrans, endExecOrders });
+    win->addTransitions({ play, quit });
 
-    states = {start, mapLoaded, mapValidated, playersAdded, assignReinforcements, issueOrders, executeOrders, win};
+    states = { start, mapLoaded, mapValidated, playersAdded, assignReinforcements, issueOrders, executeOrders, win };
     currentState = start;
 }
 
@@ -184,7 +195,7 @@ void GameEngine::selectMode() {
     do {
         cout << "Type -console or -file to specify how to read the commands." << endl;
         cin >> mode;
-    } while(mode != "-console" && mode != "-file");
+    } while (mode != "-console" && mode != "-file");
     this->mode = mode;
     initProcessor();
 }
@@ -209,19 +220,83 @@ void GameEngine::initProcessor() {
     }
 }
 
+void GameEngine::setPlayer(vector<Player*> player)
+{
+    players = player;
+}
+// getter and setter for numOfArmies
+int GameEngine::getNumOfPlayers() const {
+    return numOfPlayers;
+}
+
+void GameEngine::setNumOfPlayers(int num) {
+    numOfPlayers = num;
+}
+
+vector<Player*> GameEngine::getPlayers() {
+    return players;
+}
+
+void GameEngine::addPlayer(Player* player) {
+    players.push_back(player);
+}
+
+Deck* GameEngine::getGameDeck() {
+    return gameDeck;
+}
+
+void listFilesInDirectory() {
+    std::string directoryPath = "../Maps/"; 
+
+    if (filesystem::exists(directoryPath) && std::filesystem::is_directory(directoryPath)) {
+        cout << "List of map files in the directory:" << endl;
+        for (const auto& entry : filesystem::directory_iterator(directoryPath)) {
+            if (filesystem::is_regular_file(entry)) {
+                cout << entry.path().string() << endl;
+            }
+        }
+    }
+    else {
+        cerr << "Directory not found or is not a directory." << endl;
+    }
+}
+
+
+void GameEngine::startupPhase() {
+    listFilesInDirectory();
+
+    // Load a map
+    while (currentState->getName() != "maploaded") {
+        Command* loadMapCommand = commandProcessor -> getCommand();
+        commandProcessor->executeCommand(loadMapCommand);
+    }
+
+    // Load another map (optional) and validate the map
+    while (currentState->getName() != "mapvalidated") {
+        Command* validateMapcommand = commandProcessor->getCommand();
+        commandProcessor->executeCommand(validateMapcommand);
+    }
+    
+    // add 2-6 players after which gameStart command will be accepted
+    while (currentState->getName() != "assignreinforcement") {
+        Command* playerCommand = commandProcessor->getCommand();
+        commandProcessor->executeCommand(playerCommand);
+    }
+}
+
 // Function that indicates if the command is valid in the current state game.
 bool GameEngine::isCommandValid(string command) {
     vector<Transition*> transitions = currentState->getTransitions();
-    vector<Transition*>::iterator it = std::find_if(transitions.begin(), transitions.end(), 
-                                         [&command](Transition* cmd) { return cmd->getCommandName() == command; });
+    vector<Transition*>::iterator it = std::find_if(transitions.begin(), transitions.end(),
+        [&command](Transition* cmd) { return cmd->getCommandName() == command; });
     return it != transitions.end();
 }
 
 // Function that finds transition with given command name. If not found, it displays an error. Otherwise, calls function to perform the state transition.
 void GameEngine::findAndTransition(string name) {
     vector<Transition*> transitions = currentState->getTransitions();
-    vector<Transition*>::iterator it = std::find_if(transitions.begin(), transitions.end(), 
-                                         [&name](Transition* cmd) { return cmd->getCommandName() == name; });
+    vector<Transition*>::iterator it = std::find_if(transitions.begin(), transitions.end(),
+        [&name](Transition* cmd) { return cmd->getCommandName() == name; });
     if (it != transitions.end())
         transition(*it);
     else
@@ -233,7 +308,7 @@ void GameEngine::transition(Transition* transition) {
     currentState = transition->getNextState();
     std::cout << "Command `" << transition->getCommandName() << "` has been executed. ";
     if (currentState)
-        std::cout << "Current state is now " << *currentState  << "." << std::endl;
+        std::cout << "Current state is now " << *currentState << "." << std::endl;
     else
         std::cout << "The game cycle has been completed." << std::endl; 
     notify(*this);
@@ -251,7 +326,7 @@ GameEngine& GameEngine::operator=(const GameEngine& gameEngine) {
     states.clear();
 
     for (Transition* transition : transitions)
-            delete transition;
+        delete transition;
 
     this->states = gameEngine.states; // To simplify circular data dependency, reuse same states and transitions.
     currentState = gameEngine.currentState;
@@ -280,16 +355,233 @@ GameEngine::~GameEngine() {
     for (State* state : states) { // Deletes the `currentState` too.
         for (Transition* transition : state->getTransitions())
             transitions.insert(transition);
-        delete state;
+            delete state;
     }
 
     for (Transition* transition : transitions)
-            delete transition;
-        
+        delete transition;
+
     delete currentMap;
     delete commandProcessor;
 }
 
 string GameEngine::stringToLog() const {
     return "Game state changed to " + currentState->getName();
+}
+//addition for A2: main game loop
+void GameEngine::mainGameLoop() {
+    cout << "\n\nentering main game loop" << endl;
+    bool gameEnd = false;
+    while (!gameEnd) {
+        cout << "inside while loop" << endl;
+        //run game loop
+        reinforcementPhase();
+        issueOrdersPhase();
+        executeOrdersPhase();
+
+        gameEnd =  gameResultCheck();
+    }
+    cout << "Winner: " << (*players.at(0)) << endl;
+
+}
+
+bool GameEngine::gameResultCheck() {
+
+    cout << "\nVerifying current game result:" << endl;
+    //check if a player has no territories owned, then eliminate him
+
+    auto iterator = players.begin();
+    while (iterator != players.end()) {
+        //cout << "getting player data: " << players.at(0) << " " << players.at(1) << " " << players.at(2) << endl;
+        cout << "check player" << endl;
+        if ((*iterator)->getTerritories().size() < 1) {
+            iterator = players.erase(iterator);
+            continue;
+        }
+        ++iterator;
+    }
+
+    //check if a player owns all the territories
+    if (players.size() == 1) {
+        int numberTerritoriesOwned = players.at(0)->getTerritories().size();
+        int numberTerritories = 0;
+        for (int i = 0; i < currentMap->getContinents().size(); i++) {
+            cout << "territories in continent: " << currentMap->getContinents().at(i)->getTerritory().size() << endl;
+            numberTerritories += currentMap->getContinents().at(i)->getTerritory().size();
+        }
+
+        if (numberTerritoriesOwned == numberTerritories) {
+            return true;
+        }
+    }
+    cout << "Game still in progress, starting new turn." << endl;
+    return false;
+}
+
+void GameEngine::reinforcementPhase() {
+    cout << "\nEntering reinforcement phase." << endl;
+    //int reinforcement = 0;
+    auto iterator = players.begin();
+    
+    while (iterator != players.end()) {
+        cout << "\n-----------------debug line--------------------" << endl;
+        //number of territories owned by players
+        int territoryQuantity = 0; 
+        territoryQuantity = (*iterator)->getTerritories().size();
+        //reinforcement amount
+        reinforcement = floor(territoryQuantity/3);
+
+        int totalTerritories = 0;
+        //check if player owns all territories in a continent
+        for (int i = 0; i < currentMap->getContinents().size(); i++) {
+            //count territories own per continent
+            for (int j = 0; j < (*iterator)->getTerritories().size(); j++) {
+                if ((*iterator)->getTerritories().at(j)->GetContinentName() == currentMap->getContinents().at(i)->GetName()) {
+                    totalTerritories++;
+                }
+            }
+            if (totalTerritories == currentMap->getContinents().at(i)->getTerritory().size()) {
+                reinforcement += currentMap->getContinents().at(i)->getBonusValue();
+            }
+        }
+
+        if (reinforcement < 3) {
+            reinforcement = 3;
+        }
+        ++iterator;
+    }
+}
+
+void GameEngine::issueOrdersPhase() {
+    //vector value for round-robin
+    vector<int> turn;
+    for (int i = 0; i < players.size(); i++) {
+        turn.push_back(i);
+        //setting reinforcement pool
+        players.at(i)->setReinforcementPool(reinforcement);
+    }
+
+    //round-robin loop
+    bool trueFalse = true;
+    int iteration = 0;
+    while (!turn.empty()) {
+        string str, availableOrder;
+        cout << "Current player issuing order: " << players.at(turn.at(iteration))->getName() << endl;
+        //deploying reinforcements
+        while (players.at(turn.at(iteration))->getReinforcementPool() != 0) {
+            players.at(turn.at(iteration))->issueOrder(getOrderType("DEPLOY"));
+        }
+
+        //issue order for cards. 1 order per cycle
+        for (int i = 0; i < players.at(turn.at(iteration))->getHandSize(); i++) {
+            availableOrder += "[" + players.at(turn.at(iteration))->getCard(i) + "]\t";
+        }
+        cout << "Available Order: " << availableOrder << endl;
+        while (trueFalse) {
+            cin >> str;
+            //check if player has card
+            for (int i = 0; i < players.at(turn.at(iteration))->getHandSize(); i++) {
+                if (players.at(turn.at(iteration))->getCard(i) == str) {
+                    players.at(turn.at(iteration))->issueOrder(getOrderType(str));
+                    trueFalse = false;
+                    break;
+                }
+                else  if (i == players.at(turn.at(iteration))->getHandSize()-1) {
+                    cout << "Invalid order. Please ender a valid order:" << endl;
+                }
+            }
+        }
+        
+        trueFalse = true;
+        //end turn or not
+        while (trueFalse) {
+            cout << "Will you end your turn? [y/n]" << endl;
+            cin >> str;
+            char first = str.at(0);
+            //remove player from roundrobin
+            if (first == 'y') {
+                turn.erase(turn.begin() + iteration);
+                trueFalse = false;
+                break;
+            }
+            else if (first == 'n') {
+                trueFalse = false;
+                break;
+            }
+            else {
+                cout << "Cannot understand choice. please enter again [y/n]: " << endl;
+            }
+        }
+
+        //return to first iteration
+        trueFalse = true;
+        if (iteration >= turn.size()-1) {
+            iteration = 0;
+        }
+        else {
+            iteration++;
+        }
+    }
+}
+
+void GameEngine::executeOrdersPhase() {
+    //vector value for round-robin
+    vector<int> turn;
+    for (int i = 0; i < players.size(); i++) {
+        turn.push_back(i);
+    }
+
+    //round-robin loop
+    int iteration = 0;
+    bool deploy = true;
+    while (!turn.empty()) {
+        while (deploy) {
+            for (int i = 0; i < players.at(turn.at(iteration))->getHandSize(); i++) {
+                if (players.at(turn.at(iteration))->getCard(i) == "DEPLOY") {
+                    players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
+                }
+            }
+        }
+
+
+
+
+        string value;
+        cout << "Will you end your turn?" << endl;
+        cin >> value;
+        char first = value.at(0);
+        //remove player from roundrobin
+        if (first == 'y') {
+            turn.erase(turn.begin() + iteration);
+        }
+
+        //return to first iteration
+        if (iteration >= turn.size()-1) {
+            iteration = 0;
+        }
+        else {
+            iteration++;
+        }
+    }
+}
+
+OrderType getOrderType(string str) {
+    if (str.compare("deploy")) {
+        return OrderType::Deploy;
+    }
+    else if (str.compare("advance")) {
+        return OrderType::Advance;
+    }
+    else if (str.compare("bomb")) {
+        return OrderType::Bomb;
+    }
+    else if (str.compare("blockade")) {
+        return OrderType::Blockade;
+    }
+    else if (str.compare("airlift")) {
+        return OrderType::Airlift;
+    }
+    else if (str.compare("negotiate")) {
+        return OrderType::Negotiate;
+    }
 }

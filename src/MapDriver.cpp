@@ -1,4 +1,4 @@
-#include "MapDriver.h"
+#include "Map.h"
 #include <iostream>
 
 using namespace std;
@@ -37,3 +37,7 @@ void testLoadMaps() {
         }
     }
 }
+
+
+//test methods
+void testLoadMaps();

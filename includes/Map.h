@@ -1,6 +1,8 @@
 #ifndef MAP_H
 #define MAP_H
 
+#include "Player.h"
+
 #include <vector>
 #include <string>
 #include <map>
@@ -10,15 +12,21 @@
 #include <stack>
 
 using namespace std; 
+class Player;
+class Territory;
 
 // Continent Class
 class Continent {
 private:
     string name;
-
+    vector<Territory*> territoryList;
+    int bonusValue;
 public:
     Continent(const string& name);
     const string& GetName() const;
+    void addTerritory(Territory* t);
+    vector<Territory*> getTerritory();
+    int getBonusValue();
 };
 
 // Territory Class
@@ -28,7 +36,9 @@ private:
     int nbArmies;
     string continentName;
     vector<string> adjacentTerritories;
-    int ownerID; 
+    Player* owner;
+    Player* getOwner() const;
+    int ownerID;
 
 public:
     Territory(const string& name, const string& continentName);
@@ -39,6 +49,7 @@ public:
     const vector<string>& GetAdjacentTerritories() const;
     const int getNbArmies() const;
     void setNbArmies(int nbArmies);
+    void setOwner(Player* owner);
 
     //new method added for a2-part4
     bool isAdjacent(Territory* territory);
@@ -58,6 +69,7 @@ class Map {
 public:
     Map(const vector<Continent*> continents, const vector<Territory*> territories);
     bool validate() const;
+    vector<Territory*> getTerritories();
 
     vector<Continent*> continents;
     vector<Territory*> territories;
@@ -71,6 +83,7 @@ public:
     size_t getTerritoryIndex(const string& territoryName) const;
     size_t getContinentIndex(const string& continentName) const;
     bool territoriesBelongToOneContinent() const;
+    vector<Continent*> getContinents();
 
     // Copy constructor
     Map(const Map& other);
@@ -104,3 +117,6 @@ public:
 };
 
 #endif // MAP_H
+
+//test methods
+void testLoadMaps();
