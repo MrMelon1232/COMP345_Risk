@@ -33,12 +33,6 @@ std::ostream& operator<<(std::ostream& output, const Command& command) {
     return output;
 }
 
-// Save effect function
-void Command::saveEffect(string effect) {
-    this->effect = effect; 
-    notify(*this);
-}
-
 // Command's destructor.
 Command::~Command() {}
 
@@ -89,7 +83,6 @@ Command* CommandProcessor::readCommand() {
 // Saves the command into the CommandProcessor's commands list.
 void CommandProcessor::saveCommand(Command* command) {
     commands.push_back(command);
-    notify(*command);
 }
 
 // Sets the effect according to the command type. If the command is invalid, it sets an invalid effect.
@@ -97,31 +90,27 @@ void CommandProcessor::validate(Command* command) {
     string cmdName = command->getName();
     if (!gameEngine->isCommandValid(cmdName)) {
         command->saveEffect("Command `" + command->getName() + "` is invalid in state: `" + gameEngine->getCurrentState()->getName() + "`.");
-        notify(*this);
         return;
     }
 
     if (cmdName == "loadmap") {
         command->saveEffect("Loading map.");
-        notify(*this);
-    } else if (cmdName == "validatemap") {
+    }
+    else if (cmdName == "validatemap") {
         command->saveEffect("Validating map.");
-        notify(*this);
-    } else if (cmdName == "addplayer") {
+    }
+    else if (cmdName == "addplayer") {
         command->saveEffect("Adding player.");
-        notify(*this);
-    } else if (cmdName == "gamestart") {
+    }
+    else if (cmdName == "gamestart") {
         command->saveEffect("Ending startup phase. Starting play phase.");
-        notify(*this);
-    } else if (cmdName == "replay") {
+    }
+    else if (cmdName == "replay") {
         command->saveEffect("Restarting the game.");
-        notify(*this);
     } else if (cmdName == "quit") {
-        command->saveEffect("Quitting the game");
-        notify(*this);
+        command->saveEffect("Quitting the game.");
     } else { // if command behavior undefined, simply transition state.
         command->saveEffect("Transitioning to another state.");
-        notify(*this);
     }
 }
 
@@ -165,7 +154,6 @@ void CommandProcessor::loadMap(Command* command) {
     }
     catch (const runtime_error& error) {
         command->saveEffect("Map file not found.");
-        notify(*this);
         cout << "Could not load map file " + command->getArg() + ". State is still `" + gameEngine->getCurrentState()->getName() + "`." << endl;
     }
 }
@@ -367,13 +355,4 @@ std::ostream& operator<<(std::ostream& output, const FileCommandProcessorAdapter
 // FileCommandProcessorAdapter's destructor.
 FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
     delete flr;
-}
-
-// Part 2
-string CommandProcessor::stringToLog() const {
-    return "";
-}
-
-string Command::stringToLog() const {
-    return "Command: " + cmdName + ", Effect: " + effect;
 }
