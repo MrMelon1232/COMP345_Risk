@@ -5,7 +5,6 @@
 #include "Cards.h"
 #include <iostream>
 #include <vector>
-#include "LoggingObserver.h"
 #include <Player.h>
 
 using std::vector;
@@ -48,7 +47,7 @@ class Transition {
 class CommandProcessor; // forward declaration
 
 // Manages the game setup and execution.
-class GameEngine: : public Subject, public ILoggable {
+class GameEngine {
 public:
     GameEngine();
     GameEngine(string mode);
@@ -85,9 +84,6 @@ public:
         void executeOrdersPhase();
 
         ~GameEngine();
-
-        //Part 2 Logging
-        string stringToLog() const override;
     private:
         void setDefaultGameStates();
         void selectMode();

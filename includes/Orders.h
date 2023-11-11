@@ -33,7 +33,6 @@ class Deploy : public Order
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Deploy& operator=(const Deploy& other);
-        string stringToLog() const override;        
     
     private:
         int armyUnits; 
@@ -54,7 +53,6 @@ class Advance : public Order
         ostream& displayOrder(ostream& myOrder) const override;
         Advance& operator=(const Advance& other);
         void simulateAttack(); 
-        string stringToLog() const override;
     
     private:
         int armyUnits;
@@ -75,7 +73,6 @@ class Bomb : public Order
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Bomb& operator=(const Bomb& other);
-        string stringToLog() const override;
     
     private:
         Player* player;
@@ -94,7 +91,6 @@ class Blockade : public Order
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Blockade& operator=(const Blockade& other);
-        string stringToLog() const override;
     
     private:
         Player* player;
@@ -113,7 +109,6 @@ class Airlift : public Order
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Airlift& operator=(const Airlift& other);
-        string stringToLog() const override;
     
     private:
         Player* player;
@@ -134,7 +129,6 @@ class Negotiate : public Order
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Negotiate& operator=(const Negotiate& other);
-        string stringToLog() const override;
     
     private:
         Player* player;
@@ -167,8 +161,6 @@ class OrdersList
         OrdersList& operator=(const OrdersList& other);
         ~OrdersList(); 
         Order* getOrder(int i);
-        string stringToLog() const override;
-                
     private: 
         std::vector<Order*> listOfOrders;
         friend ostream& operator<<(ostream& myOrderList, OrdersList& Olist);
