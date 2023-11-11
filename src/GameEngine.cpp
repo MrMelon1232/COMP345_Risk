@@ -310,7 +310,8 @@ void GameEngine::transition(Transition* transition) {
     if (currentState)
         std::cout << "Current state is now " << *currentState << "." << std::endl;
     else
-        std::cout << "The game cycle has been completed." << std::endl;
+        std::cout << "The game cycle has been completed." << std::endl; 
+    notify(*this);
 }
 
 // Game Engine's assignment operator overload.
@@ -364,6 +365,9 @@ GameEngine::~GameEngine() {
     delete commandProcessor;
 }
 
+string GameEngine::stringToLog() const {
+    return "Game state changed to " + currentState->getName();
+}
 //addition for A2: main game loop
 void GameEngine::mainGameLoop() {
     cout << "\n\nentering main game loop" << endl;
