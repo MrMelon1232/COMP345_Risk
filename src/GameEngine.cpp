@@ -460,8 +460,15 @@ void GameEngine::executeOrdersPhase() {
 
     //round-robin loop
     int iteration = 0;
+    bool deploy = true;
     while (!turn.empty()) {
-
+        while (deploy) {
+            for (int i = 0; i < playersList.at(turn.at(iteration))->getHandSize(); i++) {
+                if (playersList.at(turn.at(iteration))->getCard(i) == "DEPLOY") {
+                    playersList.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
+                }
+            }
+        }
 
 
 

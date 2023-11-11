@@ -92,6 +92,8 @@ class Player
         int getHandSize();
 
         string getCard(int i);
+
+        OrdersList* getOrdersList();
 };
 
 

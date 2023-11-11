@@ -592,6 +592,11 @@ OrdersList::~OrdersList()
         delete listOfOrders[o];
 }
 
+Order* OrdersList::getOrder(int i)
+{
+    return listOfOrders.at(i);
+}
+
 
     
          

@@ -234,6 +234,11 @@ string Player::getCard(int i)
     return hand->currentHand.at(i)->card;
 }
 
+OrdersList* Player::getOrdersList()
+{
+    return orders;
+}
+
 
 //test methods
 void testPlayers();

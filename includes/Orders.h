@@ -160,7 +160,7 @@ class OrdersList
         ostream& displayOrderList(ostream& myOrderList);
         OrdersList& operator=(const OrdersList& other);
         ~OrdersList(); 
-
+        Order* getOrder(int i);
     private: 
         std::vector<Order*> listOfOrders;
         friend ostream& operator<<(ostream& myOrderList, OrdersList& Olist);
