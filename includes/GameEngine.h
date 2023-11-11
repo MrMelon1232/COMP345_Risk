@@ -3,11 +3,13 @@
 #include "CommandProcessing.h"
 #include <iostream>
 #include <vector>
+#include <Player.h>
 
 using std::vector;
 using std::string;
 
 class Transition;
+class Player;
 
 // Represents a state of the game with its valid commands
 class State {
@@ -37,7 +39,8 @@ class Transition {
         ~Transition();
     private:
         string commandName;
-        State* nextState;
+        State* nextState; 
+        
 };
 
 class CommandProcessor; // forward declaration
@@ -56,6 +59,7 @@ class GameEngine {
         State* getCurrentState() { return currentState; }
         Map* getCurrentMap() { return currentMap; }
         void setCurrentMap(Map* map) { this->currentMap = map; }
+        void setPlayer(vector<Player*> player);
         CommandProcessor* getCommandProcessor() { return commandProcessor; }
         void setCommandProcessor(CommandProcessor* commandProcessor) {this->commandProcessor = commandProcessor; }
 
@@ -65,6 +69,14 @@ class GameEngine {
         
         GameEngine& operator=(const GameEngine& gameEngine);
         friend std::ostream& operator<<(std::ostream& output, const GameEngine& gameEngine);
+
+
+        //A2
+        void mainGameLoop();
+        bool gameResultCheck();
+        void reinforcementPhase();
+        void issueOrdersPhase();
+        void executeOrdersPhase();
 
         ~GameEngine();
     private:
@@ -77,4 +89,10 @@ class GameEngine {
         Map* currentMap;
         CommandProcessor* commandProcessor;
         string mode;
+        vector<Player*> playersList;
+        int reinforcement;
 };
+
+//test methods
+void testGameStates();
+void testMainGameLoop();

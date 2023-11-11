@@ -1,12 +1,13 @@
-#include "PlayerDriver.h"
-#include "CardsDriver.h"
-#include "OrdersDriver.h"
-#include "GameEngineDriver.h"
-#include "MapDriver.h"
-#include "CommandProcessingDriver.h"
 
-int main() {
+#include "CommandProcessing.h"
+#include "Map.h"
+#include "Player.h"
+#include "Orders.h"
+#include "Cards.h"
+#include "GameEngine.h"
 
+
+void testA1() {
     // Test function for map
     testLoadMaps();
 
@@ -22,7 +23,21 @@ int main() {
 
     // Test function for game engine
     testGameStates();
+}
 
+void testA2() {
     // Test function for command processor
-    testCommandProcessor();
+    //testCommandProcessor();
+
+
+    //Test function for main game loop
+    testMainGameLoop();
+}
+
+int main() {
+    //Assignment 1
+    //testA1();
+
+    //Assignment 2
+    testA2();
 }

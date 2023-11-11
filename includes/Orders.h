@@ -165,7 +165,5 @@ class OrdersList
         friend ostream& operator<<(ostream& myOrderList, OrdersList& Olist);
 }; 
 
-
-
-
-
+//test methods
+void testOrdersList();

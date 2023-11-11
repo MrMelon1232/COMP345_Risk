@@ -3,6 +3,9 @@
 #define PLAYER_H
 
 // Includes
+#include "Orders.h"
+#include "Cards.h"
+#include "Map.h"
 #include <vector>
 using namespace std;
 #include <iostream> 
@@ -20,16 +23,16 @@ class Player
 {
     // Players' possessions
     private:
+        string name;
 
         // List of territories owned by the player
-        std::vector<Territory*> territoriesOwned;
-
+        vector<Territory*> territoriesOwned;
+        
         // List of orders owned by the player
         OrdersList* orders;
 
         // Hand of cards owned by the player
         Hand* hand;
-
         //NEW: Each player will have a unique ID 
         static int nextID;
         int playerID;
@@ -39,8 +42,7 @@ class Player
 
         //NEW: each player will have a vector of integers for players which they have an alliance with
         std::vector<int> myAlliesForTheTurn;
-
-
+  
     // Player public methods
     public:
 
@@ -54,13 +56,13 @@ class Player
         Player& operator=(const Player& other);
 
         // Stream insertion operator
-        friend std::ostream& operator<<(std::ostream& os, const Player& player);
+        friend ostream& operator<<(ostream& os, const Player& player);
 
         // Returns a list of territories that are to be defended
-        std::vector<Territory*> toDefend();
+        vector<Territory*> toDefend();
         
         // Returns a list of territories that are to be attacked
-        std::vector<Territory*> toAttack();
+        vector<Territory*> toAttack();
 
         // Creates order object and adds it to the list of orders
         void issueOrder(OrderType type);
@@ -70,7 +72,6 @@ class Player
 
         // Destructor to clean up resources
         ~Player();
-
         //NEW methods for a2-part4
         int getPlayerID();
         int getReinforcementPool();
@@ -80,8 +81,21 @@ class Player
         void addAlly(int allyID);
         void clearAllies();
         bool isAllyPresent(int allyID);
+  
+        //A2
+        string getName();
+
+        void setName(string n);
+        
+        vector<Territory*> getTerritories();
+
+        int getReinforcement();
+
+        void setReinforcement(int army);
 };
 
 
 
+//test methods
+void testPlayers();
 #endif
