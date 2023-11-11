@@ -109,7 +109,8 @@ vector<Territory*> Player::toAttack() {
 // Function that creates an order object and adds it to the list of orders
 void Player::issueOrder(OrderType type) {
     Order* newOrder = nullptr;
-
+    cout << "issueOrder called" << endl;
+    /*
     // Check which type of order it is
     switch (type) {
         case OrderType::Deploy:
@@ -133,7 +134,7 @@ void Player::issueOrder(OrderType type) {
         default:
             break;
         }
-    orders->add(newOrder);
+    orders->add(newOrder);*/
 }
 
 // Function to add territories to the player's possession
@@ -222,6 +223,17 @@ vector<Territory*> Player::getTerritories()
 {
     return territoriesOwned;
 }
+
+int Player::getHandSize()
+{
+    return hand->handSize();
+}
+
+string Player::getCard(int i)
+{
+    return hand->currentHand.at(i)->card;
+}
+
 
 //test methods
 void testPlayers();

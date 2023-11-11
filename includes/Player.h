@@ -88,8 +88,11 @@ class Player
         void setName(string n);
         
         vector<Territory*> getTerritories();
-};
 
+        int getHandSize();
+
+        string getCard(int i);
+};
 
 
 //test methods

@@ -93,6 +93,8 @@ class GameEngine {
         int reinforcement;
 };
 
+OrderType getOrderType(string str);
+
 //test methods
 void testGameStates();
 void testMainGameLoop();

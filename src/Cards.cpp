@@ -156,6 +156,11 @@ void Hand::removeHand(int i){
     currentHand.erase(currentHand.begin() + i);
 }
 
+int Hand::handSize()
+{
+    return currentHand.size();
+}
+
 ostream& operator << (ostream& os, const Hand& d) {
     string str;
     for (int i = 0; i < d.currentHand.size(); i++) {

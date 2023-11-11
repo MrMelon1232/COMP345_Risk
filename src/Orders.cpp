@@ -425,7 +425,6 @@ ostream& Airlift::displayOrder(ostream &myOrder) const
 //Function Definition for Negotiate
 Negotiate::Negotiate()
 {
-
 }
 
 Negotiate::Negotiate(Player* player,Player* enemy)

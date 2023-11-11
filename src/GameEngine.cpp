@@ -389,20 +389,57 @@ void GameEngine::issueOrdersPhase() {
     }
 
     //round-robin loop
+    bool trueFalse = true;
     int iteration = 0;
-    int currentReinforcement;
     while (!turn.empty()) {
-        //issue order
-        playersList.at(turn.at(iteration))->issueOrder((playersList.at(turn.at(iteration))).);
-
-
-        //remove player from roundrobin
-        if (true) {
-            ;
+        cout << "Current player issuing order: " << playersList.at(turn.at(iteration))->getName() << endl;
+        string order, availableOrder;
+        
+        for (int i = 0; i < playersList.at(turn.at(iteration))->getHandSize(); i++) {
+            availableOrder += "[" + playersList.at(turn.at(iteration))->getCard(i) + "]\t";
+        }
+        cout << "Available Order: " << availableOrder << endl;
+        while (trueFalse) {
+            cin >> order;
+            //check if player has card
+            cout << "debug lien" << endl;
+            for (int i = 0; i < playersList.at(turn.at(iteration))->getHandSize(); i++) {
+                if (playersList.at(turn.at(iteration))->getCard(i).compare(order)) {
+                    playersList.at(turn.at(iteration))->issueOrder(getOrderType(order));
+                    trueFalse = false;
+                    break;
+                }
+                else {
+                    //wrong location but works for now
+                    cout << "Invalid order. Please ender a valid order:" << endl;
+                }
+            }
+        }
+        
+        trueFalse = true;
+        string value;
+        while (trueFalse) {
+            cout << "Will you end your turn? [y/n]" << endl;
+            cin >> value;
+            char first = value.at(0);
+            //remove player from roundrobin
+            if (first == 'y') {
+                turn.erase(turn.begin() + iteration);
+                trueFalse = false;
+                break;
+            }
+            else if (first == 'n') {
+                trueFalse = false;
+                break;
+            }
+            else {
+                cout << "Cannot understand choice. please enter again [y/n]: " << endl;
+            }
         }
 
         //return to first iteration
-        if (iteration >= turn.size()) {
+        trueFalse = true;
+        if (iteration >= turn.size()-1) {
             iteration = 0;
         }
         else {
@@ -423,17 +460,45 @@ void GameEngine::executeOrdersPhase() {
     while (!turn.empty()) {
 
 
+
+
+
+        string value;
+        cout << "Will you end your turn?" << endl;
+        cin >> value;
+        char first = value.at(0);
         //remove player from roundrobin
-        if (true) {
-            ;
+        if (first == 'y') {
+            turn.erase(turn.begin() + iteration);
         }
 
         //return to first iteration
-        if (iteration >= turn.size()) {
+        if (iteration >= turn.size()-1) {
             iteration = 0;
         }
         else {
             iteration++;
         }
+    }
+}
+
+OrderType getOrderType(string str) {
+    if (str.compare("deploy")) {
+        return OrderType::Deploy;
+    }
+    else if (str.compare("advance")) {
+        return OrderType::Advance;
+    }
+    else if (str.compare("bomb")) {
+        return OrderType::Bomb;
+    }
+    else if (str.compare("blockade")) {
+        return OrderType::Blockade;
+    }
+    else if (str.compare("airlift")) {
+        return OrderType::Airlift;
+    }
+    else if (str.compare("negotiate")) {
+        return OrderType::Negotiate;
     }
 }
