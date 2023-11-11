@@ -1,6 +1,7 @@
 #pragma once
 #include "GameEngine.h"
 #include "Map.h"
+#include "Player.h"
 #include <iostream>
 #include <vector>
 
@@ -98,6 +99,3 @@ class FileCommandProcessorAdapter : public CommandProcessor {
     private:
         FileLineReader* flr;
 };
-
-//test methods
-void testCommandProcessor();

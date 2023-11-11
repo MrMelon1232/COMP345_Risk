@@ -3,10 +3,12 @@
 #include <set>
 #include <cmath>
 #include "Map.h"
+#include <random>
+#include <filesystem>
 
 // Constructor to initialize a state with a name.
-State::State(string name) { 
-    this->name = name; 
+State::State(string name) {
+    this->name = name;
 };
 
 // Copy constructor for State class.
@@ -89,8 +91,8 @@ Transition& Transition::operator=(const Transition& transition) {
 
 // Ouput stream operator overload to return Transition's command name and next state.
 std::ostream& operator<<(std::ostream& output, const Transition& transition) {
-    output << "Command name: " << transition.commandName << 
-            ", Next state: " << transition.nextState->getName();
+    output << "Command name: " << transition.commandName <<
+        ", Next state: " << transition.nextState->getName();
     return output;
 }
 
@@ -139,7 +141,8 @@ GameEngine::GameEngine(GameEngine& gameEngine) {
     if (fileCmdProcAdapter) {
         FileLineReader* flr = new FileLineReader(*(fileCmdProcAdapter->getFileLineReader()));
         commandProcessor = new FileCommandProcessorAdapter(this, flr);
-    } else {
+    }
+    else {
         commandProcessor = new CommandProcessor(this);
     }
 }
@@ -167,16 +170,16 @@ void GameEngine::setDefaultGameStates() {
     Transition* play = new Transition("replay", start);
     Transition* quit = new Transition("quit", nullptr);
 
-    start->addTransitions({loadMap});
-    mapLoaded->addTransitions({loadMap, validateMap});
-    mapValidated->addTransitions({addPlayer});
-    playersAdded->addTransitions({addPlayer, gamestart});
-    assignReinforcements->addTransitions({issueOrder});
-    issueOrders->addTransitions({issueOrder, issueOrdersEnd});
-    executeOrders->addTransitions({execOrder, winTrans, endExecOrders});
-    win->addTransitions({play, quit});
+    start->addTransitions({ loadMap });
+    mapLoaded->addTransitions({ loadMap, validateMap });
+    mapValidated->addTransitions({ addPlayer });
+    playersAdded->addTransitions({ addPlayer, gamestart });
+    assignReinforcements->addTransitions({ issueOrder });
+    issueOrders->addTransitions({ issueOrder, issueOrdersEnd });
+    executeOrders->addTransitions({ execOrder, winTrans, endExecOrders });
+    win->addTransitions({ play, quit });
 
-    states = {start, mapLoaded, mapValidated, playersAdded, assignReinforcements, issueOrders, executeOrders, win};
+    states = { start, mapLoaded, mapValidated, playersAdded, assignReinforcements, issueOrders, executeOrders, win };
     currentState = start;
 }
 
@@ -186,7 +189,7 @@ void GameEngine::selectMode() {
     do {
         cout << "Type -console or -file to specify how to read the commands." << endl;
         cin >> mode;
-    } while(mode != "-console" && mode != "-file");
+    } while (mode != "-console" && mode != "-file");
     this->mode = mode;
     initProcessor();
 }
@@ -215,20 +218,79 @@ void GameEngine::setPlayer(vector<Player*> player)
 {
     playersList = player;
 }
+// getter and setter for numOfArmies
+int GameEngine::getNumOfPlayers() const {
+    return numOfPlayers;
+}
+
+void GameEngine::setNumOfPlayers(int num) {
+    numOfPlayers = num;
+}
+
+vector<Player*> GameEngine::getPlayers() {
+    return players;
+}
+
+void GameEngine::addPlayer(Player* player) {
+    players.push_back(player);
+}
+
+Deck* GameEngine::getGameDeck() {
+    return gameDeck;
+}
+
+void listFilesInDirectory() {
+    std::string directoryPath = "../Maps/"; 
+
+    if (filesystem::exists(directoryPath) && std::filesystem::is_directory(directoryPath)) {
+        cout << "List of map files in the directory:" << endl;
+        for (const auto& entry : filesystem::directory_iterator(directoryPath)) {
+            if (filesystem::is_regular_file(entry)) {
+                cout << entry.path().string() << endl;
+            }
+        }
+    }
+    else {
+        cerr << "Directory not found or is not a directory." << endl;
+    }
+}
+
+
+void GameEngine::startupPhase() {
+    listFilesInDirectory();
+
+    // Load a map
+    while (currentState->getName() != "maploaded") {
+        Command* loadMapCommand = commandProcessor -> getCommand();
+        commandProcessor->executeCommand(loadMapCommand);
+    }
+
+    // Load another map (optional) and validate the map
+    while (currentState->getName() != "mapvalidated") {
+        Command* validateMapcommand = commandProcessor->getCommand();
+        commandProcessor->executeCommand(validateMapcommand);
+    }
+    
+    // add 2-6 players after which gameStart command will be accepted
+    while (currentState->getName() != "assignreinforcement") {
+        Command* playerCommand = commandProcessor->getCommand();
+        commandProcessor->executeCommand(playerCommand);
+    }
+}
 
 // Function that indicates if the command is valid in the current state game.
 bool GameEngine::isCommandValid(string command) {
     vector<Transition*> transitions = currentState->getTransitions();
-    vector<Transition*>::iterator it = std::find_if(transitions.begin(), transitions.end(), 
-                                         [&command](Transition* cmd) { return cmd->getCommandName() == command; });
+    vector<Transition*>::iterator it = std::find_if(transitions.begin(), transitions.end(),
+        [&command](Transition* cmd) { return cmd->getCommandName() == command; });
     return it != transitions.end();
 }
 
 // Function that finds transition with given command name. If not found, it displays an error. Otherwise, calls function to perform the state transition.
 void GameEngine::findAndTransition(string name) {
     vector<Transition*> transitions = currentState->getTransitions();
-    vector<Transition*>::iterator it = std::find_if(transitions.begin(), transitions.end(), 
-                                         [&name](Transition* cmd) { return cmd->getCommandName() == name; });
+    vector<Transition*>::iterator it = std::find_if(transitions.begin(), transitions.end(),
+        [&name](Transition* cmd) { return cmd->getCommandName() == name; });
     if (it != transitions.end())
         transition(*it);
     else
@@ -240,9 +302,9 @@ void GameEngine::transition(Transition* transition) {
     currentState = transition->getNextState();
     std::cout << "Command `" << transition->getCommandName() << "` has been executed. ";
     if (currentState)
-        std::cout << "Current state is now " << *currentState  << "." << std::endl;
+        std::cout << "Current state is now " << *currentState << "." << std::endl;
     else
-        std::cout << "The game cycle has been completed." << std::endl; 
+        std::cout << "The game cycle has been completed." << std::endl;
 }
 
 // Game Engine's assignment operator overload.
@@ -257,7 +319,7 @@ GameEngine& GameEngine::operator=(const GameEngine& gameEngine) {
     states.clear();
 
     for (Transition* transition : transitions)
-            delete transition;
+        delete transition;
 
     this->states = gameEngine.states; // To simplify circular data dependency, reuse same states and transitions.
     currentState = gameEngine.currentState;
@@ -295,6 +357,7 @@ GameEngine::~GameEngine() {
     delete currentMap;
     delete commandProcessor;
 }
+
 //addition for A2: main game loop
 void GameEngine::mainGameLoop() {
     cout << "\n\nentering main game loop" << endl;
