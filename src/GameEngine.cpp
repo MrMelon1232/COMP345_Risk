@@ -227,7 +227,7 @@ void GameEngine::setNumOfPlayers(int num) {
     numOfPlayers = num;
 }
 
-vector<Player*>& GameEngine::getPlayers() {
+vector<Player*> GameEngine::getPlayers() {
     return players;
 }
 
@@ -236,19 +236,24 @@ void GameEngine::addPlayer(Player* player) {
     players.push_back(player);
 }
 
+Deck* GameEngine::getGameDeck() {
+    return gameDeck;
+}
+
+
 void listFilesInDirectory() {
     std::string directoryPath = "Maps"; 
 
-    if (std::filesystem::exists(directoryPath) && std::filesystem::is_directory(directoryPath)) {
-        std::cout << "List of map files in the directory:" << std::endl;
-        for (const auto& entry : std::filesystem::directory_iterator(directoryPath)) {
-            if (std::filesystem::is_regular_file(entry)) {
-                std::cout << entry.path().filename() << std::endl;
+    if (filesystem::exists(directoryPath) && std::filesystem::is_directory(directoryPath)) {
+        cout << "List of map files in the directory:" << endl;
+        for (const auto& entry : filesystem::directory_iterator(directoryPath)) {
+            if (filesystem::is_regular_file(entry)) {
+                cout << entry.path().filename() << endl;
             }
         }
     }
     else {
-        std::cerr << "Directory not found or is not a directory." << std::endl;
+        cerr << "Directory not found or is not a directory." << endl;
     }
 }
 
@@ -257,38 +262,23 @@ void GameEngine::startupPhase() {
 
     listFilesInDirectory();
 
-    CommandProcessor consoleCommandProcessor(this);
 
     // Load a map
     while (currentState->getName() != "maploaded") {
-        Command* loadMapCommand = consoleCommandProcessor.getCommand();
+        Command* loadMapCommand = commandProcessor -> getCommand();
         commandProcessor->executeCommand(loadMapCommand);
     }
 
     // Load another map (optional) and validate the map
     while (currentState->getName() != "mapvalidated") {
-        Command* validateMapcommand = consoleCommandProcessor.getCommand();
+        Command* validateMapcommand = commandProcessor->getCommand();
         commandProcessor->executeCommand(validateMapcommand);
     }
-
-    // add players
-    int numPlayers;
-    do {
-        cout << "Enter the number of players (2-6): ";
-        cin >> numPlayers;
-        setNumOfPlayers(numPlayers);
-    } while (numPlayers < 2 || numPlayers > 6);
-
-    for (int i = 1; i <= numPlayers; i++) {
-        Command* addPlayerCommand = consoleCommandProcessor.getCommand();
-        commandProcessor -> executeCommand(addPlayerCommand);
-    }
-
-
-    // gamestart
+    
+    // add 2-6 players after which gameStart command will be accepted
     while (currentState->getName() != "assignreinforcement") {
-        Command* gameStartcommand = consoleCommandProcessor.getCommand();
-        commandProcessor->executeCommand(gameStartcommand);
+        Command* playerCommand = commandProcessor->getCommand();
+        commandProcessor->executeCommand(playerCommand);
     }
 
 
