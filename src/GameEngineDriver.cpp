@@ -13,3 +13,11 @@ void testGameStates() {
 
     delete gameEngine;
 }
+
+void testStartupPhase() {
+    GameEngine gameEngine;
+
+    // Call the startup phase
+    std::cout << "Testing startup phase..." << std::endl;
+    gameEngine.startupPhase();
+}

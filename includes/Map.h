@@ -1,6 +1,8 @@
 #ifndef MAP_H
 #define MAP_H
 
+#include "Player.h"
+
 #include <vector>
 #include <string>
 #include <map>
@@ -28,7 +30,9 @@ private:
     int nbArmies;
     string continentName;
     vector<string> adjacentTerritories;
-    int ownerID; 
+    Player* owner;
+    Player* getOwner() const;
+    int ownerID;
 
 public:
     Territory(const string& name, const string& continentName);
@@ -39,6 +43,7 @@ public:
     const vector<string>& GetAdjacentTerritories() const;
     const int getNbArmies() const;
     void setNbArmies(int nbArmies);
+    void setOwner(Player* owner);
 
     //new method added for a2-part4
     bool isAdjacent(Territory* territory);
@@ -58,6 +63,7 @@ class Map {
 public:
     Map(const vector<Continent*> continents, const vector<Territory*> territories);
     bool validate() const;
+    vector<Territory*> getTerritories();
 
     vector<Continent*> continents;
     vector<Territory*> territories;

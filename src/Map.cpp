@@ -87,6 +87,15 @@ void Territory::setNbArmies(int nbArmies) {
     this->nbArmies = nbArmies;
 }
 
+// Implement the getOwner and setOwner functions
+Player* Territory::getOwner() const {
+    return owner;
+}
+
+void Territory::setOwner(Player* newOwner) {
+    owner = newOwner;
+}
+
 //NEW: accessor method + mutator method for attribute ownerID
 
 //returns the ownerID of the territory
@@ -140,6 +149,10 @@ Map :: Map (const Map& other) {
 
 Map &Map::operator=(const Map &other){
     return *this;
+}
+
+vector<Territory*> Map::getTerritories() {
+    return territories;
 }
 
 // Stream insertion operator
@@ -467,5 +480,5 @@ Map* MapLoader::LoadMap(const string& mapFileName) {
 
     // Create and return a Map object
     return new Map(continents, territories);
-}
+} 
 
