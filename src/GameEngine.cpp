@@ -392,36 +392,39 @@ void GameEngine::issueOrdersPhase() {
     bool trueFalse = true;
     int iteration = 0;
     while (!turn.empty()) {
+        string str, availableOrder;
         cout << "Current player issuing order: " << playersList.at(turn.at(iteration))->getName() << endl;
-        string order, availableOrder;
-        
+        //deploying reinforcements
+        while (playersList.at(turn.at(iteration))->getReinforcementPool() != 0) {
+            playersList.at(turn.at(iteration))->issueOrder(getOrderType("DEPLOY"));
+        }
+
+        //issue order for cards. 1 order per cycle
         for (int i = 0; i < playersList.at(turn.at(iteration))->getHandSize(); i++) {
             availableOrder += "[" + playersList.at(turn.at(iteration))->getCard(i) + "]\t";
         }
         cout << "Available Order: " << availableOrder << endl;
         while (trueFalse) {
-            cin >> order;
+            cin >> str;
             //check if player has card
-            cout << "debug lien" << endl;
             for (int i = 0; i < playersList.at(turn.at(iteration))->getHandSize(); i++) {
-                if (playersList.at(turn.at(iteration))->getCard(i).compare(order)) {
-                    playersList.at(turn.at(iteration))->issueOrder(getOrderType(order));
+                if (playersList.at(turn.at(iteration))->getCard(i) == str) {
+                    playersList.at(turn.at(iteration))->issueOrder(getOrderType(str));
                     trueFalse = false;
                     break;
                 }
-                else {
-                    //wrong location but works for now
+                else  if (i == playersList.at(turn.at(iteration))->getHandSize()-1) {
                     cout << "Invalid order. Please ender a valid order:" << endl;
                 }
             }
         }
         
         trueFalse = true;
-        string value;
+        //end turn or not
         while (trueFalse) {
             cout << "Will you end your turn? [y/n]" << endl;
-            cin >> value;
-            char first = value.at(0);
+            cin >> str;
+            char first = str.at(0);
             //remove player from roundrobin
             if (first == 'y') {
                 turn.erase(turn.begin() + iteration);
