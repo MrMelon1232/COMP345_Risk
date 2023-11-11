@@ -92,9 +92,10 @@ void testMainGameLoop() {
 }
 
 void testStartupPhase() {
-    GameEngine gameEngine;
+    GameEngine* gameEngine = new GameEngine();
 
     // Call the startup phase
     std::cout << "Testing startup phase..." << std::endl;
-    gameEngine.startupPhase();
+    gameEngine->startupPhase();
+    delete gameEngine;
 }

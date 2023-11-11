@@ -109,6 +109,7 @@ Transition::~Transition() {
 GameEngine::GameEngine() {
     setDefaultGameStates();
     currentMap = nullptr;
+    gameDeck = new Deck();
     selectMode();
     std::cout << "Current state is " << *currentState << "." << std::endl;
 }
@@ -117,6 +118,7 @@ GameEngine::GameEngine() {
 GameEngine::GameEngine(string mode) {
     setDefaultGameStates();
     currentMap = nullptr;
+    gameDeck = new Deck();
     this->mode = mode;
     initProcessor();
     std::cout << "Current state is " << *currentState << "." << std::endl;
@@ -125,6 +127,7 @@ GameEngine::GameEngine(string mode) {
 // Game Engine constructor to initialize with states. Mainly used for testing.
 GameEngine::GameEngine(vector<State*> states) {
     currentState = states.front();
+    gameDeck = new Deck();
     for (State* state : states)
         this->states.push_back(state);
     currentMap = nullptr;
@@ -136,6 +139,7 @@ GameEngine::GameEngine(vector<State*> states) {
 GameEngine::GameEngine(GameEngine& gameEngine) {
     this->states = gameEngine.states; // To simplify circular data dependency, reuse same states and transitions.
     currentState = gameEngine.currentState;
+    gameDeck = new Deck(*(gameEngine.gameDeck));
     currentMap = new Map(*(gameEngine.currentMap));
     mode = gameEngine.mode;
 

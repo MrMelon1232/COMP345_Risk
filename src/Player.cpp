@@ -10,6 +10,10 @@ Player::Player() : orders(new OrdersList), hand(new Hand) {
     reinforcementPool = 10;
 }
 
+Player::Player(const std::string& playerName) : Player() {
+    name = playerName;
+}
+
 // Copy Constructor
 Player::Player(const Player& other) {
     // Copy territoriesOwned (assuming Territory objects are not dynamically allocated)

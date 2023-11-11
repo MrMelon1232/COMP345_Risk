@@ -211,7 +211,8 @@ void CommandProcessor::gameStart(Command* command) {
 
     // 4.b determine randomly the order of play of the players in the game
     // Randomize the order of the how the player is accessed by rnadomizing the vector
-    shuffle(gameEngine->getPlayers().begin(), gameEngine->getPlayers().end(), rng);
+    vector<Player*> allPlayers = gameEngine->getPlayers();
+    shuffle(allPlayers.begin(), allPlayers.end(), rng);
 
     // 4.c give 50 initial army units to the players, which are placed in their respective reinforcement pool
     for (Player* player : gameEngine->getPlayers()) {
@@ -332,7 +333,7 @@ Command* FileCommandProcessorAdapter::readCommand() {
     string cmdName = commandLine.substr(0, spaceIndex);
 
     Command* command = new Command(cmdName);
-    if (cmdName == "loadmap" || cmdName == "addPlayer")
+    if (cmdName == "loadmap" || cmdName == "addplayer")
         command->setArg(commandLine.substr(spaceIndex + 1));
     return command;
 }
