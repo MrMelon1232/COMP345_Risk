@@ -1,7 +1,4 @@
 #include "Player.h"
-#include "Orders.h"
-#include "Cards.h"
-#include "Map.h"
 
 int Player::nextID = 0;
 
@@ -97,17 +94,17 @@ std::ostream& operator<<(std::ostream& os, const Player& player) {
 }
 
 // Function that returns a list of territories that are to be defended
-std::vector<Territory*> Player::toDefend() {
-    std::vector<Territory*> defendTerritories;
+vector<Territory*> Player::toDefend() {
+    vector<Territory*> defendTerritories;
     defendTerritories.push_back(new Territory("TerritoryA", "ContinentA")); // Example territory
     defendTerritories.push_back(new Territory("TerritoryB", "ContinentA")); // Example territory
     return defendTerritories;
 }
 
 // Function that returns a list of territories that are to be attacked
-std::vector<Territory*> Player::toAttack() {
+vector<Territory*> Player::toAttack() {
     // Implement toAttack logic, return a list of territories to attack
-    std::vector<Territory*> attackTerritories;
+    vector<Territory*> attackTerritories;
     // Populate the list with territories
     attackTerritories.push_back(new Territory("TerritoryC", "ContinentB")); // Example territory
     attackTerritories.push_back(new Territory("TerritoryD", "ContinentB")); // Example territory
@@ -118,31 +115,32 @@ std::vector<Territory*> Player::toAttack() {
 // Function that creates an order object and adds it to the list of orders
 void Player::issueOrder(OrderType type) {
     Order* newOrder = nullptr;
-
+    cout << "issueOrder called" << endl;
+    /*
     // Check which type of order it is
     switch (type) {
-    case OrderType::Deploy:
-        newOrder = new Deploy();
-        break;
-    case OrderType::Advance:
-        newOrder = new Advance();
-        break;
-    case OrderType::Bomb:
-        newOrder = new Bomb();
-        break;
-    case OrderType::Blockade:
-        newOrder = new Blockade();
-        break;
-    case OrderType::Airlift:
-        newOrder = new Airlift();
-        break;
-    case OrderType::Negotiate:
-        newOrder = new Negotiate();
-        break;
-    default:
-        break;
-    }
-    orders->add(newOrder);
+        case OrderType::Deploy:
+            newOrder = new Deploy();
+            break;
+        case OrderType::Advance:
+            newOrder = new Advance();
+            break;
+        case OrderType::Bomb:
+            newOrder = new Bomb();
+            break;
+        case OrderType::Blockade:
+            newOrder = new Blockade();
+            break;
+        case OrderType::Airlift:
+            newOrder = new Airlift();
+            break;
+        case OrderType::Negotiate:
+            newOrder = new Negotiate();
+            break;
+        default:
+            break;
+        }
+    orders->add(newOrder);*/
 }
 
 // Function to add territories to the player's possession
@@ -215,9 +213,37 @@ bool Player::isAllyPresent(int allyID)
     return false;
 }
 
-Player::Player(const std::string& playerName) : name(playerName) {
+//A2
+
+string Player::getName()
+{
+    return name;
+}
+
+void Player::setName(string n)
+{
+    name = n;
+}
+
+vector<Territory*> Player::getTerritories()
+{
+    return territoriesOwned;
+}
+
+int Player::getHandSize()
+{
+    return hand->handSize();
+
+string Player::getCard(int i)
+{
+    return hand->currentHand.at(i)->card;
+}
+
+OrdersList* Player::getOrdersList()
+{
+    return orders;
 }
 
 
-
-
+//test methods
+void testPlayers();

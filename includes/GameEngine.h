@@ -5,11 +5,13 @@
 #include "Cards.h"
 #include <iostream>
 #include <vector>
+#include <Player.h>
 
 using std::vector;
 using std::string;
 
 class Transition;
+class Player;
 
 // Represents a state of the game with its valid commands
 class State {
@@ -29,17 +31,17 @@ private:
 
 // Holds the next state to transition to after executing the command with the given name
 class Transition {
-public:
-    Transition(string commandName, State* nextState);
-    Transition(Transition& transition);
-    string getCommandName();
-    State* getNextState();
-    Transition& operator=(const Transition& transition);
-    friend std::ostream& operator<<(std::ostream& output, const Transition& transition);
-    ~Transition();
-private:
-    string commandName;
-    State* nextState;
+    public:
+        Transition(string commandName, State* nextState);
+        Transition(Transition& transition);
+        string getCommandName();
+        State* getNextState();
+        Transition& operator=(const Transition& transition);
+        friend std::ostream& operator<<(std::ostream& output, const Transition& transition);
+        ~Transition();
+    private:
+        string commandName;
+        State* nextState; 
 };
 
 class CommandProcessor; // forward declaration
@@ -58,8 +60,9 @@ public:
     State* getCurrentState() { return currentState; }
     Map* getCurrentMap() { return currentMap; }
     void setCurrentMap(Map* map) { this->currentMap = map; }
+    void setPlayer(vector<Player*> player);
     CommandProcessor* getCommandProcessor() { return commandProcessor; }
-    void setCommandProcessor(CommandProcessor* commandProcessor) { this->commandProcessor = commandProcessor; }
+    void setCommandProcessor(CommandProcessor* commandProcessor) {this->commandProcessor = commandProcessor; }
 
     void addPlayer(Player* player);
     void startupPhase();
@@ -73,19 +76,28 @@ public:
 
     GameEngine& operator=(const GameEngine& gameEngine);
     friend std::ostream& operator<<(std::ostream& output, const GameEngine& gameEngine);
+        //A2
+        void mainGameLoop();
+        bool gameResultCheck();
+        void reinforcementPhase();
+        void issueOrdersPhase();
+        void executeOrdersPhase();
 
-    ~GameEngine();
-private:
-    void setDefaultGameStates();
-    void selectMode();
-    void initProcessor();
+        ~GameEngine();
+    private:
+        void setDefaultGameStates();
+        void selectMode();
+        void initProcessor();
 
-    vector<State*> states;
-    State* currentState;
-    Map* currentMap;
-    CommandProcessor* commandProcessor;
-    vector<Player*> players;
-    string mode;
-    int numOfPlayers;
-    Deck* gameDeck;
+        vector<State*> states;
+        State* currentState;
+        Map* currentMap;
+        CommandProcessor* commandProcessor;
+        string mode;
+        vector<Player*> playersList;
+        int reinforcement;
+        int numOfPlayers;
+        Deck* gameDeck;
 };
+
+OrderType getOrderType(string str);

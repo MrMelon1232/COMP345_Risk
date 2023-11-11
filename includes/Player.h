@@ -3,6 +3,9 @@
 #define PLAYER_H
 
 // Includes
+#include "Orders.h"
+#include "Cards.h"
+#include "Map.h"
 #include <vector>
 using namespace std;
 #include <iostream> 
@@ -20,6 +23,8 @@ class Player
 {
     // Players' possessions
 private:
+    // Player name
+    string name;
 
     // List of territories owned by the player
     std::vector<Territory*> territoriesOwned;
@@ -33,10 +38,7 @@ private:
     //NEW: Each player will have a unique ID 
     static int nextID;
     int playerID;
-
-    // Player name
-    string name;
-
+  
     //NEW: Each player will have a reinforcement pool
     int reinforcementPool;
 
@@ -67,27 +69,40 @@ public:
     // Creates order object and adds it to the list of orders
     void issueOrder(OrderType type);
 
+        // Destructor to clean up resources
+        ~Player();
+        //NEW methods for a2-part4
+        int getPlayerID();
+        int getReinforcementPool();
+        void setReinforcementPool(int reinforcement);
+        bool isAnyAdjacent(Territory* territory);
+        void addCardToHand(Card* c);
+        void addAlly(int allyID);
+        void clearAllies();
+        bool isAllyPresent(int allyID);
+  
+        //A2
+        string getName();
+
+        void setName(string n);
+        
+        vector<Territory*> getTerritories();
     // Add territory
     void addTerritory(Territory* territory);
 
     Hand* getHand() const {return hand;}
-
-    // Destructor to clean up resources
-    ~Player();
-
+  
     Player(const std::string& playerName);
+};
 
-    //NEW methods for a2-part4
-    int getPlayerID();
-    int getReinforcementPool();
-    void setReinforcementPool(int reinforcement);
-    bool isAnyAdjacent(Territory* territory);
-    void addCardToHand(Card* c);
-    void addAlly(int allyID);
-    void clearAllies();
-    bool isAllyPresent(int allyID);
+        int getHandSize();
+
+        string getCard(int i);
+
+        OrdersList* getOrdersList();
 };
 
 
-
+//test methods
+void testPlayers();
 #endif

@@ -35,6 +35,7 @@ public:
 	//extra operators
 	void addHand(Card* c); //add card to hand
 	void removeHand(int i); //remove card from hand
+	int handSize();
 
 	friend ostream& operator << (ostream& os, const Hand& hand);
 	virtual string toString() const;
@@ -59,3 +60,5 @@ class Deck {
 		virtual string toString() const;
 	private:
 };
+
+void testCards();

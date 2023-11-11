@@ -425,7 +425,6 @@ ostream& Airlift::displayOrder(ostream &myOrder) const
 //Function Definition for Negotiate
 Negotiate::Negotiate()
 {
-
 }
 
 Negotiate::Negotiate(Player* player,Player* enemy)
@@ -591,6 +590,11 @@ OrdersList::~OrdersList()
     //Clearing memory for each Order 'o' in the list
     for (int o = 0; o < (this -> getSize()); o++)
         delete listOfOrders[o];
+}
+
+Order* OrdersList::getOrder(int i)
+{
+    return listOfOrders.at(i);
 }
 
 

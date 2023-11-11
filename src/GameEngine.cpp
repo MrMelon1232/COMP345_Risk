@@ -1,6 +1,8 @@
 #include "GameEngine.h"
 #include <algorithm>
 #include <set>
+#include <cmath>
+#include "Map.h"
 #include <random>
 #include <filesystem>
 
@@ -212,6 +214,10 @@ void GameEngine::initProcessor() {
     }
 }
 
+void GameEngine::setPlayer(vector<Player*> player)
+{
+    playersList = player;
+}
 // getter and setter for numOfArmies
 int GameEngine::getNumOfPlayers() const {
     return numOfPlayers;
@@ -342,7 +348,7 @@ GameEngine::~GameEngine() {
     for (State* state : states) { // Deletes the `currentState` too.
         for (Transition* transition : state->getTransitions())
             transitions.insert(transition);
-        delete state;
+            delete state;
     }
 
     for (Transition* transition : transitions)
@@ -350,4 +356,222 @@ GameEngine::~GameEngine() {
 
     delete currentMap;
     delete commandProcessor;
+}
+
+//addition for A2: main game loop
+void GameEngine::mainGameLoop() {
+    cout << "\n\nentering main game loop" << endl;
+    bool gameEnd = false;
+    while (!gameEnd) {
+        cout << "inside while loop" << endl;
+        //run game loop
+        reinforcementPhase();
+        issueOrdersPhase();
+        executeOrdersPhase();
+
+        gameEnd =  gameResultCheck();
+    }
+    cout << "Winner: " << (*playersList.at(0)) << endl;
+
+}
+
+bool GameEngine::gameResultCheck() {
+
+    cout << "\nVerifying current game result:" << endl;
+    //check if a player has no territories owned, then eliminate him
+
+    auto iterator = playersList.begin();
+    while (iterator != playersList.end()) {
+        //cout << "getting player data: " << playersList.at(0) << " " << playersList.at(1) << " " << playersList.at(2) << endl;
+        cout << "check player" << endl;
+        if ((*iterator)->getTerritories().size() < 1) {
+            iterator = playersList.erase(iterator);
+            continue;
+        }
+        ++iterator;
+    }
+
+    //check if a player owns all the territories
+    if (playersList.size() == 1) {
+        int numberTerritoriesOwned = playersList.at(0)->getTerritories().size();
+        int numberTerritories = 0;
+        for (int i = 0; i < currentMap->getContinents().size(); i++) {
+            cout << "territories in continent: " << currentMap->getContinents().at(i)->getTerritory().size() << endl;
+            numberTerritories += currentMap->getContinents().at(i)->getTerritory().size();
+        }
+
+        if (numberTerritoriesOwned == numberTerritories) {
+            return true;
+        }
+    }
+    cout << "Game still in progress, starting new turn." << endl;
+    return false;
+}
+
+void GameEngine::reinforcementPhase() {
+    cout << "\nEntering reinforcement phase." << endl;
+    //int reinforcement = 0;
+    auto iterator = playersList.begin();
+    
+    while (iterator != playersList.end()) {
+        cout << "\n-----------------debug line--------------------" << endl;
+        //number of territories owned by players
+        int territoryQuantity = 0; 
+        territoryQuantity = (*iterator)->getTerritories().size();
+        //reinforcement amount
+        reinforcement = floor(territoryQuantity/3);
+
+        int totalTerritories = 0;
+        //check if player owns all territories in a continent
+        for (int i = 0; i < currentMap->getContinents().size(); i++) {
+            //count territories own per continent
+            for (int j = 0; j < (*iterator)->getTerritories().size(); j++) {
+                if ((*iterator)->getTerritories().at(j)->GetContinentName() == currentMap->getContinents().at(i)->GetName()) {
+                    totalTerritories++;
+                }
+            }
+            if (totalTerritories == currentMap->getContinents().at(i)->getTerritory().size()) {
+                reinforcement += currentMap->getContinents().at(i)->getBonusValue();
+            }
+        }
+
+        if (reinforcement < 3) {
+            reinforcement = 3;
+        }
+        ++iterator;
+    }
+}
+
+void GameEngine::issueOrdersPhase() {
+    //vector value for round-robin
+    vector<int> turn;
+    for (int i = 0; i < playersList.size(); i++) {
+        turn.push_back(i);
+        //setting reinforcement pool
+        playersList.at(i)->setReinforcementPool(reinforcement);
+    }
+
+    //round-robin loop
+    bool trueFalse = true;
+    int iteration = 0;
+    while (!turn.empty()) {
+        string str, availableOrder;
+        cout << "Current player issuing order: " << playersList.at(turn.at(iteration))->getName() << endl;
+        //deploying reinforcements
+        while (playersList.at(turn.at(iteration))->getReinforcementPool() != 0) {
+            playersList.at(turn.at(iteration))->issueOrder(getOrderType("DEPLOY"));
+        }
+
+        //issue order for cards. 1 order per cycle
+        for (int i = 0; i < playersList.at(turn.at(iteration))->getHandSize(); i++) {
+            availableOrder += "[" + playersList.at(turn.at(iteration))->getCard(i) + "]\t";
+        }
+        cout << "Available Order: " << availableOrder << endl;
+        while (trueFalse) {
+            cin >> str;
+            //check if player has card
+            for (int i = 0; i < playersList.at(turn.at(iteration))->getHandSize(); i++) {
+                if (playersList.at(turn.at(iteration))->getCard(i) == str) {
+                    playersList.at(turn.at(iteration))->issueOrder(getOrderType(str));
+                    trueFalse = false;
+                    break;
+                }
+                else  if (i == playersList.at(turn.at(iteration))->getHandSize()-1) {
+                    cout << "Invalid order. Please ender a valid order:" << endl;
+                }
+            }
+        }
+        
+        trueFalse = true;
+        //end turn or not
+        while (trueFalse) {
+            cout << "Will you end your turn? [y/n]" << endl;
+            cin >> str;
+            char first = str.at(0);
+            //remove player from roundrobin
+            if (first == 'y') {
+                turn.erase(turn.begin() + iteration);
+                trueFalse = false;
+                break;
+            }
+            else if (first == 'n') {
+                trueFalse = false;
+                break;
+            }
+            else {
+                cout << "Cannot understand choice. please enter again [y/n]: " << endl;
+            }
+        }
+
+        //return to first iteration
+        trueFalse = true;
+        if (iteration >= turn.size()-1) {
+            iteration = 0;
+        }
+        else {
+            iteration++;
+        }
+    }
+}
+
+void GameEngine::executeOrdersPhase() {
+    //vector value for round-robin
+    vector<int> turn;
+    for (int i = 0; i < playersList.size(); i++) {
+        turn.push_back(i);
+    }
+
+    //round-robin loop
+    int iteration = 0;
+    bool deploy = true;
+    while (!turn.empty()) {
+        while (deploy) {
+            for (int i = 0; i < playersList.at(turn.at(iteration))->getHandSize(); i++) {
+                if (playersList.at(turn.at(iteration))->getCard(i) == "DEPLOY") {
+                    playersList.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
+                }
+            }
+        }
+
+
+
+
+        string value;
+        cout << "Will you end your turn?" << endl;
+        cin >> value;
+        char first = value.at(0);
+        //remove player from roundrobin
+        if (first == 'y') {
+            turn.erase(turn.begin() + iteration);
+        }
+
+        //return to first iteration
+        if (iteration >= turn.size()-1) {
+            iteration = 0;
+        }
+        else {
+            iteration++;
+        }
+    }
+}
+
+OrderType getOrderType(string str) {
+    if (str.compare("deploy")) {
+        return OrderType::Deploy;
+    }
+    else if (str.compare("advance")) {
+        return OrderType::Advance;
+    }
+    else if (str.compare("bomb")) {
+        return OrderType::Bomb;
+    }
+    else if (str.compare("blockade")) {
+        return OrderType::Blockade;
+    }
+    else if (str.compare("airlift")) {
+        return OrderType::Airlift;
+    }
+    else if (str.compare("negotiate")) {
+        return OrderType::Negotiate;
+    }
 }

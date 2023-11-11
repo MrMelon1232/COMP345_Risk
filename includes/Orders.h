@@ -3,7 +3,8 @@
 #include <iostream>
 #include "Player.h"
 using namespace std;
-
+class Player;
+class Territory;
 //----Order and all subclasses of Order----//
 class Order
 {
@@ -159,13 +160,12 @@ class OrdersList
         ostream& displayOrderList(ostream& myOrderList);
         OrdersList& operator=(const OrdersList& other);
         ~OrdersList(); 
-
+        Order* getOrder(int i);
     private: 
         std::vector<Order*> listOfOrders;
         friend ostream& operator<<(ostream& myOrderList, OrdersList& Olist);
 }; 
 
-
-
-
-
+//test methods
+void testOrdersList();
+void testOrderExecution();

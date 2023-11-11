@@ -12,15 +12,20 @@
 #include <stack>
 
 using namespace std; 
+class Territory;
 
 // Continent Class
 class Continent {
 private:
     string name;
-
+    vector<Territory*> territoryList;
+    int bonusValue;
 public:
     Continent(const string& name);
     const string& GetName() const;
+    void addTerritory(Territory* t);
+    vector<Territory*> getTerritory();
+    int getBonusValue();
 };
 
 // Territory Class
@@ -77,6 +82,7 @@ public:
     size_t getTerritoryIndex(const string& territoryName) const;
     size_t getContinentIndex(const string& continentName) const;
     bool territoriesBelongToOneContinent() const;
+    vector<Continent*> getContinents();
 
     // Copy constructor
     Map(const Map& other);
@@ -110,3 +116,6 @@ public:
 };
 
 #endif // MAP_H
+
+//test methods
+void testLoadMaps();
