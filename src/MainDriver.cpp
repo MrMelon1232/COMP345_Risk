@@ -1,5 +1,6 @@
 
 #include "CommandProcessingDriver.h"
+#include "LoggingObserverDriver.h"
 #include "Map.h"
 #include "Player.h"
 #include "Orders.h"
@@ -28,6 +29,9 @@ void testA2() {
     // Test function for command processor
     testCommandProcessor();
 
+    // Test function for logging observer
+    testLoggingObserver();
+    
     testStartupPhase();
     //Test function for main game loop
     testMainGameLoop();
@@ -42,3 +46,4 @@ int main() {
     //Assignment 2
     testA2();
 }
+
