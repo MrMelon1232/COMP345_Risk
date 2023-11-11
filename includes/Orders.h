@@ -167,3 +167,4 @@ class OrdersList
 
 //test methods
 void testOrdersList();
+void testOrderExecution();

@@ -385,14 +385,15 @@ void GameEngine::issueOrdersPhase() {
     for (int i = 0; i < playersList.size(); i++) {
         turn.push_back(i);
         //setting reinforcement pool
-        playersList.at(i)->setReinforcement(reinforcement);
+        playersList.at(i)->setReinforcementPool(reinforcement);
     }
 
     //round-robin loop
     int iteration = 0;
+    int currentReinforcement;
     while (!turn.empty()) {
         //issue order
-
+        playersList.at(turn.at(iteration))->issueOrder((playersList.at(turn.at(iteration))).);
 
 
         //remove player from roundrobin

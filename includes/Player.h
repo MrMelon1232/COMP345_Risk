@@ -88,10 +88,6 @@ class Player
         void setName(string n);
         
         vector<Territory*> getTerritories();
-
-        int getReinforcement();
-
-        void setReinforcement(int army);
 };
 
 
