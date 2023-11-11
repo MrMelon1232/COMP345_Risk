@@ -32,9 +32,11 @@ private:
     vector<string> adjacentTerritories;
     Player* owner;
     Player* getOwner() const;
+    int ownerID;
 
 public:
     Territory(const string& name, const string& continentName);
+    Territory(const string& name, const string& continentName, int playerID);
     const string& GetName() const;
     const string& GetContinentName() const;
     void AddAdjacentTerritory(const string& adjacent);
@@ -42,6 +44,11 @@ public:
     const int getNbArmies() const;
     void setNbArmies(int nbArmies);
     void setOwner(Player* owner);
+
+    //new method added for a2-part4
+    bool isAdjacent(Territory* territory);
+    int getOwnerID();
+    void setOwnerID(int playerID);
 
     // Copy constructor
     Territory(const Territory& other);

@@ -44,6 +44,17 @@ private:
     std::vector<int> myAlliesForTheTurn;
 
 
+        //NEW: Each player will have a unique ID 
+        static int nextID;
+        int playerID;
+
+        //NEW: Each player will have a reinforcement pool
+        int reinforcementPool;
+
+        //NEW: each player will have a vector of integers for players which they have an alliance with
+        std::vector<int> myAlliesForTheTurn;
+
+
     // Player public methods
 public:
 

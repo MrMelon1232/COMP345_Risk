@@ -107,11 +107,9 @@ void CommandProcessor::validate(Command* command) {
     }
     else if (cmdName == "replay") {
         command->saveEffect("Restarting the game.");
-    }
-    else if (cmdName == "quit") {
+    } else if (cmdName == "quit") {
         command->saveEffect("Quitting the game.");
-    }
-    else { // if command behavior undefined, simply transition state.
+    } else { // if command behavior undefined, simply transition state.
         command->saveEffect("Transitioning to another state.");
     }
 }

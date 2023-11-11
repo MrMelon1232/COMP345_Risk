@@ -71,7 +71,6 @@ public:
     int getNumOfPlayers() const;
     Deck* getGameDeck();
 
-
     GameEngine& operator=(const GameEngine& gameEngine);
     friend std::ostream& operator<<(std::ostream& output, const GameEngine& gameEngine);
 

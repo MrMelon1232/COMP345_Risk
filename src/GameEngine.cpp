@@ -196,8 +196,7 @@ void GameEngine::selectMode() {
 void GameEngine::initProcessor() {
     if (mode == "-console") {
         commandProcessor = new CommandProcessor(this);
-    }
-    else { // mode is -file
+    } else { // mode is -file
         commandProcessor = nullptr;
         do {
             string fileName;
@@ -206,17 +205,12 @@ void GameEngine::initProcessor() {
             try {
                 FileLineReader* flr = new FileLineReader(fileName);
                 commandProcessor = new FileCommandProcessorAdapter(this, flr);
-            }
-            catch (const std::invalid_argument& e) {
+            } catch (const std::invalid_argument& e) {
                 cout << "Could not open file: " << fileName << endl;
             }
-        } while (!commandProcessor);
+        } while(!commandProcessor);
     }
 }
-
-
-
-
 
 // getter and setter for numOfArmies
 int GameEngine::getNumOfPlayers() const {
@@ -231,7 +225,6 @@ vector<Player*> GameEngine::getPlayers() {
     return players;
 }
 
-
 void GameEngine::addPlayer(Player* player) {
     players.push_back(player);
 }
@@ -239,7 +232,6 @@ void GameEngine::addPlayer(Player* player) {
 Deck* GameEngine::getGameDeck() {
     return gameDeck;
 }
-
 
 void listFilesInDirectory() {
     std::string directoryPath = "../Maps/"; 
@@ -259,9 +251,7 @@ void listFilesInDirectory() {
 
 
 void GameEngine::startupPhase() {
-
     listFilesInDirectory();
-
 
     // Load a map
     while (currentState->getName() != "maploaded") {
@@ -280,9 +270,6 @@ void GameEngine::startupPhase() {
         Command* playerCommand = commandProcessor->getCommand();
         commandProcessor->executeCommand(playerCommand);
     }
-
-
-
 }
 
 // Function that indicates if the command is valid in the current state game.
@@ -337,8 +324,7 @@ GameEngine& GameEngine::operator=(const GameEngine& gameEngine) {
     if (fileCmdProcAdapter) {
         FileLineReader* flr = new FileLineReader(*(fileCmdProcAdapter->getFileLineReader()));
         commandProcessor = new FileCommandProcessorAdapter(this, flr);
-    }
-    else {
+    } else {
         commandProcessor = new CommandProcessor(this);
     }
     return *this;
