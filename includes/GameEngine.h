@@ -2,6 +2,7 @@
 #include "Map.h"
 #include "CommandProcessing.h"
 #include "Player.h"
+#include "Cards.h"
 #include <iostream>
 #include <vector>
 
@@ -62,14 +63,14 @@ public:
 
     void addPlayer(Player* player);
     void startupPhase();
-    void distributeTerritories(int num);
     bool isCommandValid(string command);
     void findAndTransition(string name);
     void transition(Transition* transition);
-    vector<Player*>& getPlayers();
+    vector<Player*> getPlayers();
     void setNumOfPlayers(int num);
     int getNumOfPlayers() const;
-    Deck& getGameDeck() {return gameDeck;}
+    Deck* getGameDeck();
+
 
     GameEngine& operator=(const GameEngine& gameEngine);
     friend std::ostream& operator<<(std::ostream& output, const GameEngine& gameEngine);
@@ -87,5 +88,5 @@ private:
     vector<Player*> players;
     string mode;
     int numOfPlayers;
-    Deck gameDeck;
+    Deck* gameDeck;
 };
