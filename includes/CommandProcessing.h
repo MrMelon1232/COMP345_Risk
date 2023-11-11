@@ -5,7 +5,6 @@
 #include <vector>
 #include "LoggingObserver.h"
 
-
 using std::string;
 using std::vector;
 
@@ -17,7 +16,7 @@ class Command: public ILoggable, public Subject {
 
         // Getter and setters.
         string getEffect() { return effect; };
-        void saveEffect(string effect) { this->effect = effect; };
+        void saveEffect(string effect);
         string getName() { return cmdName; };
         string getArg() { return arg; };
         void setArg(string arg) { this->arg = arg; };
@@ -26,6 +25,9 @@ class Command: public ILoggable, public Subject {
         friend std::ostream& operator<<(std::ostream& output, const Command& command);
 
         ~Command();
+
+        //Part 2 Loggable
+        string stringToLog() const override;
 
     private:
         string cmdName;
@@ -52,7 +54,7 @@ class CommandProcessor: public ILoggable, public Subject {
         virtual ~CommandProcessor();
 
         // Part 2 Logging
-        string stringtoLog() override;
+        string stringToLog() const override;
 
     private:
         virtual Command* readCommand();

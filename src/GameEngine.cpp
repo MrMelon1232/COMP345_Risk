@@ -290,6 +290,6 @@ GameEngine::~GameEngine() {
     delete commandProcessor;
 }
 
-GameEngine::stringToLog() {
+string GameEngine::stringToLog() const {
     return "Game state changed to " + currentState->getName();
 }

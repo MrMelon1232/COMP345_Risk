@@ -3,6 +3,7 @@
 #include "CommandProcessing.h"
 #include <iostream>
 #include <vector>
+#include "LoggingObserver.h"
 
 using std::vector;
 using std::string;
@@ -68,7 +69,7 @@ class GameEngine : public Subject, public ILoggable {
         ~GameEngine();
 
         //Part 2 Logging
-        string stringToLog() override;
+        string stringToLog() const override;
     private:
         void setDefaultGameStates();
         void selectMode();

@@ -1,18 +1,19 @@
 #include "LoggingObserver.h"
 
-void Subject::attach(Observer * observer) {
+void Subject::attach(Observer *observer) {
     observers.push_back(observer);
 }
 
-void Subject::detach(Observer * observer) {
-   auto it = std::find(observers.begin(), observers.end(), observer);
-    if (it != observers.end()) {
-        observers.erase(it);
-    }
+void Subject::detach(Observer* observer) {
+    observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
 }
 
+void LogObserver::update(const ILoggable& loggable) {
+    logFile << loggable.stringToLog() << std::endl;
+} 
+
 void Subject::notify(const ILoggable& loggable) {
-   for (Observer* observer : observers) {
+    for (Observer* observer : observers) {
         observer->update(loggable);
     }
 }
@@ -21,10 +22,6 @@ LogObserver::LogObserver(const string& logFileName) {
     logFile.open(logFileName, ios::app);
 }
 
-LogObsever::~LogObserver() {
+LogObserver::~LogObserver() {
     logFile.close();
 }
-
-void LogObserver::update(ILoggable& loggable) override {
-    logFile << loggable.stringToLog() << std::endl;
-} 

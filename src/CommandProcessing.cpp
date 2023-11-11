@@ -31,6 +31,12 @@ std::ostream& operator<<(std::ostream& output, const Command& command) {
     return output;
 }
 
+// Save effect function
+void Command::saveEffect(string effect) {
+    this->effect = effect; 
+    notify(*this);
+}
+
 // Command's destructor.
 Command::~Command() {}
 
@@ -81,6 +87,7 @@ Command* CommandProcessor::readCommand() {
 // Saves the command into the CommandProcessor's commands list.
 void CommandProcessor::saveCommand(Command* command) {
     commands.push_back(command);
+    notify(*command);
 }
 
 // Sets the effect according to the command type. If the command is invalid, it sets an invalid effect.
@@ -114,12 +121,6 @@ void CommandProcessor::validate(Command* command) {
         command->saveEffect("Transitioning to another state.");
         notify(*this);
     }
-}
-
-// Saves the command into the CommandProcessor's commands list.
-void CommandProcessor::saveCommand(Command* command) {
-    commands.push_back(command);
-    notify(*this);
 }
 
 // Executes the given command. If command is invalid, it just outputs the effect.
@@ -311,11 +312,11 @@ FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
 }
 
 // Part 2
-CommandProcessor::stringtoLog() {
-    string logMessage;
-    // Append logged commands and their effects
-        for (const Command& command : commands) {
-            logMessage += "Command: " + command.getName() + ", Effect: " + command.getEffect() + "\n";
-        }
-    return logMessage;
+
+string CommandProcessor::stringToLog() const {
+    return "";
+}
+
+string Command::stringToLog() const {
+    return "Command: " + cmdName + ", Effect: " + effect;
 }

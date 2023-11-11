@@ -4,6 +4,7 @@
 #include "GameEngineDriver.h"
 #include "MapDriver.h"
 #include "CommandProcessingDriver.h"
+#include "LoggingObserverDriver.h"
 
 int main() {
 
@@ -25,4 +26,8 @@ int main() {
 
     // Test function for command processor
     testCommandProcessor();
+
+    // Test function for logging observer
+    testLoggingObserver();
 }
+
