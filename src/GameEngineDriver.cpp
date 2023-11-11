@@ -20,7 +20,7 @@ void testMainGameLoop() {
 	vector<Player*> players;
 	vector<Continent*> continents;
 	vector<Territory*> territories;
-	
+
 	cout << "Creating necessary dummy values for test" << endl;
 	//create new players
 	Player* p1 = new Player();
@@ -80,7 +80,7 @@ void testMainGameLoop() {
 	}
 	Map* map = new Map(continents, territories);
 
-	
+
 	cout << "creating game engine" << endl;
 	//create game engine
 	GameEngine* game = new GameEngine();
@@ -89,6 +89,7 @@ void testMainGameLoop() {
 	game->setPlayer(players);
 	game->setCurrentMap(map);
 	game->mainGameLoop();
+}
 
 void testStartupPhase() {
     GameEngine gameEngine;

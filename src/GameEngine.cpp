@@ -6,6 +6,8 @@
 #include <random>
 #include <filesystem>
 
+using namespace std;
+
 // Constructor to initialize a state with a name.
 State::State(string name) {
     this->name = name;
@@ -216,7 +218,7 @@ void GameEngine::initProcessor() {
 
 void GameEngine::setPlayer(vector<Player*> player)
 {
-    playersList = player;
+    players = player;
 }
 // getter and setter for numOfArmies
 int GameEngine::getNumOfPlayers() const {
@@ -371,7 +373,7 @@ void GameEngine::mainGameLoop() {
 
         gameEnd =  gameResultCheck();
     }
-    cout << "Winner: " << (*playersList.at(0)) << endl;
+    cout << "Winner: " << (*players.at(0)) << endl;
 
 }
 
@@ -380,20 +382,20 @@ bool GameEngine::gameResultCheck() {
     cout << "\nVerifying current game result:" << endl;
     //check if a player has no territories owned, then eliminate him
 
-    auto iterator = playersList.begin();
-    while (iterator != playersList.end()) {
-        //cout << "getting player data: " << playersList.at(0) << " " << playersList.at(1) << " " << playersList.at(2) << endl;
+    auto iterator = players.begin();
+    while (iterator != players.end()) {
+        //cout << "getting player data: " << players.at(0) << " " << players.at(1) << " " << players.at(2) << endl;
         cout << "check player" << endl;
         if ((*iterator)->getTerritories().size() < 1) {
-            iterator = playersList.erase(iterator);
+            iterator = players.erase(iterator);
             continue;
         }
         ++iterator;
     }
 
     //check if a player owns all the territories
-    if (playersList.size() == 1) {
-        int numberTerritoriesOwned = playersList.at(0)->getTerritories().size();
+    if (players.size() == 1) {
+        int numberTerritoriesOwned = players.at(0)->getTerritories().size();
         int numberTerritories = 0;
         for (int i = 0; i < currentMap->getContinents().size(); i++) {
             cout << "territories in continent: " << currentMap->getContinents().at(i)->getTerritory().size() << endl;
@@ -411,9 +413,9 @@ bool GameEngine::gameResultCheck() {
 void GameEngine::reinforcementPhase() {
     cout << "\nEntering reinforcement phase." << endl;
     //int reinforcement = 0;
-    auto iterator = playersList.begin();
+    auto iterator = players.begin();
     
-    while (iterator != playersList.end()) {
+    while (iterator != players.end()) {
         cout << "\n-----------------debug line--------------------" << endl;
         //number of territories owned by players
         int territoryQuantity = 0; 
@@ -445,10 +447,10 @@ void GameEngine::reinforcementPhase() {
 void GameEngine::issueOrdersPhase() {
     //vector value for round-robin
     vector<int> turn;
-    for (int i = 0; i < playersList.size(); i++) {
+    for (int i = 0; i < players.size(); i++) {
         turn.push_back(i);
         //setting reinforcement pool
-        playersList.at(i)->setReinforcementPool(reinforcement);
+        players.at(i)->setReinforcementPool(reinforcement);
     }
 
     //round-robin loop
@@ -456,27 +458,27 @@ void GameEngine::issueOrdersPhase() {
     int iteration = 0;
     while (!turn.empty()) {
         string str, availableOrder;
-        cout << "Current player issuing order: " << playersList.at(turn.at(iteration))->getName() << endl;
+        cout << "Current player issuing order: " << players.at(turn.at(iteration))->getName() << endl;
         //deploying reinforcements
-        while (playersList.at(turn.at(iteration))->getReinforcementPool() != 0) {
-            playersList.at(turn.at(iteration))->issueOrder(getOrderType("DEPLOY"));
+        while (players.at(turn.at(iteration))->getReinforcementPool() != 0) {
+            players.at(turn.at(iteration))->issueOrder(getOrderType("DEPLOY"));
         }
 
         //issue order for cards. 1 order per cycle
-        for (int i = 0; i < playersList.at(turn.at(iteration))->getHandSize(); i++) {
-            availableOrder += "[" + playersList.at(turn.at(iteration))->getCard(i) + "]\t";
+        for (int i = 0; i < players.at(turn.at(iteration))->getHandSize(); i++) {
+            availableOrder += "[" + players.at(turn.at(iteration))->getCard(i) + "]\t";
         }
         cout << "Available Order: " << availableOrder << endl;
         while (trueFalse) {
             cin >> str;
             //check if player has card
-            for (int i = 0; i < playersList.at(turn.at(iteration))->getHandSize(); i++) {
-                if (playersList.at(turn.at(iteration))->getCard(i) == str) {
-                    playersList.at(turn.at(iteration))->issueOrder(getOrderType(str));
+            for (int i = 0; i < players.at(turn.at(iteration))->getHandSize(); i++) {
+                if (players.at(turn.at(iteration))->getCard(i) == str) {
+                    players.at(turn.at(iteration))->issueOrder(getOrderType(str));
                     trueFalse = false;
                     break;
                 }
-                else  if (i == playersList.at(turn.at(iteration))->getHandSize()-1) {
+                else  if (i == players.at(turn.at(iteration))->getHandSize()-1) {
                     cout << "Invalid order. Please ender a valid order:" << endl;
                 }
             }
@@ -517,7 +519,7 @@ void GameEngine::issueOrdersPhase() {
 void GameEngine::executeOrdersPhase() {
     //vector value for round-robin
     vector<int> turn;
-    for (int i = 0; i < playersList.size(); i++) {
+    for (int i = 0; i < players.size(); i++) {
         turn.push_back(i);
     }
 
@@ -526,9 +528,9 @@ void GameEngine::executeOrdersPhase() {
     bool deploy = true;
     while (!turn.empty()) {
         while (deploy) {
-            for (int i = 0; i < playersList.at(turn.at(iteration))->getHandSize(); i++) {
-                if (playersList.at(turn.at(iteration))->getCard(i) == "DEPLOY") {
-                    playersList.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
+            for (int i = 0; i < players.at(turn.at(iteration))->getHandSize(); i++) {
+                if (players.at(turn.at(iteration))->getCard(i) == "DEPLOY") {
+                    players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
                 }
             }
         }

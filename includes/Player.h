@@ -93,7 +93,6 @@ public:
     Hand* getHand() const {return hand;}
   
     Player(const std::string& playerName);
-};
 
         int getHandSize();
 

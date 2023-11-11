@@ -233,6 +233,7 @@ vector<Territory*> Player::getTerritories()
 int Player::getHandSize()
 {
     return hand->handSize();
+}
 
 string Player::getCard(int i)
 {

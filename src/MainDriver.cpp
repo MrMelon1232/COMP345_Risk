@@ -28,7 +28,7 @@ void testA2() {
     // Test function for command processor
     //testCommandProcessor();
 
-　　testStartupPhase();
+    testStartupPhase();
     //Test function for main game loop
     testMainGameLoop();
 

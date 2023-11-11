@@ -12,6 +12,7 @@
 #include <stack>
 
 using namespace std; 
+class Player;
 class Territory;
 
 // Continent Class

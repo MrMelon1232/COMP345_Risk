@@ -94,10 +94,15 @@ public:
         Map* currentMap;
         CommandProcessor* commandProcessor;
         string mode;
-        vector<Player*> playersList;
+        vector<Player*> players;
         int reinforcement;
         int numOfPlayers;
         Deck* gameDeck;
 };
 
 OrderType getOrderType(string str);
+
+//test methods
+void testGameStates();
+void testMainGameLoop();
+void testStartupPhase();
