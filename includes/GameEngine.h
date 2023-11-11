@@ -48,7 +48,7 @@ class Transition {
 class CommandProcessor; // forward declaration
 
 // Manages the game setup and execution.
-class GameEngine: : public Subject, public ILoggable {
+class GameEngine: public Subject, public ILoggable {
 public:
     GameEngine();
     GameEngine(string mode);
