@@ -172,6 +172,12 @@ void CommandProcessor::validateMap(Command* command) {
 
 // Helper function for the `addPlayer <playerName>` command.
 void CommandProcessor::addPlayer(Command* command) {
+
+    if (gameEngine->getPlayers().size() >= 6) {
+        command->saveEffect("Cannot add more players. Maximum limit reached.");
+        cout << "Cannot add more players. Maximum limit reached.";
+        return;
+    }
     string playerName = command->getArg();
     Player* newPlayer = new Player(playerName);
     gameEngine->addPlayer(newPlayer);
@@ -181,6 +187,12 @@ void CommandProcessor::addPlayer(Command* command) {
 
 // Helper function to the `gameStart` command.
 void CommandProcessor::gameStart(Command* command) {
+
+    if (gameEngine->getPlayers().size() < 2) {
+        command->saveEffect("Cannot start the game with less than 2 players.");
+        cout << "Cannot start the game with less than 2 players.";
+        return;
+    }
 
     // 4.a fairly distribute all the territories to the players
     vector<Territory*> allTerritories = gameEngine->getCurrentMap()->territories;
@@ -195,7 +207,7 @@ void CommandProcessor::gameStart(Command* command) {
         Player* currentPlayer = gameEngine->getPlayers()[playerIndex];
         currentPlayer->addTerritory(territory);
         territory->setOwner(currentPlayer);
-        playerIndex = (playerIndex + 1) % gameEngine->getNumOfPlayers();
+        playerIndex = (playerIndex + 1) % gameEngine->getPlayers().size();
     }
 
     // 4.b determine randomly the order of play of the players in the game
@@ -211,8 +223,8 @@ void CommandProcessor::gameStart(Command* command) {
 
     // 4.d let each player draw 2 initial cards from the deck using the deck’s draw() method
     for (Player* player : gameEngine->getPlayers()) {
-        gameEngine->getGameDeck().draw(player->getHand());
-        gameEngine->getGameDeck().draw(player->getHand());
+        gameEngine->getGameDeck()->draw(player->getHand());
+        gameEngine->getGameDeck()->draw(player->getHand());
     }
 
     // 4.e switch the game to the play phase
