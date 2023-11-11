@@ -16,7 +16,9 @@ void testLoggingObserver() {
 
     // Test commands
     Command* command = new Command("gamestart");
-    commandProcessor.getCommand();
+    command->attach(&logObserver);
+    commandProcessor.validate(command);
+    
 
     
     // Test execute of orders:
@@ -65,11 +67,13 @@ void testLoggingObserver() {
 
     cout << "-----------Testing Deploy-------------\n";
     Deploy* deploy = new Deploy(2,playerONE,germany);
+    deploy->attach(&logObserver);
     deploy->execute();
     cout << "-----------END of Testing Deploy-------------\n\n";
 
     cout << "-----------Testing Advance-------------\n";
     Advance* advance = new Advance(2,playerONE,france,germany);
+    advance->attach(&logObserver);
     advance->execute(); 
     cout << "Displaying both players...\n";
     cout<< *playerONE;
@@ -78,16 +82,19 @@ void testLoggingObserver() {
 
     cout << "-----------Testing Bomb-------------\n";
     Bomb* bomb = new Bomb(playerTWO, germany);
+    bomb->attach(&logObserver);
     bomb->execute(); 
     cout << "-----------End of Testing Bomb-------------\n\n";
 
     cout << "-----------Testing Airlift-------------\n";
     Airlift* airlift = new Airlift(playerONE, germany, spain, 2); 
+    airlift->attach(&logObserver);
     airlift->execute(); 
     cout << "-----------END of Testing Airlift-------------\n\n";
 
     cout << "-----------Testing Negotiate-------------\n";
     Negotiate* negotiate = new Negotiate(playerONE,playerTWO);
+    negotiate->attach(&logObserver);
     negotiate->execute(); 
 
     cout << "Attempting to attack ally...\n";
@@ -96,8 +103,12 @@ void testLoggingObserver() {
 
     cout << "-----------Testing Blockade-------------\n";
     Blockade* blockade = new Blockade(playerONE, spain);
+    blockade->attach(&logObserver);
     blockade->execute();
     cout << "-----------END of Testing Blockade-------------\n\n";
+
+    // Test add function
+    orderList.add(deploy);
     
     // Test game engine
     State * state = new State("playersadded");

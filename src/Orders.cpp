@@ -505,6 +505,7 @@ OrdersList::OrdersList()
 void OrdersList::add(Order* O)
 {
     listOfOrders.push_back(O); 
+    notify(*this);
 }
 
 //Returns the size of the list
@@ -616,26 +617,26 @@ string Advance::stringToLog() const {
 }
 
 string Bomb::stringToLog() const {
-    return target->GetName() + " now has " + std::to_string(target->getNbArmies()) + " units remaining after bomb has been dropped on.";
+    return "Bomb order: " + target->GetName() + " now has " + std::to_string(target->getNbArmies()) + " units remaining after bomb has been dropped on.";
 }
 
 string Blockade::stringToLog() const {
-    return "Neutral player: " + std::to_string(neutralPlayer->getPlayerID()) + " has received " + std::to_string(target->getNbArmies());
+    return "Blockade order: neutral player: " + std::to_string(neutralPlayer->getPlayerID()) + " has received " + std::to_string(target->getNbArmies());
 }
 
 string Airlift::stringToLog() const {
-    return target->GetName() + " has " + std::to_string(target->getNbArmies()) +
+    return "Airlift order: " + target->GetName() + " has " + std::to_string(target->getNbArmies()) +
        " units after " + std::to_string(movingUnits) +
        " units have been moved from " + std::to_string(source->getNbArmies());
 }
 
 string Negotiate::stringToLog() const {
-    return "Player " + std::to_string(player->getPlayerID()) +
+    return "Negotiate order: player " + std::to_string(player->getPlayerID()) +
        " is now allies with player " + std::to_string(enemy->getPlayerID());
 }
 
 string OrdersList::stringToLog() const {
-    return "Order " + listOfOrders.back()->getName() + " has been added to the player's list of orders.";
+    return "Add function: Order " + listOfOrders.back()->getName() + " has been added to the player's list of orders.";
 }
 
     

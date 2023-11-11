@@ -97,31 +97,23 @@ void CommandProcessor::validate(Command* command) {
     string cmdName = command->getName();
     if (!gameEngine->isCommandValid(cmdName)) {
         command->saveEffect("Command `" + command->getName() + "` is invalid in state: `" + gameEngine->getCurrentState()->getName() + "`.");
-        notify(*this);
         return;
     }
 
     if (cmdName == "loadmap") {
         command->saveEffect("Loading map.");
-        notify(*this);
     } else if (cmdName == "validatemap") {
         command->saveEffect("Validating map.");
-        notify(*this);
     } else if (cmdName == "addplayer") {
         command->saveEffect("Adding player.");
-        notify(*this);
     } else if (cmdName == "gamestart") {
         command->saveEffect("Ending startup phase. Starting play phase.");
-        notify(*this);
     } else if (cmdName == "replay") {
         command->saveEffect("Restarting the game.");
-        notify(*this);
     } else if (cmdName == "quit") {
         command->saveEffect("Quitting the game");
-        notify(*this);
     } else { // if command behavior undefined, simply transition state.
         command->saveEffect("Transitioning to another state.");
-        notify(*this);
     }
 }
 
@@ -165,7 +157,6 @@ void CommandProcessor::loadMap(Command* command) {
     }
     catch (const runtime_error& error) {
         command->saveEffect("Map file not found.");
-        notify(*this);
         cout << "Could not load map file " + command->getArg() + ". State is still `" + gameEngine->getCurrentState()->getName() + "`." << endl;
     }
 }
