@@ -2,11 +2,14 @@
 #include <vector>
 #include <iostream>
 #include "Player.h"
+#include "LoggingObserver.h"
 using namespace std;
 class Player;
 class Territory;
+class ILoggable;
+class Subject;
 //----Order and all subclasses of Order----//
-class Order
+class Order: public ILoggable, public Subject
 {
     public:
         Order();
@@ -16,6 +19,7 @@ class Order
         virtual bool validate() = 0; 
         virtual ostream& displayOrder(ostream& myOrder) const = 0;
         virtual ~Order() = default;
+        virtual string getName() const = 0; // Getter for name
 
     private:
         friend ostream& operator<< (ostream& myOrder, Order& O);
@@ -34,7 +38,8 @@ class Deploy : public Order
         ostream& displayOrder(ostream& myOrder) const override;
         Deploy& operator=(const Deploy& other);
         string stringToLog() const override;        
-    
+        string getName() const override { return "Deploy"; }
+
     private:
         int armyUnits; 
         Player* player; 
@@ -55,6 +60,7 @@ class Advance : public Order
         Advance& operator=(const Advance& other);
         void simulateAttack(); 
         string stringToLog() const override;
+        string getName() const override { return "Advance"; }
     
     private:
         int armyUnits;
@@ -76,6 +82,7 @@ class Bomb : public Order
         ostream& displayOrder(ostream& myOrder) const override;
         Bomb& operator=(const Bomb& other);
         string stringToLog() const override;
+        string getName() const override { return "Bomb"; }
     
     private:
         Player* player;
@@ -95,6 +102,7 @@ class Blockade : public Order
         ostream& displayOrder(ostream& myOrder) const override;
         Blockade& operator=(const Blockade& other);
         string stringToLog() const override;
+        string getName() const override { return "Blockade"; }
     
     private:
         Player* player;
@@ -114,6 +122,7 @@ class Airlift : public Order
         ostream& displayOrder(ostream& myOrder) const override;
         Airlift& operator=(const Airlift& other);
         string stringToLog() const override;
+        string getName() const override { return "Airlift"; }
     
     private:
         Player* player;
@@ -135,6 +144,7 @@ class Negotiate : public Order
         ostream& displayOrder(ostream& myOrder) const override;
         Negotiate& operator=(const Negotiate& other);
         string stringToLog() const override;
+        string getName() const override { return "Negotiate"; }
     
     private:
         Player* player;
@@ -155,7 +165,7 @@ enum class OrderType {
 
 //----OrderList-----//
 
-class OrdersList
+class OrdersList: public ILoggable, public Subject
 {
     public:
         OrdersList();

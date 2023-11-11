@@ -1,0 +1,2 @@
+Command: gamestart, Effect: 
+Game state changed to playersadded
