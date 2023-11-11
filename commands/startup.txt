@@ -1,0 +1,11 @@
+loadmap ../Maps/Africa.map
+validatemap
+addplayer John
+gamestart
+addplayer Jane
+addplayer Rick
+addplayer Claire
+addplayer Oscar
+addplayer Becky
+addplayer Jade
+gamestart

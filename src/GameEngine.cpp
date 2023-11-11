@@ -242,13 +242,13 @@ Deck* GameEngine::getGameDeck() {
 
 
 void listFilesInDirectory() {
-    std::string directoryPath = "Maps"; 
+    std::string directoryPath = "../Maps/"; 
 
     if (filesystem::exists(directoryPath) && std::filesystem::is_directory(directoryPath)) {
         cout << "List of map files in the directory:" << endl;
         for (const auto& entry : filesystem::directory_iterator(directoryPath)) {
             if (filesystem::is_regular_file(entry)) {
-                cout << entry.path().filename() << endl;
+                cout << entry.path().string() << endl;
             }
         }
     }

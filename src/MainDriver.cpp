@@ -21,6 +21,7 @@ int main() {
 
     // Test function for game engine
     testGameStates();
+    testStartupPhase();
 
     // Test function for command processor
     testCommandProcessor();

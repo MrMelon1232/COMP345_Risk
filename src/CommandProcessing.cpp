@@ -1,5 +1,6 @@
 #include "CommandProcessing.h"
 #include <iostream>
+#include <algorithm>
 #include <stdexcept>
 #include <random>
 
@@ -175,13 +176,13 @@ void CommandProcessor::addPlayer(Command* command) {
 
     if (gameEngine->getPlayers().size() >= 6) {
         command->saveEffect("Cannot add more players. Maximum limit reached.");
-        cout << "Cannot add more players. Maximum limit reached.";
+        cout << "Cannot add more players. Maximum limit reached." << endl;
         return;
     }
     string playerName = command->getArg();
     Player* newPlayer = new Player(playerName);
     gameEngine->addPlayer(newPlayer);
-    cout << "Player " << playerName << " added successfully.";
+    cout << "Player " << playerName << " added successfully." << endl;
     gameEngine->findAndTransition(command->getName());
 }
 
@@ -190,7 +191,7 @@ void CommandProcessor::gameStart(Command* command) {
 
     if (gameEngine->getPlayers().size() < 2) {
         command->saveEffect("Cannot start the game with less than 2 players.");
-        cout << "Cannot start the game with less than 2 players.";
+        cout << "Cannot start the game with less than 2 players." << endl;
         return;
     }
 
@@ -212,8 +213,6 @@ void CommandProcessor::gameStart(Command* command) {
 
     // 4.b determine randomly the order of play of the players in the game
     // Randomize the order of the how the player is accessed by rnadomizing the vector
-    random_device rd;
-    default_random_engine rng(rd());
     shuffle(gameEngine->getPlayers().begin(), gameEngine->getPlayers().end(), rng);
 
     // 4.c give 50 initial army units to the players, which are placed in their respective reinforcement pool
