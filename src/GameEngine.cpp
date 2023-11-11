@@ -347,7 +347,7 @@ bool GameEngine::gameResultCheck() {
 
 void GameEngine::reinforcementPhase() {
     cout << "\nEntering reinforcement phase." << endl;
-    int reinforcement = 0;
+    //int reinforcement = 0;
     auto iterator = playersList.begin();
     
     while (iterator != playersList.end()) {
@@ -385,7 +385,7 @@ void GameEngine::issueOrdersPhase() {
     for (int i = 0; i < playersList.size(); i++) {
         turn.push_back(i);
         //setting reinforcement pool
-        
+        playersList.at(i)->setReinforcement(reinforcement);
     }
 
     //round-robin loop

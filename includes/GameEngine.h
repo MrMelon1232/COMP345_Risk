@@ -90,6 +90,7 @@ class GameEngine {
         CommandProcessor* commandProcessor;
         string mode;
         vector<Player*> playersList;
+        int reinforcement;
 };
 
 //test methods

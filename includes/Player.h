@@ -33,6 +33,7 @@ class Player
         // Hand of cards owned by the player
         Hand* hand;
 
+        int reinforcement;
     // Player public methods
     public:
 
@@ -69,6 +70,10 @@ class Player
         void setName(string n);
         
         vector<Territory*> getTerritories();
+
+        int getReinforcement();
+
+        void setReinforcement(int army);
 };
 
 

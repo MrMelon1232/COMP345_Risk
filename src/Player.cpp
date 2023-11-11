@@ -155,5 +155,15 @@ vector<Territory*> Player::getTerritories()
     return territoriesOwned;
 }
 
+int Player::getReinforcement()
+{
+    return reinforcement;
+}
+
+void Player::setReinforcement(int army)
+{
+    reinforcement = army;
+}
+
 //test methods
 void testPlayers();
