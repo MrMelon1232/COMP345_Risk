@@ -424,10 +424,11 @@ void GameEngine::reinforcementPhase() {
     auto iterator = players.begin();
     
     while (iterator != players.end()) {
-        cout << "\n-----------------debug line--------------------" << endl;
+        //cout << "\n-----------------debug line--------------------\n" << (*iterator)->getTempPool() << endl;
+        (*iterator)->setTempPool((*iterator)->getReinforcementPool());
         //number of territories owned by players
         int territoryQuantity = 0; 
-        territoryQuantity = (*iterator)->getTerritories().size();
+        territoryQuantity += (*iterator)->getTerritories().size();
         //reinforcement amount
         reinforcement = floor(territoryQuantity/3);
 
@@ -448,6 +449,7 @@ void GameEngine::reinforcementPhase() {
         if (reinforcement < 3) {
             reinforcement = 3;
         }
+        //cout << "\n-----------------debug line--------------------\n" << reinforcement << endl;
         ++iterator;
     }
 }
@@ -458,8 +460,9 @@ void GameEngine::issueOrdersPhase() {
     for (int i = 0; i < players.size(); i++) {
         turn.push_back(i);
         //setting reinforcement pool
-        players.at(i)->setReinforcementPool(reinforcement);
-        players.at(i)->setTempPool(reinforcement);
+        players.at(i)->setReinforcementPool(players.at(i)->getReinforcementPool() + reinforcement);
+        players.at(i)->setTempPool(players.at(i)->getTempPool() + reinforcement);
+        //cout << "\n-----------------debug line--------------------\n" << players.at(i)->getTempPool() << endl;
     }
 
     //round-robin loop
@@ -469,7 +472,7 @@ void GameEngine::issueOrdersPhase() {
         string str, availableOrder;
         cout << "Current player issuing order: " << players.at(turn.at(iteration))->getName() << endl;
         //show territories that player can deploy
-        
+        //cout << "\n-----------------debug line--------------------\n" << players.at(iteration)->getTempPool() << endl;
         //deploying reinforcements
         while (players.at(turn.at(iteration))->getTempPool() != 0) {
             players.at(turn.at(iteration))->issueOrder(players.at(turn.at(iteration)), players, getOrderType("deploy"));
@@ -562,13 +565,18 @@ void GameEngine::executeOrdersPhase() {
             for (int i = 0; i < players.at(turn.at(iteration))->getOrdersList()->getSize(); i++) {
                 if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Deploy") {
                     players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute(); 
+                    players.at(turn.at(iteration))->getOrdersList()->remove(i);
                 }
             }
         }
 
 
 
-
+        //remove player from roundrobin
+        if (players.at(turn.at(iteration))->getOrdersList()->getSize() == 0) {
+            turn.erase(turn.begin() + iteration);
+            break;
+        }
         //return to first iteration
         if (iteration >= turn.size()-1) {
             iteration = 0;
