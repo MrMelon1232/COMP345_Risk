@@ -33,6 +33,12 @@ std::ostream& operator<<(std::ostream& output, const Command& command) {
     return output;
 }
 
+// Save effect function
+void Command::saveEffect(string effect) {
+    this->effect = effect; 
+    notify(*this);
+}
+
 // Command's destructor.
 Command::~Command() {}
 
@@ -83,6 +89,7 @@ Command* CommandProcessor::readCommand() {
 // Saves the command into the CommandProcessor's commands list.
 void CommandProcessor::saveCommand(Command* command) {
     commands.push_back(command);
+    notify(*command);
 }
 
 // Sets the effect according to the command type. If the command is invalid, it sets an invalid effect.
@@ -95,20 +102,16 @@ void CommandProcessor::validate(Command* command) {
 
     if (cmdName == "loadmap") {
         command->saveEffect("Loading map.");
-    }
-    else if (cmdName == "validatemap") {
+    } else if (cmdName == "validatemap") {
         command->saveEffect("Validating map.");
-    }
-    else if (cmdName == "addplayer") {
+    } else if (cmdName == "addplayer") {
         command->saveEffect("Adding player.");
-    }
-    else if (cmdName == "gamestart") {
+    } else if (cmdName == "gamestart") {
         command->saveEffect("Ending startup phase. Starting play phase.");
-    }
-    else if (cmdName == "replay") {
+    } else if (cmdName == "replay") {
         command->saveEffect("Restarting the game.");
     } else if (cmdName == "quit") {
-        command->saveEffect("Quitting the game.");
+        command->saveEffect("Quitting the game");
     } else { // if command behavior undefined, simply transition state.
         command->saveEffect("Transitioning to another state.");
     }
@@ -211,7 +214,8 @@ void CommandProcessor::gameStart(Command* command) {
 
     // 4.b determine randomly the order of play of the players in the game
     // Randomize the order of the how the player is accessed by rnadomizing the vector
-    shuffle(gameEngine->getPlayers().begin(), gameEngine->getPlayers().end(), rng);
+    vector<Player*> allPlayers = gameEngine->getPlayers();
+    shuffle(allPlayers.begin(), allPlayers.end(), rng);
 
     // 4.c give 50 initial army units to the players, which are placed in their respective reinforcement pool
     for (Player* player : gameEngine->getPlayers()) {
@@ -332,7 +336,7 @@ Command* FileCommandProcessorAdapter::readCommand() {
     string cmdName = commandLine.substr(0, spaceIndex);
 
     Command* command = new Command(cmdName);
-    if (cmdName == "loadmap" || cmdName == "addPlayer")
+    if (cmdName == "loadmap" || cmdName == "addplayer")
         command->setArg(commandLine.substr(spaceIndex + 1));
     return command;
 }
@@ -354,4 +358,13 @@ std::ostream& operator<<(std::ostream& output, const FileCommandProcessorAdapter
 // FileCommandProcessorAdapter's destructor.
 FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
     delete flr;
+}
+
+// Part 2
+string CommandProcessor::stringToLog() const {
+    return "";
+}
+
+string Command::stringToLog() const {
+    return "Command: " + cmdName + ", Effect: " + effect;
 }

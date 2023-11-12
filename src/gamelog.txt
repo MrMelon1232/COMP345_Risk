@@ -1,0 +1,9 @@
+Command: gamestart, Effect: Command `gamestart` is invalid in state: `start`.
+Deploy order: 2 units have been deployed to Germany
+Advance order: target: France is now owned by player 2 and has 3 units.
+Bomb order: Germany now has 1 units remaining after bomb has been dropped on.
+Airlift order: Germany has 3 units after 2 units have been moved from 1
+Negotiate order: player 1 is now allies with player 2
+Blockade order: neutral player: 0 has received 2
+Add function: Order Deploy has been added to the player's list of orders.
+Game state changed to playersadded

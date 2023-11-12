@@ -4,19 +4,20 @@
 #include "Player.h"
 #include <iostream>
 #include <vector>
+#include "LoggingObserver.h"
 
 using std::string;
 using std::vector;
 
 // Represents an in-game command.
-class Command {
+class Command: public ILoggable, public Subject {
     public:
         Command(string cmdName);
         Command(Command& command);
 
         // Getter and setters.
         string getEffect() { return effect; };
-        void saveEffect(string effect) { this->effect = effect; };
+        void saveEffect(string effect);
         string getName() { return cmdName; };
         string getArg() { return arg; };
         void setArg(string arg) { this->arg = arg; };
@@ -25,6 +26,10 @@ class Command {
         friend std::ostream& operator<<(std::ostream& output, const Command& command);
 
         ~Command();
+
+        //Part 2 Loggable
+        string stringToLog() const override;
+
     private:
         string cmdName;
         string effect;
@@ -34,7 +39,7 @@ class Command {
 class GameEngine; // forward declaration
 
 // Manages game commands including creation, validation and execution.
-class CommandProcessor {
+class CommandProcessor: public ILoggable, public Subject {
     public:
         CommandProcessor(GameEngine* gameEngine);
         CommandProcessor(CommandProcessor& commandProcessor);
@@ -48,6 +53,10 @@ class CommandProcessor {
         friend std::ostream& operator<<(std::ostream& output, const CommandProcessor& commandProcessor);
 
         virtual ~CommandProcessor();
+
+        // Part 2 Logging
+        string stringToLog() const override;
+
     private:
         virtual Command* readCommand();
         void saveCommand(Command* command);

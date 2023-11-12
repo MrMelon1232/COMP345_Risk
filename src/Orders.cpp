@@ -79,6 +79,8 @@ void Deploy::execute()
         player->setReinforcementPool(player->getReinforcementPool() - armyUnits); 
         cout<<armyUnits<<" units have been deployed to "<<target->GetName()<<".\n";
         cout<<target->GetName()<<" now has "<<target->getNbArmies()<<" units.\n";
+        notify(*this);
+
     }
 }
 
@@ -191,7 +193,8 @@ void Advance::execute()
     if(validate() == true)
     {
         cout <<"Executing Advance\n";
-        simulateAttack(); 
+        simulateAttack();
+        notify(*this);
     }
 }
 
@@ -237,6 +240,7 @@ void Bomb::execute()
         target->setNbArmies(0.5*(target->getNbArmies()));
         cout<<"The bomb has dropped on " <<target->GetName()<<".\n";
         cout<<target->GetName()<<" now has "<<target->getNbArmies()<<" units remaining.\n";
+        notify(*this);
     }
 }
 
@@ -333,6 +337,7 @@ void Blockade::execute()
         cout << "Displaying neutral player below...\n";
         cout<< *neutralPlayer; 
         cout << "\n";
+        notify(*this);
     }
 }
 
@@ -406,6 +411,7 @@ void Airlift::execute()
         cout<<"After Airlift is completed: \n";
         cout<<source->GetName()<<" has "<<source->getNbArmies()<<" units.\n";
         cout<<target->GetName()<<" has "<<target->getNbArmies()<<" units.\n\n";
+        notify(*this);
     }
 }
 
@@ -465,6 +471,7 @@ void Negotiate::execute()
         enemy->addAlly(player->getPlayerID()); 
 
         cout<<"Both players can no longer attack each other until end of turn now\n";
+        notify(*this);
     }
 }
 
@@ -498,6 +505,7 @@ OrdersList::OrdersList()
 void OrdersList::add(Order* O)
 {
     listOfOrders.push_back(O); 
+    notify(*this);
 }
 
 //Returns the size of the list
@@ -597,6 +605,39 @@ Order* OrdersList::getOrder(int i)
     return listOfOrders.at(i);
 }
 
+// Part 2: Logging
+string Deploy::stringToLog() const {
+    return "Deploy order: " + to_string(armyUnits) + " units have been deployed to " + target->GetName();
+}
+
+string Advance::stringToLog() const {
+    return "Advance order: target: " + target->GetName() + " is now owned by player " +
+                         std::to_string(target->getOwnerID()) + " and has " +
+                         std::to_string(target->getNbArmies()) + " units.";
+}
+
+string Bomb::stringToLog() const {
+    return "Bomb order: " + target->GetName() + " now has " + std::to_string(target->getNbArmies()) + " units remaining after bomb has been dropped on.";
+}
+
+string Blockade::stringToLog() const {
+    return "Blockade order: neutral player: " + std::to_string(neutralPlayer->getPlayerID()) + " has received " + std::to_string(target->getNbArmies());
+}
+
+string Airlift::stringToLog() const {
+    return "Airlift order: " + target->GetName() + " has " + std::to_string(target->getNbArmies()) +
+       " units after " + std::to_string(movingUnits) +
+       " units have been moved from " + std::to_string(source->getNbArmies());
+}
+
+string Negotiate::stringToLog() const {
+    return "Negotiate order: player " + std::to_string(player->getPlayerID()) +
+       " is now allies with player " + std::to_string(enemy->getPlayerID());
+}
+
+string OrdersList::stringToLog() const {
+    return "Add function: Order " + listOfOrders.back()->getName() + " has been added to the player's list of orders.";
+}
 
     
          

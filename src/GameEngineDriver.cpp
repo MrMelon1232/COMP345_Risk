@@ -20,7 +20,7 @@ void testMainGameLoop() {
 	vector<Player*> players;
 	vector<Continent*> continents;
 	vector<Territory*> territories;
-	
+
 	cout << "Creating necessary dummy values for test" << endl;
 	//create new players
 	Player* p1 = new Player();
@@ -61,6 +61,9 @@ void testMainGameLoop() {
 	for (int i = 0; i < territories.size(); i++) {
 		if (i < 4) {
 			c1->addTerritory(territories.at(i));
+			territories.at(i)->AddAdjacentTerritory(t2);
+			territories.at(i)->AddAdjacentTerritory(t5);
+			territories.at(i)->AddAdjacentTerritory(t7);
 		}
 		else if (i > 3 && i < territories.size()) {
 			c2->addTerritory(territories.at(i));
@@ -71,29 +74,33 @@ void testMainGameLoop() {
 	}
 	//assign territories to players
 	for (int i = 0; i < territories.size(); i++) {
-		if (i < 50) {
+		if (i < 4) {
 			players.at(0)->addTerritory(territories.at(i));
 		}
 		else {
-			//players.at(1)->addTerritory(territories.at(i));
+			players.at(1)->addTerritory(territories.at(i));
 		}
 	}
 	Map* map = new Map(continents, territories);
 
-	
+
 	cout << "creating game engine" << endl;
 	//create game engine
 	GameEngine* game = new GameEngine();
-
+	//
+	Card* c = new Card("ADVANCE");
+	p1->getHand()->addHand(c);
 	//setup
 	game->setPlayer(players);
 	game->setCurrentMap(map);
 	game->mainGameLoop();
+}
 
 void testStartupPhase() {
-    GameEngine gameEngine;
+    GameEngine* gameEngine = new GameEngine();
 
     // Call the startup phase
     std::cout << "Testing startup phase..." << std::endl;
-    gameEngine.startupPhase();
+    gameEngine->startupPhase();
+    delete gameEngine;
 }
