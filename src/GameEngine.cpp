@@ -373,11 +373,13 @@ void GameEngine::mainGameLoop() {
     cout << "\n\nentering main game loop" << endl;
     bool gameEnd = false;
     while (!gameEnd) {
-        cout << "inside while loop" << endl;
+        //cout << "inside while loop" << endl;
         //run game loop
         reinforcementPhase();
         issueOrdersPhase();
         executeOrdersPhase();
+
+        forceGameWin();
 
         gameEnd =  gameResultCheck();
     }
@@ -393,23 +395,24 @@ bool GameEngine::gameResultCheck() {
     auto iterator = players.begin();
     while (iterator != players.end()) {
         //cout << "getting player data: " << players.at(0) << " " << players.at(1) << " " << players.at(2) << endl;
-        cout << "check player" << endl;
+        cout << "checking player" << endl;
         if ((*iterator)->getTerritories().size() < 1) {
+            cout << "Player " << (*iterator)->getName() + " ID: " << (*iterator)->getPlayerID() << " is out!" << endl;
             iterator = players.erase(iterator);
             continue;
         }
         ++iterator;
     }
-
+    
     //check if a player owns all the territories
     if (players.size() == 1) {
         int numberTerritoriesOwned = players.at(0)->getTerritories().size();
         int numberTerritories = 0;
         for (int i = 0; i < currentMap->getContinents().size(); i++) {
-            cout << "territories in continent: " << currentMap->getContinents().at(i)->getTerritory().size() << endl;
+            cout << "territories owned in continent: " << currentMap->getContinents().at(i)->getTerritory().size() << endl;
             numberTerritories += currentMap->getContinents().at(i)->getTerritory().size();
         }
-
+        cout << numberTerritoriesOwned << " " << numberTerritories;
         if (numberTerritoriesOwned == numberTerritories) {
             return true;
         }
@@ -470,7 +473,7 @@ void GameEngine::issueOrdersPhase() {
     int iteration = 0;
     while (!turn.empty()) {
         string str, availableOrder;
-        cout << "Current player issuing order: " << players.at(turn.at(iteration))->getName() << endl;
+        cout << "Current player issuing order: " << players.at(turn.at(iteration))->getName() << " ID: " << players.at(turn.at(iteration))->getPlayerID() << endl;
         //show territories that player can deploy
         //cout << "\n-----------------debug line--------------------\n" << players.at(iteration)->getTempPool() << endl;
         //deploying reinforcements
@@ -559,8 +562,10 @@ void GameEngine::executeOrdersPhase() {
 
     //round-robin loop
     int iteration = 0;
-    bool deploy = true, trueFalse = true;
+    bool advance = false;
     while (!turn.empty()) {
+        bool trueFalse = true;
+        //first iteration for deploy orders
         while (players.at(turn.at(iteration))->getReinforcementPool() != 0) {
             for (int i = 0; i < players.at(turn.at(iteration))->getOrdersList()->getSize(); i++) {
                 if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Deploy") {
@@ -568,14 +573,39 @@ void GameEngine::executeOrdersPhase() {
                     players.at(turn.at(iteration))->getOrdersList()->remove(i);
                 }
             }
+            trueFalse = false;
         }
-
-
+        //second iteration for remaining orders
+        cout << players.at(turn.at(iteration))->getTerritories().at(0)->getNbArmies() << endl;
+        while (trueFalse) {
+            for (int i = 0; i < players.at(turn.at(iteration))->getOrdersList()->getSize(); i++) {
+                if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Advance") {
+                    players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
+                    players.at(turn.at(iteration))->getOrdersList()->remove(i);
+                }
+                else if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Bomb") {
+                    players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
+                    players.at(turn.at(iteration))->getOrdersList()->remove(i);
+                }
+                else if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Blockade") {
+                    players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
+                    players.at(turn.at(iteration))->getOrdersList()->remove(i);
+                }
+                else if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Airlift") {
+                    players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
+                    players.at(turn.at(iteration))->getOrdersList()->remove(i);
+                }
+                else if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Negotiate") {
+                    players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
+                    players.at(turn.at(iteration))->getOrdersList()->remove(i);
+                }
+            }
+            trueFalse = false;
+        }
 
         //remove player from roundrobin
         if (players.at(turn.at(iteration))->getOrdersList()->getSize() == 0) {
             turn.erase(turn.begin() + iteration);
-            break;
         }
         //return to first iteration
         if (iteration >= turn.size()-1) {
@@ -584,7 +614,6 @@ void GameEngine::executeOrdersPhase() {
         else {
             iteration++;
         }
-        trueFalse = true;
     }
 }
 
@@ -612,5 +641,18 @@ OrderType getOrderType(string str) {
     else if (str == "diplomacy") {
         cout << "negotiate order type" << endl;
         return OrderType::Negotiate;
+    }
+}
+
+void GameEngine::forceGameWin() {
+    cout << "Erasing a player manually to simulate winning game..." << endl;
+    players.resize(1);
+    for (int i = 0; i < currentMap->getTerritories().size(); i++) {
+        if (currentMap->getTerritories().at(i)->getOwnerID() != players.at(0)->getPlayerID()) {
+            currentMap->getTerritories().at(i)->setOwner(players.at(0));
+            currentMap->getTerritories().at(i)->setOwnerID(players.at(0)->getPlayerID());
+            players.at(0)->addTerritory(currentMap->getTerritories().at(i));
+        }
+        //cout << players.at(0)->getTerritories().at(i)->GetName() << endl;
     }
 }

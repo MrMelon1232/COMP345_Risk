@@ -61,9 +61,9 @@ void testMainGameLoop() {
 	for (int i = 0; i < territories.size(); i++) {
 		if (i < 4) {
 			c1->addTerritory(territories.at(i));
-			territories.at(i)->AddAdjacentTerritory(t2);
-			territories.at(i)->AddAdjacentTerritory(t5);
-			territories.at(i)->AddAdjacentTerritory(t7);
+			territories.at(i)->AddAdjacency(territories.at(i), t2);
+			territories.at(i)->AddAdjacency(territories.at(i), t5);
+			territories.at(i)->AddAdjacency(territories.at(i), t7);
 		}
 		else if (i > 3 && i < territories.size()) {
 			c2->addTerritory(territories.at(i));
@@ -77,11 +77,8 @@ void testMainGameLoop() {
 		if (i < 4) {
 			players.at(0)->addTerritory(territories.at(i));
 		}
-		else if (i < 7) {
-			players.at(1)->addTerritory(territories.at(i));
-		}
 		else {
-			players.at(2)->addTerritory(territories.at(i));
+			players.at(1)->addTerritory(territories.at(i));
 		}
 	}
 	Map* map = new Map(continents, territories);
@@ -96,6 +93,7 @@ void testMainGameLoop() {
 	//setup
 	game->setPlayer(players);
 	game->setCurrentMap(map);
+	game->gameResultCheck();
 	game->mainGameLoop();
 }
 
