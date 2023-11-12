@@ -32,8 +32,13 @@ std::ostream& operator<<(std::ostream& os, Territory& territory) {
     os << "Territory name: " << territory.GetName() << std::endl;
     os << "Territory continent name: " << territory.GetContinentName() << std::endl;
     os << "Territory adjacent territories: ";
-    
-    for (Territory* adjacent : territory.GetAdjacentTerritories()) {
+    vector<string> adjacentTerritories;
+
+    for (int i = 0; i < territory.GetAdjacentTerritories().size(); i++) {
+        adjacentTerritories.push_back(territory.GetAdjacentTerritories().at(i)->GetName());
+    }
+
+    for (string adjacent : adjacentTerritories) {
         os << adjacent << ", ";
     }
     os << std::endl;
@@ -73,7 +78,7 @@ Territory::Territory(const string& name, const string& continentName, int player
     :name(name), continentName(continentName), nbArmies(0), ownerID(playerID) {}
 
 // GetName method
-const string& Territory::GetName() const {
+string& Territory::GetName() {
     return name;
 }
 
@@ -88,7 +93,7 @@ void Territory::AddAdjacentTerritory(Territory* adjacent) {
 }
 
 // GetAdjacentTerritories method
-const vector<Territory*> Territory::GetAdjacentTerritories() {
+vector<Territory*> Territory::GetAdjacentTerritories() {
     return adjacentTerritories;
 }
 
@@ -131,9 +136,14 @@ void Territory::setOwnerID(int playerID) {
 //NEW: boolean method which returns true if the territory passed is adjacent
 bool Territory::isAdjacent(Territory* territory)
 {
-    for (const Territory* adjacentTerritory : adjacentTerritories) 
+    vector<string> adjacentTerritories;
+
+    for (int i = 0; i < (*territory).GetAdjacentTerritories().size(); i++) {
+        adjacentTerritories.push_back((*territory).GetAdjacentTerritories().at(i)->GetName());
+    }
+    for (const string adjacentTerritory : adjacentTerritories) 
     {
-        if (adjacentTerritory->GetName() == territory->GetName())
+        if (adjacentTerritory == territory->GetName())
         {
             return true;
         }
@@ -219,7 +229,7 @@ bool Map::isConnectedGraph() const {
             return false; // If any territory is not visited, the graph is not connected
         }
     }
-
+    
     return true;
 }
 
@@ -233,17 +243,20 @@ void Map::dfs(size_t territoryIndex, vector<bool>& visited) const {
         stack.pop();
 
         visited[currentIndex] = true;
-
+        cout << territories[currentIndex]->GetName() << " is visited" << endl;
         const vector<string>& adjacents = adjacencyList.at(territories[currentIndex]->GetName());
         for (const string& adjacent : adjacents) {
             size_t adjIndex = 0;
             for (size_t i = 0; i < territories.size(); ++i) {
+                cout << adjacent << " comparing " << territories[i]->GetName() << endl;
                 if (territories[i]->GetName() == adjacent) {
+                    cout << "Debug line #1" << endl;
                     adjIndex = i;
                     break;
                 }
             }
             if (!visited[adjIndex]) {
+                cout << "Debug line #2" << endl;
                 stack.push(adjIndex);
             }
         }
@@ -342,8 +355,8 @@ bool Map::territoriesBelongToOneContinent() const {
 
    
 
-    for (const Territory* territory : territories) {
-        const string& territoryName = territory->GetName();
+    for (Territory* territory : territories) {
+        string& territoryName = territory->GetName();
         const string& continentName = territory->GetContinentName();
 
         // Check if the territory exists in the territoryToContinent map

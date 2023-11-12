@@ -43,10 +43,10 @@ private:
 public:
     Territory(const string& name, const string& continentName);
     Territory(const string& name, const string& continentName, int playerID);
-    const string& GetName() const;
+    string& GetName();
     const string& GetContinentName() const;
     void AddAdjacentTerritory(Territory* adjacent);
-    const vector<Territory*> GetAdjacentTerritories();
+    vector<Territory*> GetAdjacentTerritories();
     void AddAdjacency(Territory* territory1, Territory* territory2);
     const int getNbArmies() const;
     void setNbArmies(int nbArmies);
