@@ -20,7 +20,7 @@ class Card {
 		//string getCardType(int n);
 		string card;
 		string const cardList[5] = 
-			{"ADVANCE", "REINFORCEMENT", "BLOCKADE", "AIRLIFT", "DIPLOMACY"};
+			{"bomb", "reinforcement", "blockade", "airlift", "diplomacy"};
 
 	private:
 };

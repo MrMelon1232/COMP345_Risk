@@ -77,8 +77,11 @@ void testMainGameLoop() {
 		if (i < 4) {
 			players.at(0)->addTerritory(territories.at(i));
 		}
-		else {
+		else if (i < 7) {
 			players.at(1)->addTerritory(territories.at(i));
+		}
+		else {
+			players.at(2)->addTerritory(territories.at(i));
 		}
 	}
 	Map* map = new Map(continents, territories);

@@ -463,7 +463,7 @@ void GameEngine::issueOrdersPhase() {
     }
 
     //round-robin loop
-    bool trueFalse = true;
+    bool trueFalse = true, advance = true, cardUsed = false;
     int iteration = 0;
     while (!turn.empty()) {
         string str, availableOrder;
@@ -472,21 +472,45 @@ void GameEngine::issueOrdersPhase() {
         
         //deploying reinforcements
         while (players.at(turn.at(iteration))->getTempPool() != 0) {
-            players.at(turn.at(iteration))->issueOrder(players.at(turn.at(iteration)), players, getOrderType("DEPLOY"));
+            players.at(turn.at(iteration))->issueOrder(players.at(turn.at(iteration)), players, getOrderType("deploy"));
+            if (players.at(turn.at(iteration))->getTempPool() == 0) {
+                trueFalse = false;
+            }
         }
+        //chose between advance or a card
+        while (trueFalse && advance) {
+            cout << "Would you like to advance armies? Player won't be able to use advance again for this phase after selecting 'no'. [y/n] : " << endl;
+            cin >> str;
+            char first = str.at(0);
+            //remove player from roundrobin
+            if (first == 'y') {
+                players.at(turn.at(iteration))->issueOrder(players.at(turn.at(iteration)), players, getOrderType("advance"));
+                trueFalse = false;
+                break;
+            }
+            else if (first == 'n') {
+                advance = false;
+                break;
+            }
+            else {
+                cout << "Cannot understand choice. please enter again." << endl;
+            }
+        }
+
 
         //issue order for cards. 1 order per cycle
         for (int i = 0; i < players.at(turn.at(iteration))->getHandSize(); i++) {
             availableOrder += "[" + players.at(turn.at(iteration))->getCard(i) + "]\t";
         }
-        cout << "Available Order: " << availableOrder << endl;
-        while (trueFalse) {
+        while (trueFalse && !cardUsed) {
+            cout << "Available Order: " << availableOrder << "\nState the order ton be issued: " << endl;
             cin >> str;
             //check if player has card
             for (int i = 0; i < players.at(turn.at(iteration))->getHandSize(); i++) {
                 if (players.at(turn.at(iteration))->getCard(i) == str) {
                     players.at(turn.at(iteration))->issueOrder(players.at(turn.at(iteration)), players, getOrderType(str));
                     trueFalse = false;
+                    cardUsed = true;
                     break;
                 }
                 else  if (i == players.at(turn.at(iteration))->getHandSize()-1) {
@@ -494,21 +518,17 @@ void GameEngine::issueOrdersPhase() {
                 }
             }
         }
-        
-        trueFalse = true;
         //end turn or not
-        while (trueFalse) {
+        while (true) {
             cout << "Will you end your turn? [y/n]" << endl;
             cin >> str;
             char first = str.at(0);
             //remove player from roundrobin
             if (first == 'y') {
                 turn.erase(turn.begin() + iteration);
-                trueFalse = false;
                 break;
             }
             else if (first == 'n') {
-                trueFalse = false;
                 break;
             }
             else {
@@ -536,27 +556,18 @@ void GameEngine::executeOrdersPhase() {
 
     //round-robin loop
     int iteration = 0;
-    bool deploy = true;
+    bool deploy = true, trueFalse = true;
     while (!turn.empty()) {
-        while (deploy) {
-            for (int i = 0; i < players.at(turn.at(iteration))->getHandSize(); i++) {
-                if (players.at(turn.at(iteration))->getCard(i) == "DEPLOY") {
-                    players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
+        while (players.at(turn.at(iteration))->getReinforcementPool() != 0) {
+            for (int i = 0; i < players.at(turn.at(iteration))->getOrdersList()->getSize(); i++) {
+                if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Deploy") {
+                    players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute(); 
                 }
             }
         }
 
 
 
-
-        string value;
-        cout << "Will you end your turn?" << endl;
-        cin >> value;
-        char first = value.at(0);
-        //remove player from roundrobin
-        if (first == 'y') {
-            turn.erase(turn.begin() + iteration);
-        }
 
         //return to first iteration
         if (iteration >= turn.size()-1) {
@@ -565,31 +576,32 @@ void GameEngine::executeOrdersPhase() {
         else {
             iteration++;
         }
+        trueFalse = true;
     }
 }
 
 OrderType getOrderType(string str) {
-    if (str == "DEPLOY") {
+    if (str == "deploy") {
         cout << "deploy order type" << endl;
         return OrderType::Deploy;
     }
-    else if (str == "ADVANCE") {
+    else if (str == "advance") {
         cout << "advance order type" << endl;
         return OrderType::Advance;
     }
-    else if (str.compare("bomb")) {
+    else if (str == "bomb") {
         cout << "bomb order type" << endl;
         return OrderType::Bomb;
     }
-    else if (str.compare("blockade")) {
+    else if (str == "blockade") {
         cout << "blockade order type" << endl;
         return OrderType::Blockade;
     }
-    else if (str.compare("airlift")) {
+    else if (str == "airlift") {
         cout << "airlift order type" << endl;
         return OrderType::Airlift;
     }
-    else if (str.compare("negotiate")) {
+    else if (str == "diplomacy") {
         cout << "negotiate order type" << endl;
         return OrderType::Negotiate;
     }
