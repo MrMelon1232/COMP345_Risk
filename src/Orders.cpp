@@ -638,7 +638,3 @@ string Negotiate::stringToLog() const {
 string OrdersList::stringToLog() const {
     return "Add function: Order " + listOfOrders.back()->getName() + " has been added to the player's list of orders.";
 }
-
-    
-         
-    
