@@ -29,16 +29,17 @@ void testA2() {
     // Test function for command processor
     //testCommandProcessor();
 
-    // Test function for logging observer
-    testLoggingObserver();
-
-    // Test function for stat
+    // Test function for startup phase
     //testStartupPhase();
-    
+
     //Test function for main game loop
     //testMainGameLoop();
 
+    // Test function for orders execution
     //testOrderExecution();
+
+    // Test function for logging observer
+    //testLoggingObserver();
 }
 
 int main() {

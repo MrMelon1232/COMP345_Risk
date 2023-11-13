@@ -83,6 +83,7 @@ public:
         void reinforcementPhase();
         void issueOrdersPhase();
         void executeOrdersPhase();
+        void resetGame();
 
         //method for demo
         void forceGameWin();

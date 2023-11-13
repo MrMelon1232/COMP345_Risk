@@ -94,6 +94,10 @@ void CommandProcessor::saveCommand(Command* command) {
 
 // Sets the effect according to the command type. If the command is invalid, it sets an invalid effect.
 void CommandProcessor::validate(Command* command) {
+    if (!command) { // empty command (i.e., no more commands in file)
+        throw std::invalid_argument( "No more commands to execute.");
+    }
+
     string cmdName = command->getName();
     if (!gameEngine->isCommandValid(cmdName)) {
         command->saveEffect("Command `" + command->getName() + "` is invalid in state: `" + gameEngine->getCurrentState()->getName() + "`.");
@@ -234,9 +238,8 @@ void CommandProcessor::gameStart(Command* command) {
 
 // Helper function to the `replay` command.
 void CommandProcessor::replay(Command* command) {
-    cout << "replay()" << endl;
     gameEngine->findAndTransition(command->getName()); // cmdName is "replay"
-    // TODO: reset GameEngine variables (i.e., current map, players)
+    gameEngine->resetGame();
 }
 
 // Assignment operator of the CommandProcessor.
