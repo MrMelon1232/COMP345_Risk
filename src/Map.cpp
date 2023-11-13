@@ -237,26 +237,39 @@ bool Map::isConnectedGraph() const {
 void Map::dfs(size_t territoryIndex, vector<bool>& visited) const {
     stack<size_t> stack;
     stack.push(territoryIndex);
+    //actual territories
+    /*
+    //cout << "-----Territories" << endl;
+    for (int i = 0; i < territories.size(); i++) {
+        cout << territories.at(i)->GetName() << endl;
+    }
+    //cout << "-----Adjacency List" << endl;
+    for (auto it = adjacencyList.begin(); it != adjacencyList.end(); ++it) {
+        cout << it->first << endl;
+    }*/
 
     while (!stack.empty()) {
         size_t currentIndex = stack.top();
         stack.pop();
 
         visited[currentIndex] = true;
-        cout << territories[currentIndex]->GetName() << " is visited" << endl;
-        const vector<string>& adjacents = adjacencyList.at(territories[currentIndex]->GetName());
+        //cout << territories[currentIndex]->GetName() << " is visited" << endl;
+        vector<string> adjacents;
+        for (auto it = adjacencyList.begin(); it != adjacencyList.end(); ++it) {
+            adjacents.push_back(it->first);
+        }
         for (const string& adjacent : adjacents) {
             size_t adjIndex = 0;
             for (size_t i = 0; i < territories.size(); ++i) {
-                cout << adjacent << " comparing " << territories[i]->GetName() << endl;
+                //cout << adjacent << " comparing " << territories[i]->GetName() << endl;
                 if (territories[i]->GetName() == adjacent) {
-                    cout << "Debug line #1" << endl;
+                    //cout << "-----Debug line #1" << endl;
                     adjIndex = i;
                     break;
                 }
             }
             if (!visited[adjIndex]) {
-                cout << "Debug line #2" << endl;
+                //cout << "-----Debug line #2" << endl;
                 stack.push(adjIndex);
             }
         }
