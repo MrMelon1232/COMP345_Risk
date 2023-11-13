@@ -27,7 +27,7 @@ void testA1() {
 
 void testA2() {
     // Test function for command processor
-    testCommandProcessor();
+    //testCommandProcessor();
 
     // Test function for startup phase
     //testStartupPhase();
