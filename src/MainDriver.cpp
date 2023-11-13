@@ -30,13 +30,13 @@ void testA2() {
     //testCommandProcessor();
 
     // Test function for logging observer
-    //testLoggingObserver();
+    testLoggingObserver();
 
     // Test function for stat
     //testStartupPhase();
     
     //Test function for main game loop
-    testMainGameLoop();
+    //testMainGameLoop();
 
     //testOrderExecution();
 }

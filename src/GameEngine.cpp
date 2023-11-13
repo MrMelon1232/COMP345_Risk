@@ -412,7 +412,7 @@ bool GameEngine::gameResultCheck() {
             cout << "territories owned in continent: " << currentMap->getContinents().at(i)->getTerritory().size() << endl;
             numberTerritories += currentMap->getContinents().at(i)->getTerritory().size();
         }
-        cout << numberTerritoriesOwned << " " << numberTerritories;
+        //cout << numberTerritoriesOwned << " " << numberTerritories;
         if (numberTerritoriesOwned == numberTerritories) {
             return true;
         }
