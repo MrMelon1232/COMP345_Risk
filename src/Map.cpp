@@ -143,7 +143,8 @@ bool Territory::isAdjacent(Territory* territory)
     }
     for (const string adjacentTerritory : adjacentTerritories) 
     {
-        if (adjacentTerritory == territory->GetName())
+        //cout << adjacentTerritory << " comparing " << territory->GetName() << endl;;
+        if (adjacentTerritory == name)
         {
             return true;
         }
