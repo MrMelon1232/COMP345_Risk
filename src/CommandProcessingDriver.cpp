@@ -51,7 +51,11 @@ void testCommandProcessor() {
     CommandProcessor* commandProcessor = gameEngine->getCommandProcessor();
     for (Command* command : commandProcessor->getCommands()) {
         cout << "-------------------------------" << endl;
-        commandProcessor->executeCommand(command);
-        cout << *command << endl;
+        try {    
+            commandProcessor->executeCommand(command);
+            cout << *command << endl;
+        } catch (const std::invalid_argument& e) {
+		    cout << "Cannot replay during testing. Ending test." << endl;
+	    }
     }
 }

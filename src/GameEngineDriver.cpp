@@ -102,6 +102,12 @@ void testStartupPhase() {
 
     // Call the startup phase
     std::cout << "Testing startup phase..." << std::endl;
-    gameEngine->startupPhase();
+
+	try {
+		gameEngine->startupPhase();
+	} catch (const std::invalid_argument& e) {
+		cout << "No more commands to read. Ending test." << endl;
+	}
+
     delete gameEngine;
 }

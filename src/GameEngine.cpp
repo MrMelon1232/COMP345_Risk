@@ -267,7 +267,7 @@ void GameEngine::startupPhase() {
 
     // Load a map
     while (currentState->getName() != "maploaded") {
-        Command* loadMapCommand = commandProcessor -> getCommand();
+        Command* loadMapCommand = commandProcessor->getCommand();
         commandProcessor->executeCommand(loadMapCommand);
     }
 
@@ -332,6 +332,14 @@ GameEngine& GameEngine::operator=(const GameEngine& gameEngine) {
     currentState = gameEngine.currentState;
     currentMap = new Map(*(gameEngine.currentMap));
     mode = gameEngine.mode;
+    delete gameDeck;
+    gameDeck = new Deck(*(gameEngine.gameDeck));
+
+    for (Player* player : players)
+        delete player;
+    players.clear();
+    for (Player* player : gameEngine.players)
+        players.push_back(player);
 
     FileCommandProcessorAdapter* fileCmdProcAdapter = dynamic_cast<FileCommandProcessorAdapter*>(gameEngine.commandProcessor);
     if (fileCmdProcAdapter) {
@@ -361,6 +369,10 @@ GameEngine::~GameEngine() {
     for (Transition* transition : transitions)
         delete transition;
 
+    for (Player* player : players)
+        delete player;
+
+    delete gameDeck;
     delete currentMap;
     delete commandProcessor;
 }
@@ -655,4 +667,18 @@ void GameEngine::forceGameWin() {
         }
         //cout << players.at(0)->getTerritories().at(i)->GetName() << endl;
     }
+}
+
+void GameEngine::resetGame() {
+    for (Player* player : players)
+        delete player;
+    players.clear();
+
+    delete currentMap;
+    currentMap = nullptr;
+
+    delete gameDeck;
+    gameDeck = new Deck();
+    startupPhase();
+    mainGameLoop();
 }
