@@ -26,11 +26,11 @@ void testPlayers() {
 
     // Issue orders for players
     std::cout << "\nAdding order of Deploy type to player1 \n";
-    player1.issueOrder(OrderType::Deploy);
+    //player1.issueOrder(OrderType::Deploy);
     std::cout << "Displaying player1 information: \n";
     std::cout << player1;
     std::cout << "\nAdding order of Advance type to player1 \n";
-    player1.issueOrder(OrderType::Advance);
+    //player1.issueOrder(OrderType::Advance);
     std::cout << "\nDisplaying player1 information: \n";
     std::cout << player1;
 

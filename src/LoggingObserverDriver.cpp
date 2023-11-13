@@ -54,12 +54,12 @@ void testLoggingObserver() {
     cout << "Spain and France are adjacent to each other.\n";
 
     //Germany is adjacent to France 
-    germany->AddAdjacentTerritory("France");
-    france->AddAdjacentTerritory("Germany");
+    germany->AddAdjacentTerritory(france);
+    france->AddAdjacentTerritory(germany);
 
     //Spain is adjacent to France
-    spain->AddAdjacentTerritory("France");
-    france->AddAdjacentTerritory("Spain"); 
+    spain->AddAdjacentTerritory(france);
+    france->AddAdjacentTerritory(spain);
 
     cout << "Displaying both players...\n";
     cout<< *playerONE; 

@@ -37,16 +37,16 @@ void testMainGameLoop() {
 	continents.push_back(c2);
 	continents.push_back(c3);
 	//create new territories
-	Territory* t1 = new Territory("t1", "c1");
-	Territory* t2 = new Territory("t2", "c1");
-	Territory* t3 = new Territory("t3", "c1");
-	Territory* t4 = new Territory("t4", "c2");
-	Territory* t5 = new Territory("t5", "c2");
-	Territory* t6 = new Territory("t6", "c2");
-	Territory* t7 = new Territory("t7", "c3");
-	Territory* t8 = new Territory("t8", "c3");
-	Territory* t9 = new Territory("t9", "c3");
-	Territory* t10 = new Territory("t10", "c3");
+	Territory* t1 = new Territory("t1", "c1", p1->getPlayerID());
+	Territory* t2 = new Territory("t2", "c1", p1->getPlayerID());
+	Territory* t3 = new Territory("t3", "c1", p1->getPlayerID());
+	Territory* t4 = new Territory("t4", "c2", p1->getPlayerID());
+	Territory* t5 = new Territory("t5", "c2", p2->getPlayerID());
+	Territory* t6 = new Territory("t6", "c2", p2->getPlayerID());
+	Territory* t7 = new Territory("t7", "c3", p2->getPlayerID());
+	Territory* t8 = new Territory("t8", "c3", p3->getPlayerID());
+	Territory* t9 = new Territory("t9", "c3", p3->getPlayerID());
+	Territory* t10 = new Territory("t10", "c3", p3->getPlayerID());
 	territories.push_back(t1);
 	territories.push_back(t2);
 	territories.push_back(t3);
@@ -61,6 +61,9 @@ void testMainGameLoop() {
 	for (int i = 0; i < territories.size(); i++) {
 		if (i < 4) {
 			c1->addTerritory(territories.at(i));
+			territories.at(i)->AddAdjacency(territories.at(i), t2);
+			territories.at(i)->AddAdjacency(territories.at(i), t5);
+			territories.at(i)->AddAdjacency(territories.at(i), t7);
 		}
 		else if (i > 3 && i < territories.size()) {
 			c2->addTerritory(territories.at(i));
@@ -71,11 +74,11 @@ void testMainGameLoop() {
 	}
 	//assign territories to players
 	for (int i = 0; i < territories.size(); i++) {
-		if (i < 50) {
+		if (i < 4) {
 			players.at(0)->addTerritory(territories.at(i));
 		}
 		else {
-			//players.at(1)->addTerritory(territories.at(i));
+			players.at(1)->addTerritory(territories.at(i));
 		}
 	}
 	Map* map = new Map(continents, territories);
@@ -84,10 +87,13 @@ void testMainGameLoop() {
 	cout << "creating game engine" << endl;
 	//create game engine
 	GameEngine* game = new GameEngine();
-
+	//
+	Card* c = new Card("ADVANCE");
+	p1->getHand()->addHand(c);
 	//setup
 	game->setPlayer(players);
 	game->setCurrentMap(map);
+	game->gameResultCheck();
 	game->mainGameLoop();
 }
 

@@ -35,18 +35,19 @@ private:
     string name;
     int nbArmies;
     string continentName;
-    vector<string> adjacentTerritories;
-    Player* owner;
+    vector<Territory*> adjacentTerritories;
+    Player* owner = nullptr;
     Player* getOwner() const;
     int ownerID;
 
 public:
     Territory(const string& name, const string& continentName);
     Territory(const string& name, const string& continentName, int playerID);
-    const string& GetName() const;
+    string& GetName();
     const string& GetContinentName() const;
-    void AddAdjacentTerritory(const string& adjacent);
-    const vector<string>& GetAdjacentTerritories() const;
+    void AddAdjacentTerritory(Territory* adjacent);
+    vector<Territory*> GetAdjacentTerritories();
+    void AddAdjacency(Territory* territory1, Territory* territory2);
     const int getNbArmies() const;
     void setNbArmies(int nbArmies);
     void setOwner(Player* owner);
@@ -61,7 +62,7 @@ public:
     // Class assignment operator
     Territory& operator=(const Territory& other);
     // Stream insertion operator
-    friend std::ostream& operator<<(std::ostream& os, const Territory& territory);
+    friend std::ostream& operator<<(std::ostream& os, Territory& territory);
 };
 
 // Map Class

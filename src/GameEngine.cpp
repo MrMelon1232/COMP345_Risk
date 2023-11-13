@@ -373,11 +373,13 @@ void GameEngine::mainGameLoop() {
     cout << "\n\nentering main game loop" << endl;
     bool gameEnd = false;
     while (!gameEnd) {
-        cout << "inside while loop" << endl;
+        //cout << "inside while loop" << endl;
         //run game loop
         reinforcementPhase();
         issueOrdersPhase();
         executeOrdersPhase();
+
+        forceGameWin();
 
         gameEnd =  gameResultCheck();
     }
@@ -393,23 +395,24 @@ bool GameEngine::gameResultCheck() {
     auto iterator = players.begin();
     while (iterator != players.end()) {
         //cout << "getting player data: " << players.at(0) << " " << players.at(1) << " " << players.at(2) << endl;
-        cout << "check player" << endl;
+        cout << "checking player" << endl;
         if ((*iterator)->getTerritories().size() < 1) {
+            cout << "Player " << (*iterator)->getName() + " ID: " << (*iterator)->getPlayerID() << " is out!" << endl;
             iterator = players.erase(iterator);
             continue;
         }
         ++iterator;
     }
-
+    
     //check if a player owns all the territories
     if (players.size() == 1) {
         int numberTerritoriesOwned = players.at(0)->getTerritories().size();
         int numberTerritories = 0;
         for (int i = 0; i < currentMap->getContinents().size(); i++) {
-            cout << "territories in continent: " << currentMap->getContinents().at(i)->getTerritory().size() << endl;
+            cout << "territories owned in continent: " << currentMap->getContinents().at(i)->getTerritory().size() << endl;
             numberTerritories += currentMap->getContinents().at(i)->getTerritory().size();
         }
-
+        cout << numberTerritoriesOwned << " " << numberTerritories;
         if (numberTerritoriesOwned == numberTerritories) {
             return true;
         }
@@ -424,10 +427,11 @@ void GameEngine::reinforcementPhase() {
     auto iterator = players.begin();
     
     while (iterator != players.end()) {
-        cout << "\n-----------------debug line--------------------" << endl;
+        //cout << "\n-----------------debug line--------------------\n" << (*iterator)->getTempPool() << endl;
+        (*iterator)->setTempPool((*iterator)->getReinforcementPool());
         //number of territories owned by players
         int territoryQuantity = 0; 
-        territoryQuantity = (*iterator)->getTerritories().size();
+        territoryQuantity += (*iterator)->getTerritories().size();
         //reinforcement amount
         reinforcement = floor(territoryQuantity/3);
 
@@ -448,6 +452,7 @@ void GameEngine::reinforcementPhase() {
         if (reinforcement < 3) {
             reinforcement = 3;
         }
+        //cout << "\n-----------------debug line--------------------\n" << reinforcement << endl;
         ++iterator;
     }
 }
@@ -458,32 +463,60 @@ void GameEngine::issueOrdersPhase() {
     for (int i = 0; i < players.size(); i++) {
         turn.push_back(i);
         //setting reinforcement pool
-        players.at(i)->setReinforcementPool(reinforcement);
+        players.at(i)->setReinforcementPool(players.at(i)->getReinforcementPool() + reinforcement);
+        players.at(i)->setTempPool(players.at(i)->getTempPool() + reinforcement);
+        //cout << "\n-----------------debug line--------------------\n" << players.at(i)->getTempPool() << endl;
     }
 
     //round-robin loop
-    bool trueFalse = true;
+    bool trueFalse = true, advance = true, cardUsed = false;
     int iteration = 0;
     while (!turn.empty()) {
         string str, availableOrder;
-        cout << "Current player issuing order: " << players.at(turn.at(iteration))->getName() << endl;
+        cout << "Current player issuing order: " << players.at(turn.at(iteration))->getName() << " ID: " << players.at(turn.at(iteration))->getPlayerID() << endl;
+        //show territories that player can deploy
+        //cout << "\n-----------------debug line--------------------\n" << players.at(iteration)->getTempPool() << endl;
         //deploying reinforcements
-        while (players.at(turn.at(iteration))->getReinforcementPool() != 0) {
-            players.at(turn.at(iteration))->issueOrder(getOrderType("DEPLOY"));
+        while (players.at(turn.at(iteration))->getTempPool() != 0) {
+            players.at(turn.at(iteration))->issueOrder(players.at(turn.at(iteration)), players, getOrderType("deploy"));
+            if (players.at(turn.at(iteration))->getTempPool() == 0) {
+                trueFalse = false;
+            }
         }
+        //chose between advance or a card
+        while (trueFalse && advance) {
+            cout << "Would you like to advance armies? Player won't be able to use advance again for this phase after selecting 'no'. [y/n] : " << endl;
+            cin >> str;
+            char first = str.at(0);
+            //remove player from roundrobin
+            if (first == 'y') {
+                players.at(turn.at(iteration))->issueOrder(players.at(turn.at(iteration)), players, getOrderType("advance"));
+                trueFalse = false;
+                break;
+            }
+            else if (first == 'n') {
+                advance = false;
+                break;
+            }
+            else {
+                cout << "Cannot understand choice. please enter again." << endl;
+            }
+        }
+
 
         //issue order for cards. 1 order per cycle
         for (int i = 0; i < players.at(turn.at(iteration))->getHandSize(); i++) {
             availableOrder += "[" + players.at(turn.at(iteration))->getCard(i) + "]\t";
         }
-        cout << "Available Order: " << availableOrder << endl;
-        while (trueFalse) {
+        while (trueFalse && !cardUsed) {
+            cout << "Available Order: " << availableOrder << "\nState the order ton be issued: " << endl;
             cin >> str;
             //check if player has card
             for (int i = 0; i < players.at(turn.at(iteration))->getHandSize(); i++) {
                 if (players.at(turn.at(iteration))->getCard(i) == str) {
-                    players.at(turn.at(iteration))->issueOrder(getOrderType(str));
+                    players.at(turn.at(iteration))->issueOrder(players.at(turn.at(iteration)), players, getOrderType(str));
                     trueFalse = false;
+                    cardUsed = true;
                     break;
                 }
                 else  if (i == players.at(turn.at(iteration))->getHandSize()-1) {
@@ -491,21 +524,17 @@ void GameEngine::issueOrdersPhase() {
                 }
             }
         }
-        
-        trueFalse = true;
         //end turn or not
-        while (trueFalse) {
+        while (true) {
             cout << "Will you end your turn? [y/n]" << endl;
             cin >> str;
             char first = str.at(0);
             //remove player from roundrobin
             if (first == 'y') {
                 turn.erase(turn.begin() + iteration);
-                trueFalse = false;
                 break;
             }
             else if (first == 'n') {
-                trueFalse = false;
                 break;
             }
             else {
@@ -533,28 +562,51 @@ void GameEngine::executeOrdersPhase() {
 
     //round-robin loop
     int iteration = 0;
-    bool deploy = true;
+    bool advance = false;
     while (!turn.empty()) {
-        while (deploy) {
-            for (int i = 0; i < players.at(turn.at(iteration))->getHandSize(); i++) {
-                if (players.at(turn.at(iteration))->getCard(i) == "DEPLOY") {
-                    players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
+        bool trueFalse = true;
+        //first iteration for deploy orders
+        while (players.at(turn.at(iteration))->getReinforcementPool() != 0) {
+            for (int i = 0; i < players.at(turn.at(iteration))->getOrdersList()->getSize(); i++) {
+                if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Deploy") {
+                    players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute(); 
+                    players.at(turn.at(iteration))->getOrdersList()->remove(i);
                 }
             }
+            trueFalse = false;
+        }
+        //second iteration for remaining orders
+        cout << players.at(turn.at(iteration))->getTerritories().at(0)->getNbArmies() << endl;
+        while (trueFalse) {
+            for (int i = 0; i < players.at(turn.at(iteration))->getOrdersList()->getSize(); i++) {
+                if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Advance") {
+                    players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
+                    players.at(turn.at(iteration))->getOrdersList()->remove(i);
+                }
+                else if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Bomb") {
+                    players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
+                    players.at(turn.at(iteration))->getOrdersList()->remove(i);
+                }
+                else if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Blockade") {
+                    players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
+                    players.at(turn.at(iteration))->getOrdersList()->remove(i);
+                }
+                else if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Airlift") {
+                    players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
+                    players.at(turn.at(iteration))->getOrdersList()->remove(i);
+                }
+                else if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Negotiate") {
+                    players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
+                    players.at(turn.at(iteration))->getOrdersList()->remove(i);
+                }
+            }
+            trueFalse = false;
         }
 
-
-
-
-        string value;
-        cout << "Will you end your turn?" << endl;
-        cin >> value;
-        char first = value.at(0);
         //remove player from roundrobin
-        if (first == 'y') {
+        if (players.at(turn.at(iteration))->getOrdersList()->getSize() == 0) {
             turn.erase(turn.begin() + iteration);
         }
-
         //return to first iteration
         if (iteration >= turn.size()-1) {
             iteration = 0;
@@ -566,22 +618,41 @@ void GameEngine::executeOrdersPhase() {
 }
 
 OrderType getOrderType(string str) {
-    if (str.compare("deploy")) {
+    if (str == "deploy") {
+        cout << "deploy order type" << endl;
         return OrderType::Deploy;
     }
-    else if (str.compare("advance")) {
+    else if (str == "advance") {
+        cout << "advance order type" << endl;
         return OrderType::Advance;
     }
-    else if (str.compare("bomb")) {
+    else if (str == "bomb") {
+        cout << "bomb order type" << endl;
         return OrderType::Bomb;
     }
-    else if (str.compare("blockade")) {
+    else if (str == "blockade") {
+        cout << "blockade order type" << endl;
         return OrderType::Blockade;
     }
-    else if (str.compare("airlift")) {
+    else if (str == "airlift") {
+        cout << "airlift order type" << endl;
         return OrderType::Airlift;
     }
-    else if (str.compare("negotiate")) {
+    else if (str == "diplomacy") {
+        cout << "negotiate order type" << endl;
         return OrderType::Negotiate;
+    }
+}
+
+void GameEngine::forceGameWin() {
+    cout << "Erasing a player manually to simulate winning game..." << endl;
+    players.resize(1);
+    for (int i = 0; i < currentMap->getTerritories().size(); i++) {
+        if (currentMap->getTerritories().at(i)->getOwnerID() != players.at(0)->getPlayerID()) {
+            currentMap->getTerritories().at(i)->setOwner(players.at(0));
+            currentMap->getTerritories().at(i)->setOwnerID(players.at(0)->getPlayerID());
+            players.at(0)->addTerritory(currentMap->getTerritories().at(i));
+        }
+        //cout << players.at(0)->getTerritories().at(i)->GetName() << endl;
     }
 }

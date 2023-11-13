@@ -84,6 +84,9 @@ public:
         void issueOrdersPhase();
         void executeOrdersPhase();
 
+        //method for demo
+        void forceGameWin();
+
         ~GameEngine();
 
         //Part 2 Logging

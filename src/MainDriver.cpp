@@ -27,12 +27,14 @@ void testA1() {
 
 void testA2() {
     // Test function for command processor
-    //testCommandProcessor();
+    testCommandProcessor();
 
     // Test function for logging observer
-    testLoggingObserver();
+    //testLoggingObserver();
 
+    // Test function for stat
     //testStartupPhase();
+    
     //Test function for main game loop
     //testMainGameLoop();
 
