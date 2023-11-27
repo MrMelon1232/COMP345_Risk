@@ -164,6 +164,7 @@ void GameEngine::setDefaultGameStates() {
     State* executeOrders = new State("executeorders");
     State* win = new State("win");
 
+    Transition* tournament = new Transition("tournament", assignReinforcements);
     Transition* loadMap = new Transition("loadmap", mapLoaded);
     Transition* validateMap = new Transition("validatemap", mapValidated);
     Transition* addPlayer = new Transition("addplayer", playersAdded);
@@ -176,7 +177,7 @@ void GameEngine::setDefaultGameStates() {
     Transition* play = new Transition("replay", start);
     Transition* quit = new Transition("quit", nullptr);
 
-    start->addTransitions({ loadMap });
+    start->addTransitions({ loadMap, tournament });
     mapLoaded->addTransitions({ loadMap, validateMap });
     mapValidated->addTransitions({ addPlayer });
     playersAdded->addTransitions({ addPlayer, gamestart });
@@ -430,6 +431,7 @@ bool GameEngine::gameResultCheck() {
         }
     }
     cout << "Game still in progress, starting new turn." << endl;
+    // TODO: check if number of turns was reached. If -1, game does not have max nb turns?
     return false;
 }
 
@@ -681,4 +683,37 @@ void GameEngine::resetGame() {
     gameDeck = new Deck();
     startupPhase();
     mainGameLoop();
+}
+
+void GameEngine::startTournament(TournamentCommand* tournamentCmd) {
+    for (int i = 0; i < tournamentCmd->mapFiles.size(); i++) {
+        string mapFile = tournamentCmd->mapFiles.at(i);
+        MapLoader* mapLoader = getCommandProcessor()->getMapLoader();
+
+        for (int j = 0; j < tournamentCmd->nbGames; j++) {
+            // Prepare the game.
+            try {
+                setCurrentMap(mapLoader->LoadMap(mapFile));
+            } catch (const runtime_error& error) {
+                tournamentCmd->saveEffect("Map file not found.");
+                cout << "Could not load map file " + mapFile + ". Skipping this map." << endl;
+                continue;
+            }
+
+            nbTurnsPlayed = 0;
+            maxTurns = tournamentCmd->maxTurnsPerGame;
+
+            for (StrategyType type : tournamentCmd->playerStrats) {
+                Player* newPlayer = new Player();
+                newPlayer->setStrategy(loadStrategy(newPlayer, type));
+                addPlayer(newPlayer);
+            }
+            
+            // Call mainGameLoop?
+
+            for (Player* player : players)
+                delete player; // TODO: player destructor should delete the strategy
+            delete currentMap;
+        }
+    }
 }

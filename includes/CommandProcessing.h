@@ -16,24 +16,40 @@ class Command: public ILoggable, public Subject {
         Command(Command& command);
 
         // Getter and setters.
-        string getEffect() { return effect; };
+        string getEffect() { return effect; }
         void saveEffect(string effect);
-        string getName() { return cmdName; };
+        string getName() { return cmdName; }
+        void setName(string cmdName) { this->cmdName = cmdName; }
         string getArg() { return arg; };
-        void setArg(string arg) { this->arg = arg; };
+        void setArg(string arg) { this->arg = arg; }
 
         Command& operator=(const Command& command);
         friend std::ostream& operator<<(std::ostream& output, const Command& command);
 
-        ~Command();
+        virtual ~Command();
 
         //Part 2 Loggable
         string stringToLog() const override;
-
     private:
         string cmdName;
         string effect;
-        string arg;
+        string arg; // For the tournament command, this represents the whole command line.
+};
+
+// Represents a tournament command.
+class TournamentCommand : public Command {
+    public:
+        TournamentCommand();
+
+        vector<string> mapFiles;
+        vector<StrategyType> playerStrats;
+        int nbGames;
+        int maxTurnsPerGame;
+
+        TournamentCommand& operator=(const TournamentCommand& command);
+        friend std::ostream& operator<<(std::ostream& output, const TournamentCommand& command);
+
+        ~TournamentCommand();
 };
 
 class GameEngine; // forward declaration
@@ -47,7 +63,8 @@ class CommandProcessor: public ILoggable, public Subject {
         Command* getCommand();
         void validate(Command* command);
         void executeCommand(Command* command);
-        vector<Command*> getCommands() { return commands; };
+        vector<Command*> getCommands() { return commands; }
+        MapLoader* getMapLoader() { return this->mapLoader; }
 
         CommandProcessor& operator=(const CommandProcessor& commandProcessor);
         friend std::ostream& operator<<(std::ostream& output, const CommandProcessor& commandProcessor);
@@ -60,8 +77,11 @@ class CommandProcessor: public ILoggable, public Subject {
     private:
         virtual Command* readCommand();
         void saveCommand(Command* command);
+        // helper validation method.
+        bool validateTournament(Command* command);
 
         // helper methods to manage command execution
+        void tournament(Command* command);
         void loadMap(Command* command);
         void validateMap(Command* command);
         void addPlayer(Command* command);

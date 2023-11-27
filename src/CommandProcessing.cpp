@@ -71,7 +71,7 @@ Command* CommandProcessor::readCommand() {
     string cmdName;
     cin >> cmdName;
 
-    Command* command = new Command(cmdName);
+    Command* command;
 
     if (cmdName == "loadmap" || cmdName == "addplayer") {
         string arg;
@@ -81,6 +81,15 @@ Command* CommandProcessor::readCommand() {
             cout << "Please enter the player's name." << endl;
         cin >> arg;
         command->setArg(arg);
+    } 
+
+    int tournamentIdx = cmdName.find("tournament");
+    if (cmdName.find("tournament") != string::npos) {
+        command = new TournamentCommand();
+        command->setName("tournament");
+        command->setArg(cmdName.substr(tournamentIdx));
+    } else {
+        command = new Command(cmdName);
     }
 
     return command;
@@ -116,9 +125,109 @@ void CommandProcessor::validate(Command* command) {
         command->saveEffect("Restarting the game.");
     } else if (cmdName == "quit") {
         command->saveEffect("Quitting the game");
+    } else if (cmdName == "tournament") {
+        if (validateTournament(command))
+            command->saveEffect("Starting tournament.");
+        else
+            command->saveEffect("The tournament command format is invalid.");
     } else { // if command behavior undefined, simply transition state.
         command->saveEffect("Transitioning to another state.");
     }
+}
+
+bool CommandProcessor::validateTournament(Command* command) {
+    TournamentCommand* tournamentCmd = dynamic_cast<TournamentCommand*>(command);
+    if (tournamentCmd == nullptr) { // shouldn't happen if the readCommand was implemented properly...
+        cout << "Something went wrong." << endl;
+        return false;
+    }
+
+    string cmdLine = tournamentCmd->getArg();
+    // Retrive number of turns.
+    int nbTurns;
+    int turnsIndex = cmdLine.find("-D");
+    try {
+        string nbTurnsStr = cmdLine.substr(turnsIndex+3);
+        nbTurns = std::stoi(nbTurnsStr);
+    } catch (const std::invalid_argument& e) {
+        cout << "Invalid number of turns per game. " << 
+            "Please use `tournament -M <listofmapfiles> -P <listofplayerstrategies> -G <numberofgames> -D <maxnumberofturns>`" << endl;
+        return false;
+    }
+
+    if (nbTurns < 10 || nbTurns > 50) {
+         cout << "Number of turns should be between 10 and 50 inclusively. " << endl;
+        return false;
+    }
+    
+    // Retrieve number of games.
+    int nbGames;
+    int gamesIndex = cmdLine.find("-G");
+    try {
+        string nbGamesStr = cmdLine.substr(gamesIndex+3, turnsIndex);
+        nbGames = std::stoi(nbGamesStr);
+    } catch (const std::invalid_argument& e) {
+        cout << "Invalid number of games. " << 
+            "Please use `tournament -M <listofmapfiles> -P <listofplayerstrategies> -G <numberofgames> -D <maxnumberofturns>`" << endl;
+        return false;
+    }
+
+    if (nbGames < 1 || nbGames > 5) {
+         cout << "Number of games should be between 1 and 5 inclusively. " << endl;
+        return false;
+    }
+
+    // Retrieve player strats
+    int stratIndex = cmdLine.find("-P");
+    string stratsStr = cmdLine.substr(stratIndex+3, gamesIndex);
+    vector<StrategyType> playerStrats;
+    int index = 0;
+    while ((index = stratsStr.find(" ")) != std::string::npos) {
+        string strat = stratsStr.substr(index);
+
+        StrategyType playerStrat = getStrategyType(strat);
+        if (StrategyType::None != playerStrat && StrategyType::Human != playerStrat)
+            playerStrats.push_back(playerStrat);
+        else
+            cout << "Strat `" << strat << "` is an invalid player strat, skipping." << endl;
+
+        stratsStr.erase(0, index + 1);
+    }
+
+    if (playerStrats.size() == 0) {
+        cout << "Invalid player strategies. " << 
+            "Please use `tournament -M <listofmapfiles> -P <listofplayerstrategies> -G <numberofgames> -D <maxnumberofturns>`" << endl;
+        return false;
+    } else if (playerStrats.size() < 2 || playerStrats.size() > 4) {
+        cout << "Number of strats should be between 2 and 4 inclusively and Human strategy is not allowed in tournament mode." << endl;
+        return false;
+    }
+
+    // Retrieve list of maps
+    string mapsStr = cmdLine.substr(cmdLine.find("-M")+3, stratIndex);
+    vector<string> mapFiles;
+    index = 0;
+    while ((index = mapsStr.find(" ")) != std::string::npos) {
+        string mapFile = mapsStr.substr(index);
+        mapFiles.push_back(mapFile);
+        mapsStr.erase(0, index + 1);
+    }
+
+    // Since map files could be removed during execution, file paths will be validated during execution.
+    if (mapFiles.size() == 0) {
+        cout << "Invalid map files." <<
+            "Please use `tournament -M <listofmapfiles> -P <listofplayerstrategies> -G <numberofgames> -D <maxnumberofturns>`" << endl;
+        return false;
+    } else if (mapFiles.size() > 5) {
+        cout << "Number of maps should be between 1 and 5 inclusively and Human strategy is not allowed in tournament mode." << endl;
+        return false;
+    }
+
+    tournamentCmd->mapFiles = mapFiles;
+    tournamentCmd->playerStrats = playerStrats;
+    tournamentCmd->nbGames = nbGames;
+    tournamentCmd->maxTurnsPerGame = nbTurns;
+    return true;
 }
 
 // Executes the given command. If command is invalid, it just outputs the effect.
@@ -130,27 +239,36 @@ void CommandProcessor::executeCommand(Command* command) {
     }
 
     string cmdName = command->getName();
-    if (cmdName == "loadmap") {
+
+    if (cmdName == "tournament") {
+        tournament(command);
+    } else if (cmdName == "loadmap") {
         loadMap(command);
-    }
-    else if (cmdName == "validatemap") {
+    } else if (cmdName == "validatemap") {
         validateMap(command);
-    }
-    else if (cmdName == "addplayer") {
+    } else if (cmdName == "addplayer") {
         addPlayer(command);
-    }
-    else if (cmdName == "gamestart") {
+    } else if (cmdName == "gamestart") {
         gameStart(command);
-    }
-    else if (cmdName == "replay") {
+    } else if (cmdName == "replay") {
         replay(command);
-    }
-    else if (cmdName == "quit") {
+    } else if (cmdName == "quit") {
+        gameEngine->findAndTransition(command->getName());
+    } else { // if command behavior undefined, simply transition state.
         gameEngine->findAndTransition(command->getName());
     }
-    else { // if command behavior undefined, simply transition state.
-        gameEngine->findAndTransition(command->getName());
+}
+
+// Helper function for the `tournament -M <listofmapfiles> -P <listofplayerstrategies> -G <numberofgames> -D <maxnumberofturns>` command.
+void CommandProcessor::tournament(Command* command) {
+    TournamentCommand* tournamentCmd = dynamic_cast<TournamentCommand*>(command);
+    if (tournamentCmd == nullptr) { // shouldn't happen if the readCommand was implemented properly...
+        cout << "Something went wrong. Finishing tournament." << endl;
+        return;
     }
+
+    gameEngine->findAndTransition(tournamentCmd->getName());
+    gameEngine->startTournament(tournamentCmd);
 }
 
 // Helper function for the `loadmap <fileName>` command.
@@ -338,6 +456,7 @@ Command* FileCommandProcessorAdapter::readCommand() {
     int spaceIndex = commandLine.find(' ');
     string cmdName = commandLine.substr(0, spaceIndex);
 
+    // TODO: If command is tournament, create instance of TournamentCommand
     Command* command = new Command(cmdName);
     if (cmdName == "loadmap" || cmdName == "addplayer")
         command->setArg(commandLine.substr(spaceIndex + 1));

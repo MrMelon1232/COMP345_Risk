@@ -45,7 +45,10 @@ class Transition {
         State* nextState; 
 };
 
+class PlayerStrategy;
+
 class CommandProcessor; // forward declaration
+class TournamentCommand; // forward declaration
 
 // Manages the game setup and execution.
 class GameEngine: public Subject, public ILoggable {
@@ -74,6 +77,7 @@ public:
     void setNumOfPlayers(int num);
     int getNumOfPlayers() const;
     Deck* getGameDeck();
+    void startTournament(TournamentCommand* tournamentCmd);
 
     GameEngine& operator=(const GameEngine& gameEngine);
     friend std::ostream& operator<<(std::ostream& output, const GameEngine& gameEngine);
@@ -106,6 +110,8 @@ public:
         int reinforcement;
         int numOfPlayers;
         Deck* gameDeck;
+        int maxTurns;
+        int nbTurnsPlayed;
 };
 
 OrderType getOrderType(string str);
