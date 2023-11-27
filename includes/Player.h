@@ -18,6 +18,7 @@ class OrdersList;
 class Hand;
 class Card;
 enum class OrderType;
+class PlayerStrategy;
 
 // Declaration of Player class
 class Player
@@ -45,6 +46,9 @@ private:
 
     //NEW: each player will have a vector of integers for players which they have an alliance with
     std::vector<int> myAlliesForTheTurn;
+
+    // Member of type PlayerStrategy
+    PlayerStrategy* ps; 
 
     // Player public methods
 public:
@@ -103,6 +107,9 @@ public:
         string getCard(int i);
 
         OrdersList* getOrdersList();
+
+    //A3 part
+    void setStrategy(PlayerStrategy* newStrategy);
 };
 
 

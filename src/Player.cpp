@@ -99,18 +99,17 @@ std::ostream& operator<<(std::ostream& os, Player& player) {
 
 // Function that returns a list of territories that are to be defended
 vector<Territory*> Player::toDefend() {
-    return territoriesOwned;
-}
+    if (ps) {
+        return ps->toDefend(this); // Delegate to PlayerStrategy's toDefend()
+    }
+    return {}; // Return empty vector if no strategy set
 
 // Function that returns a list of territories that are to be attacked
 vector<Territory*> Player::toAttack() {
-    // Implement toAttack logic, return a list of territories to attack
-    vector<Territory*> attackTerritories;
-    // Populate the list with territories
-    attackTerritories.push_back(new Territory("TerritoryC", "ContinentB")); // Example territory
-    attackTerritories.push_back(new Territory("TerritoryD", "ContinentB")); // Example territory
-
-    return attackTerritories;
+   if (ps) {
+        return ps->toAttack(this); // Delegate to PlayerStrategy's toAttack()
+    }
+    return {}; // Return empty vector if no strategy set
 }
 
 // Function that creates an order object and adds it to the list of orders
@@ -399,3 +398,8 @@ OrdersList* Player::getOrdersList()
 
 //test methods
 void testPlayers();
+
+// A3
+void Player::setStrategy(PlayerStrategy* newStrategy) {
+    strategy = newStrategy;
+}
