@@ -10,6 +10,7 @@
 //#include <string>
 using namespace std;
 #include <iostream> 
+#include "PlayerStrategies.h"
 
 
 // Foward declaration of classes to be used for typing

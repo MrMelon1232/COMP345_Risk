@@ -100,14 +100,15 @@ std::ostream& operator<<(std::ostream& os, Player& player) {
 // Function that returns a list of territories that are to be defended
 vector<Territory*> Player::toDefend() {
     if (ps) {
-        return ps->toDefend(this); // Delegate to PlayerStrategy's toDefend()
+        return ps->toDefend(); // Delegate to PlayerStrategy's toDefend()
     }
     return {}; // Return empty vector if no strategy set
+}
 
 // Function that returns a list of territories that are to be attacked
 vector<Territory*> Player::toAttack() {
    if (ps) {
-        return ps->toAttack(this); // Delegate to PlayerStrategy's toAttack()
+        return ps->toAttack(); // Delegate to PlayerStrategy's toAttack()
     }
     return {}; // Return empty vector if no strategy set
 }
@@ -401,5 +402,5 @@ void testPlayers();
 
 // A3
 void Player::setStrategy(PlayerStrategy* newStrategy) {
-    strategy = newStrategy;
+    ps = newStrategy;
 }
