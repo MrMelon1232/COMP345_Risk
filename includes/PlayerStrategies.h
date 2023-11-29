@@ -27,9 +27,15 @@ public:
 
 class AggressivePlayerStrategy : public PlayerStrategy {
 public:
+    AggressivePlayerStrategy();
+    AggressivePlayerStrategy(Player* player);
+    AggressivePlayerStrategy(const AggressivePlayerStrategy& copied);
+    ~AggressivePlayerStrategy() override;
     void issueOrder(std::vector<Player*> target, OrderType type) override;
     vector<Territory*> toDefend() override;
     vector<Territory*> toAttack() override;
+private:
+    Player* p;
 };
 
 
@@ -43,9 +49,15 @@ public:
 
 class NeutralPlayerStrategy : public PlayerStrategy {
 public:
+    NeutralPlayerStrategy();
+    NeutralPlayerStrategy(Player* player);
+    NeutralPlayerStrategy(const NeutralPlayerStrategy& copied);
+    ~NeutralPlayerStrategy() override;
     void issueOrder(std::vector<Player*> target, OrderType type) override;
     vector<Territory*> toDefend() override;
     vector<Territory*> toAttack() override;
+private:
+    Player* p;
 };
 
 
