@@ -185,6 +185,16 @@ void Advance::simulateAttack()
         cout <<"Player has captured territory and has moved units up.\n";
         cout <<"Player has earned a card for conquering a territory.\n";
     }
+
+    //Attacking a neutral player will result in a run time change of player strategy
+    if(target->getOwner()->getStrategy() == "neutral")
+    {
+        cout<<"WARNING: neutral player was attacked!";
+        cout<<"Neutral player is now an aggressive player!";
+        AggressivePlayerStrategy *aggressive = new AggressivePlayerStrategy(); 
+        target->getOwner()->setStrategy(aggressive); 
+    }
+
     cout <<"Attack simulation has ended!\n";
 }
 
@@ -240,6 +250,16 @@ void Bomb::execute()
         target->setNbArmies(0.5*(target->getNbArmies()));
         cout<<"The bomb has dropped on " <<target->GetName()<<".\n";
         cout<<target->GetName()<<" now has "<<target->getNbArmies()<<" units remaining.\n";
+
+        //Attacking a neutral player will result in a run time change of player strategy
+        if(target->getOwner()->getStrategy() == "neutral")
+        {
+            cout<<"WARNING: neutral player was attacked!";
+            cout<<"Neutral player is now an aggressive player!";
+            AggressivePlayerStrategy *aggressive = new AggressivePlayerStrategy(); 
+            target->getOwner()->setStrategy(aggressive); 
+        }
+
         notify(*this);
     }
 }
