@@ -176,6 +176,8 @@ bool CommandProcessor::validateTournament(Command* command) {
          cout << "Number of games should be between 1 and 5 inclusively. " << endl;
         return false;
     }
+    //
+
 
     // Retrieve player strats
     int stratIndex = cmdLine.find("-P");
@@ -489,4 +491,26 @@ string CommandProcessor::stringToLog() const {
 
 string Command::stringToLog() const {
     return "Command: " + cmdName + ", Effect: " + effect;
+}
+
+std::ostream& operator<<(std::ostream& output, const TournamentCommand& command)
+{
+    // TODO: insert return statement here
+    output << "Tournament mode:\nM:";
+    //map list
+    for (int i = 0; i < command.mapFiles.size(); i++) {
+        output << command.mapFiles.at(i);
+    }
+    //player list
+    output << "P: " << endl;
+    for (int i = 0; i < command.playerStrats.size(); i++) {
+        //need to convert enum to string
+        //output << command.playerStrats.at(i);
+    }
+    //game and turn amount
+    output << "G: " << command.nbGames << "\nD: " << command.maxTurnsPerGame << endl;
+    //result table
+    output << "\nResults:" << endl;
+
+    return output;
 }
