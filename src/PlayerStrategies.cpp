@@ -85,6 +85,11 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
     return; 
 }
 
+string AggressivePlayerStrategy::getType()
+{
+    return "aggressive"; 
+}
+
 //--------------------------------------------------------------------------------------------------
 // End of Agressive Player Strategy
 //--------------------------------------------------------------------------------------------------
@@ -131,7 +136,12 @@ vector<Territory*> NeutralPlayerStrategy::toDefend()
 // to complete
 void NeutralPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType type)
 {
-    return; 
+    cout<<"This is player is using the NeutralPlayerStrategy, it cannot issue orders of any type!"; 
+}
+
+string NeutralPlayerStrategy::getType()
+{
+    return "neutral"; 
 }
 
 //--------------------------------------------------------------------------------------------------
