@@ -72,4 +72,6 @@ public:
     vector<Territory*> toDefend() override;
     vector<Territory*> toAttack() override;
     string getType() override;
+private:
+    Player* p;
 };
