@@ -14,6 +14,7 @@ class PlayerStrategy {
         virtual vector<Territory*> toAttack() = 0;
         // Define other pure virtual methods or common functionalities for strategies
         virtual ~PlayerStrategy() = default;
+        virtual string getType() = 0; 
     private:
         Player* p;
 };
@@ -23,6 +24,7 @@ public:
     void issueOrder(std::vector<Player*> target, OrderType type) override;
     vector<Territory*> toDefend() override;
     vector<Territory*> toAttack() override;
+    string getType() override;
 };
 
 class AggressivePlayerStrategy : public PlayerStrategy {
@@ -34,6 +36,7 @@ public:
     void issueOrder(std::vector<Player*> target, OrderType type) override;
     vector<Territory*> toDefend() override;
     vector<Territory*> toAttack() override;
+    string getType() override;
 private:
     Player* p;
 };
@@ -44,6 +47,7 @@ public:
     void issueOrder(std::vector<Player*> target, OrderType type) override;
     vector<Territory*> toDefend() override;
     vector<Territory*> toAttack() override;
+    string getType() override;
 };
 
 
@@ -56,6 +60,7 @@ public:
     void issueOrder(std::vector<Player*> target, OrderType type) override;
     vector<Territory*> toDefend() override;
     vector<Territory*> toAttack() override;
+    string getType() override;
 private:
     Player* p;
 };
@@ -66,4 +71,5 @@ public:
     void issueOrder(std::vector<Player*> target, OrderType type) override;
     vector<Territory*> toDefend() override;
     vector<Territory*> toAttack() override;
+    string getType() override;
 };
