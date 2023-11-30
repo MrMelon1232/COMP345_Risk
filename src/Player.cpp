@@ -404,3 +404,8 @@ void testPlayers();
 void Player::setStrategy(PlayerStrategy* newStrategy) {
     ps = newStrategy;
 }
+
+string Player::getStrategy()
+{
+    return ps->getType(); 
+}
