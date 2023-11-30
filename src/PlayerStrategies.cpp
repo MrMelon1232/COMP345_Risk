@@ -147,3 +147,50 @@ string NeutralPlayerStrategy::getType()
 //--------------------------------------------------------------------------------------------------
 // End of Neutral Player Strategy
 //--------------------------------------------------------------------------------------------------
+
+
+//--------------------------------------------------------------------------------------------------
+// Cheater Player Strategy
+//--------------------------------------------------------------------------------------------------
+
+void CheaterPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType type)
+{
+    cout << "Cheater player does not manually issue orders.\n";
+}
+
+vector<Territory*> CheaterPlayerStrategy::toDefend()
+{
+    vector<Territory*> notDefending;
+    cout << "Cheater player does not defend.\n";
+    return notDefending;
+}
+
+vector<Territory*> CheaterPlayerStrategy::toAttack()
+{
+    // Automatically conquers all territories adjacent to its own territories
+    vector<Territory*> territoriesToAttack;
+
+    for (Territory* ownTerritory : p->getTerritories())
+    {
+        for (Territory* adjacentTerritory : ownTerritory->GetAdjacentTerritories())
+        {
+            if (adjacentTerritory->getOwnerID() != p->getPlayerID())
+            {
+                territoriesToAttack.push_back(adjacentTerritory);
+                cout << "Cheater player conquers " << adjacentTerritory->GetName() << ".\n";
+                adjacentTerritory->setOwnerID(p->getPlayerID());
+            }
+        }
+    }
+
+    return territoriesToAttack;
+}
+
+string CheaterPlayerStrategy::getType()
+{
+    return "cheater";
+}
+
+//--------------------------------------------------------------------------------------------------
+// End of Cheater Player Strategy
+//--------------------------------------------------------------------------------------------------
