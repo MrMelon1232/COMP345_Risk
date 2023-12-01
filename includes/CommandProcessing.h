@@ -13,6 +13,7 @@ using std::vector;
 class Command: public ILoggable, public Subject {
     public:
         Command(string cmdName);
+        Command(string cmdName, string arg);
         Command(Command& command);
 
         // Getter and setters.
@@ -39,7 +40,7 @@ class Command: public ILoggable, public Subject {
 // Represents a tournament command.
 class TournamentCommand : public Command {
     public:
-        TournamentCommand();
+        TournamentCommand(string arg);
 
         vector<string> mapFiles;
         vector<StrategyType> playerStrats;

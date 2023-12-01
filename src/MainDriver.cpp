@@ -47,6 +47,9 @@ int main() {
     //testA1();
 
     //Assignment 2
-    testA2();
+    //testA2();
+
+    //Assignment 3
+    testTournament();
 }
 

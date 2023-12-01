@@ -11,6 +11,10 @@ using std::endl;
 // Command constructor to initialize with name.
 Command::Command(string cmdName) : cmdName(cmdName) {}
 
+
+// Command constructor to initialize with name and arg.
+Command::Command(string cmdName, string arg) : cmdName(cmdName), arg(arg) {}
+
 // Copy constructor of Command.
 Command::Command(Command& command) {
     cmdName = command.cmdName;
@@ -42,6 +46,31 @@ void Command::saveEffect(string effect) {
 // Command's destructor.
 Command::~Command() {}
 
+// Tournament's constructor.
+TournamentCommand::TournamentCommand(string arg) : Command("tournament", arg) {}
+
+TournamentCommand& TournamentCommand::operator=(const TournamentCommand& tournamentCommand) {
+    Command::operator=(tournamentCommand);
+
+    nbGames = tournamentCommand.nbGames;
+    maxTurnsPerGame = tournamentCommand.maxTurnsPerGame;
+
+    mapFiles.clear();
+    for (string mapFile : tournamentCommand.mapFiles)
+        mapFiles.push_back(mapFile);
+
+    playerStrats.clear();
+    for (StrategyType strat : tournamentCommand.playerStrats)
+        playerStrats.push_back(strat);
+
+    return *this;
+}
+
+// Tournament's destructor.
+TournamentCommand::~TournamentCommand() {
+
+}
+
 // Default constructor of CommandProcessor.
 CommandProcessor::CommandProcessor(GameEngine* gameEngine) : gameEngine(gameEngine) {
     mapLoader = new MapLoader();
@@ -71,7 +100,11 @@ Command* CommandProcessor::readCommand() {
     string cmdName;
     cin >> cmdName;
 
-    Command* command;
+    int tournamentIdx = cmdName.find("tournament");
+    if (tournamentIdx == 0)
+        return new TournamentCommand(cmdName.substr(11));
+
+    Command* command = new Command(cmdName);
 
     if (cmdName == "loadmap" || cmdName == "addplayer") {
         string arg;
@@ -81,15 +114,6 @@ Command* CommandProcessor::readCommand() {
             cout << "Please enter the player's name." << endl;
         cin >> arg;
         command->setArg(arg);
-    } 
-
-    int tournamentIdx = cmdName.find("tournament");
-    if (cmdName.find("tournament") != string::npos) {
-        command = new TournamentCommand();
-        command->setName("tournament");
-        command->setArg(cmdName.substr(tournamentIdx));
-    } else {
-        command = new Command(cmdName);
     }
 
     return command;
@@ -311,44 +335,14 @@ void CommandProcessor::addPlayer(Command* command) {
 
 // Helper function to the `gameStart` command.
 void CommandProcessor::gameStart(Command* command) {
-
     if (gameEngine->getPlayers().size() < 2) {
         command->saveEffect("Cannot start the game with less than 2 players.");
         cout << "Cannot start the game with less than 2 players." << endl;
         return;
     }
 
-    // 4.a fairly distribute all the territories to the players
-    vector<Territory*> allTerritories = gameEngine->getCurrentMap()->territories;
-
-    // Shuffle the territories randomly
-    random_device rd;
-    default_random_engine rng(rd());
-    shuffle(allTerritories.begin(), allTerritories.end(), rng);
-
-    int playerIndex = 0;
-    for (Territory* territory : allTerritories) {
-        Player* currentPlayer = gameEngine->getPlayers()[playerIndex];
-        currentPlayer->addTerritory(territory);
-        territory->setOwner(currentPlayer);
-        playerIndex = (playerIndex + 1) % gameEngine->getPlayers().size();
-    }
-
-    // 4.b determine randomly the order of play of the players in the game
-    // Randomize the order of the how the player is accessed by rnadomizing the vector
-    vector<Player*> allPlayers = gameEngine->getPlayers();
-    shuffle(allPlayers.begin(), allPlayers.end(), rng);
-
-    // 4.c give 50 initial army units to the players, which are placed in their respective reinforcement pool
-    for (Player* player : gameEngine->getPlayers()) {
-        player->setReinforcementPool(50);
-    }
-
-    // 4.d let each player draw 2 initial cards from the deck using the deck’s draw() method
-    for (Player* player : gameEngine->getPlayers()) {
-        gameEngine->getGameDeck()->draw(player->getHand());
-        gameEngine->getGameDeck()->draw(player->getHand());
-    }
+    // 4 a to d
+    gameEngine->gameStart();
 
     // 4.e switch the game to the play phase
     gameEngine->findAndTransition(command->getName());
@@ -456,7 +450,10 @@ Command* FileCommandProcessorAdapter::readCommand() {
     int spaceIndex = commandLine.find(' ');
     string cmdName = commandLine.substr(0, spaceIndex);
 
-    // TODO: If command is tournament, create instance of TournamentCommand
+    // If command is tournament, create instance of TournamentCommand
+    if (cmdName == "tournament")
+        return new TournamentCommand(cmdName.substr(11));
+
     Command* command = new Command(cmdName);
     if (cmdName == "loadmap" || cmdName == "addplayer")
         command->setArg(commandLine.substr(spaceIndex + 1));
