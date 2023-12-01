@@ -156,6 +156,9 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
         case OrderType::Negotiate:
             cout << "Aggressive player REFUSES to negotiate!" << endl;
             break;
+        
+        //adding new order to list 
+        p->getOrdersList()->add(newOrder);      
 
         default:
             break;
