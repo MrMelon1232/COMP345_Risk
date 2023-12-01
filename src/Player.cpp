@@ -293,6 +293,7 @@ void Player::addTerritory(Territory* territory) {
 Player::~Player() {
     delete orders;
     delete hand;
+    delete ps;
 }
 
 //Accessor method which returns the id of a player

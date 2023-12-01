@@ -109,8 +109,9 @@ Transition::~Transition() {
 GameEngine::GameEngine() {
     setDefaultGameStates();
     currentMap = nullptr;
-    gameDeck = new Deck();
+    gameDeck = nullptr;
     selectMode();
+    maxTurns = -1;
     std::cout << "Current state is " << *currentState << "." << std::endl;
 }
 
@@ -118,8 +119,9 @@ GameEngine::GameEngine() {
 GameEngine::GameEngine(string mode) {
     setDefaultGameStates();
     currentMap = nullptr;
-    gameDeck = new Deck();
+    gameDeck = nullptr;
     this->mode = mode;
+    maxTurns = -1;
     initProcessor();
     std::cout << "Current state is " << *currentState << "." << std::endl;
 }
@@ -127,11 +129,12 @@ GameEngine::GameEngine(string mode) {
 // Game Engine constructor to initialize with states. Mainly used for testing.
 GameEngine::GameEngine(vector<State*> states) {
     currentState = states.front();
-    gameDeck = new Deck();
+    gameDeck = nullptr;
     for (State* state : states)
         this->states.push_back(state);
     currentMap = nullptr;
     selectMode();
+    maxTurns = -1;
     std::cout << "Current state is " << *currentState << "." << std::endl;
 }
 
@@ -164,6 +167,7 @@ void GameEngine::setDefaultGameStates() {
     State* executeOrders = new State("executeorders");
     State* win = new State("win");
 
+    Transition* tournament = new Transition("tournament", assignReinforcements);
     Transition* loadMap = new Transition("loadmap", mapLoaded);
     Transition* validateMap = new Transition("validatemap", mapValidated);
     Transition* addPlayer = new Transition("addplayer", playersAdded);
@@ -176,7 +180,7 @@ void GameEngine::setDefaultGameStates() {
     Transition* play = new Transition("replay", start);
     Transition* quit = new Transition("quit", nullptr);
 
-    start->addTransitions({ loadMap });
+    start->addTransitions({ loadMap, tournament });
     mapLoaded->addTransitions({ loadMap, validateMap });
     mapValidated->addTransitions({ addPlayer });
     playersAdded->addTransitions({ addPlayer, gamestart });
@@ -239,10 +243,6 @@ vector<Player*> GameEngine::getPlayers() {
 
 void GameEngine::addPlayer(Player* player) {
     players.push_back(player);
-}
-
-Deck* GameEngine::getGameDeck() {
-    return gameDeck;
 }
 
 void listFilesInDirectory() {
@@ -392,7 +392,7 @@ void GameEngine::mainGameLoop() {
         executeOrdersPhase();
 
         forceGameWin();
-
+        nbTurnsPlayed++;
         gameEnd =  gameResultCheck();
     }
     cout << "Winner: " << (*players.at(0)) << endl;
@@ -430,7 +430,10 @@ bool GameEngine::gameResultCheck() {
         }
     }
     cout << "Game still in progress, starting new turn." << endl;
-    return false;
+
+    if (maxTurns == -1) // The game played doesn't have a limit of turns.
+        return false;
+    return nbTurnsPlayed < maxTurns;
 }
 
 void GameEngine::reinforcementPhase() {
@@ -669,7 +672,80 @@ void GameEngine::forceGameWin() {
     }
 }
 
+void GameEngine::gameStart() {
+    // 4.a fairly distribute all the territories to the players
+    vector<Territory*> allTerritories = getCurrentMap()->territories;
+
+    // Shuffle the territories randomly
+    random_device rd;
+    default_random_engine rng(rd());
+    shuffle(allTerritories.begin(), allTerritories.end(), rng);
+
+    int playerIndex = 0;
+    for (Territory* territory : allTerritories) {
+        Player* currentPlayer = getPlayers()[playerIndex];
+        currentPlayer->addTerritory(territory);
+        territory->setOwner(currentPlayer);
+        playerIndex = (playerIndex + 1) % getPlayers().size();
+    }
+
+    // 4.b determine randomly the order of play of the players in the game
+    // Randomize the order of the how the player is accessed by rnadomizing the vector
+    vector<Player*> allPlayers = getPlayers();
+    shuffle(allPlayers.begin(), allPlayers.end(), rng);
+
+    // 4.c give 50 initial army units to the players, which are placed in their respective reinforcement pool
+    for (Player* player : getPlayers()) {
+        player->setReinforcementPool(50);
+    }
+
+    // 4.d let each player draw 2 initial cards from the deck using the deck’s draw() method
+    gameDeck = new Deck();
+    for (Player* player : getPlayers()) {
+        gameDeck->draw(player->getHand());
+        gameDeck->draw(player->getHand());
+    }
+}
+
 void GameEngine::resetGame() {
+    clearGame();
+    startupPhase();
+    mainGameLoop();
+}
+
+void GameEngine::startTournament(TournamentCommand* tournamentCmd) {
+    MapLoader* mapLoader = getCommandProcessor()->getMapLoader();
+    for (string mapFile : tournamentCmd->mapFiles) {
+        for (int j = 0; j < tournamentCmd->nbGames; j++) {
+            // Prepare the game.
+            try {
+                setCurrentMap(mapLoader->LoadMap(mapFile));
+            } catch (const runtime_error& error) {
+                tournamentCmd->saveEffect("Map file not found.");
+                cout << "Could not load map file " + mapFile + ". Skipping this map." << endl;
+                continue;
+            }
+
+            for (StrategyType type : tournamentCmd->playerStrats) {
+                Player* newPlayer = new Player();
+                newPlayer->setStrategy(loadStrategy(newPlayer, type));
+                addPlayer(newPlayer);
+            }
+
+            nbTurnsPlayed = 0;
+            maxTurns = tournamentCmd->maxTurnsPerGame;
+
+            // Distribute territories, cards, and reinforcements
+            gameStart();
+            // Play the game.
+            mainGameLoop();
+            // Clear game variables.
+            clearGame();
+        }
+    }
+}
+
+void GameEngine::clearGame() {
     for (Player* player : players)
         delete player;
     players.clear();
@@ -678,7 +754,5 @@ void GameEngine::resetGame() {
     currentMap = nullptr;
 
     delete gameDeck;
-    gameDeck = new Deck();
-    startupPhase();
-    mainGameLoop();
+    gameDeck = nullptr;
 }

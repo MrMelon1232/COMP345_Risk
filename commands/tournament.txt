@@ -1,0 +1,2 @@
+tournament
+tournament -M ../Maps/Africa.map ../Maps/Americas 1792.map -P Aggressive Benevolent Neutral Cheater -G 5 -D 15

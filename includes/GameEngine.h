@@ -46,6 +46,7 @@ class Transition {
 };
 
 class CommandProcessor; // forward declaration
+class TournamentCommand; // forward declaration
 
 // Manages the game setup and execution.
 class GameEngine: public Subject, public ILoggable {
@@ -73,7 +74,7 @@ public:
     vector<Player*> getPlayers();
     void setNumOfPlayers(int num);
     int getNumOfPlayers() const;
-    Deck* getGameDeck();
+    void startTournament(TournamentCommand* tournamentCmd);
 
     GameEngine& operator=(const GameEngine& gameEngine);
     friend std::ostream& operator<<(std::ostream& output, const GameEngine& gameEngine);
@@ -83,6 +84,7 @@ public:
         void reinforcementPhase();
         void issueOrdersPhase();
         void executeOrdersPhase();
+        void gameStart();
         void resetGame();
 
         //method for demo
@@ -96,6 +98,7 @@ public:
         void setDefaultGameStates();
         void selectMode();
         void initProcessor();
+        void clearGame();
 
         vector<State*> states;
         State* currentState;
@@ -106,6 +109,8 @@ public:
         int reinforcement;
         int numOfPlayers;
         Deck* gameDeck;
+        int maxTurns;
+        int nbTurnsPlayed;
 };
 
 OrderType getOrderType(string str);
@@ -114,3 +119,4 @@ OrderType getOrderType(string str);
 void testGameStates();
 void testMainGameLoop();
 void testStartupPhase();
+void testTournament();
