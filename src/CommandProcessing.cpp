@@ -513,16 +513,21 @@ std::ostream& operator<<(std::ostream& output, TournamentCommand& command)
         output << command.mapFiles.at(i);
     }
     //player list
-    output << "P: " << endl;
+    output << "\nP: " << endl;
     for (int i = 0; i < command.playerStrats.size(); i++) {
         //need to convert enum to string
         output << command.ToString(command.playerStrats.at(i));
     }
     //game and turn amount
-    output << "G: " << command.nbGames << "\nD: " << command.maxTurnsPerGame << endl;
+    output << "\nG: " << command.nbGames << "\nD: " << command.maxTurnsPerGame << endl;
     //result table
     output << "\nResults:" << endl;
-    for (int i = 0; i < command.table.size(); i++) {
+    for (int i = 0; i < command.table.size() + 1; i++) {
+        //output
+        if (i != 0) {
+            //Map
+            output << "\n" << command.table[i - 1].at(0);
+        }
         for (int j = 0; j < command.nbGames + 1; j++) {
             //first line
             if(i == 0 && j == 0){
@@ -532,6 +537,9 @@ std::ostream& operator<<(std::ostream& output, TournamentCommand& command)
                 output << "Game " << j << "\t";
             }
             //result per map
+            else if (j != 0) {
+                output << "\t" << command.table[i].at(j);
+            }
         }
     }
 
