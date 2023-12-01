@@ -1,3 +1,4 @@
+#pragma once
 #include "PlayerStrategies.h"
 
 //--------------------------------------------------------------------------------------------------
@@ -85,6 +86,9 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
     //variables for issuing orders
     string playerTerritory, targetTerritory, playerList;
     int armyAmount, indexD = 0, indexA = 0;
+    Territory* strongest = toDefend().front();
+    Territory* weakest = toDefend().back();
+
     //player's territory list
     for (int i = 0; i < p->toDefend().size(); i++) {
         playerTerritory += "(" + to_string(i) + ")" + p->toDefend().at(i)->GetName() + " | ";
@@ -98,7 +102,6 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
             cout << "Issuing deploy order from an AGGRESSIVE player..." << endl;
 
             //The aggressive player will always deploy to the strongest territory it has
-            Territory* strongest = toDefend().front();
             armyAmount = p->getReinforcementPool(); 
             newOrder = new Deploy(armyAmount, p, strongest);
             p->setReinforcementPool(p->getReinforcementPool() - armyAmount);
@@ -109,7 +112,6 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
 
             cout << "Issuing advance order from an AGGRESSIVE player..." << endl;
 
-            Territory* strongest = toDefend().front();
             armyAmount = strongest->getNbArmies();
 
             for (Territory* target : strongest->GetAdjacentTerritories()) 
@@ -144,9 +146,6 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
 
             cout << "Issuing airlift order from an AGRESSIVE player..." << endl;
             //Aggressive player will move forward players from weak territory to the strongest one
-
-            Territory* strongest = toDefend().front();
-            Territory* weakest = toDefend().back();
             armyAmount = weakest->getNbArmies(); 
             cout << "Aggressive player about to airlift units to its strongest territory!"<<endl;
             newOrder = new Airlift(p, strongest, weakest, armyAmount);
@@ -275,31 +274,3 @@ string CheaterPlayerStrategy::getType()
 //--------------------------------------------------------------------------------------------------
 // End of Cheater Player Strategy
 //--------------------------------------------------------------------------------------------------
-
-StrategyType getStrategyType(string str) {
-    if (str == "Human" || str == "human")
-        return StrategyType::Human;
-    else if (str == "Aggressive" || str == "aggressive")
-        return StrategyType::Aggressive;
-    else if (str == "Benevolent" || str == "benevolent")
-        return StrategyType::Benevolent;
-    else if (str == "Neutral" || str == "neutral")
-        return StrategyType::Neutral;
-    else if (str == "Cheater" || str == "cheater")
-        return StrategyType::Cheater;
-    return StrategyType::None;
-}
-
-PlayerStrategy* loadStrategy(Player* player, StrategyType strategyType) {
-    if (strategyType == StrategyType::Human)
-        return new HumanPlayerStrategy(player);
-    else if (strategyType == StrategyType::Aggressive)
-        return new CheaterPlayerStrategy(player);
-    else if (strategyType == StrategyType::Benevolent)
-        return new BeneloventPlayerStrategy(player);
-    else if (strategyType == StrategyType::Neutral)
-        return new NeutralPlayerStrategy(player);
-    else if (strategyType == StrategyType::Cheater)
-        return new CheaterPlayerStrategy(player);
-    return nullptr; // StrategyType::None, shouldn't happen if validation was done properly.
-}
