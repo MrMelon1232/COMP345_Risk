@@ -216,6 +216,8 @@ string NeutralPlayerStrategy::getType()
 // Cheater Player Strategy
 //--------------------------------------------------------------------------------------------------
 
+CheaterPlayerStrategy::CheaterPlayerStrategy(Player* player) : PlayerStrategy(player) {}
+
 void CheaterPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType type)
 {
     cout << "Cheater player does not manually issue orders.\n";
