@@ -6,6 +6,7 @@
 
 class Player; // Forward declaration of Player class
 class Territory; // Forward declaration
+enum class OrderType; // Forward declaration
 
 class PlayerStrategy {
     public:
