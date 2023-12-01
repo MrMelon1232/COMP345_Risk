@@ -747,7 +747,7 @@ void GameEngine::startTournament(TournamentCommand* tournamentCmd) {
             endGameData.push_back(mapFile);
             endGameData.push_back(to_string(j + 1));
             if (players.size() == 1) {
-                endGameData.push_back(players.at(0)->getName());
+                endGameData.push_back(players.at(0)->getStrategy());
             }
             else {
                 endGameData.push_back("Draw"); 
