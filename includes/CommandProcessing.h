@@ -42,6 +42,7 @@ class TournamentCommand : public Command {
     public:
         TournamentCommand(string arg);
 
+        vector<vector<string>> table;
         vector<string> mapFiles;
         vector<StrategyType> playerStrats;
         int nbGames;
