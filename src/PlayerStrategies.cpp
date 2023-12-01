@@ -1,27 +1,23 @@
-#pragma once
 #include "PlayerStrategies.h"
+
+PlayerStrategy::PlayerStrategy(Player* player) {
+    this->p = player;
+}
+
+PlayerStrategy::PlayerStrategy(const PlayerStrategy& copied) {
+    this->p = copied.p;
+}
+
 
 //--------------------------------------------------------------------------------------------------
 // Agressive Player Strategy
 //--------------------------------------------------------------------------------------------------
 
-// Default constructor
-AggressivePlayerStrategy::AggressivePlayerStrategy()
-{
-    this->p = nullptr; 
-}
-
 // Non-default constructor
-AggressivePlayerStrategy::AggressivePlayerStrategy(Player *player)
-{
-    this->p = player;
-}
+AggressivePlayerStrategy::AggressivePlayerStrategy(Player *player) : PlayerStrategy(player) {}
 
 // Copy constructor
-AggressivePlayerStrategy::AggressivePlayerStrategy(const AggressivePlayerStrategy &copied)
-{
-    this->p = copied.p;
-}
+AggressivePlayerStrategy::AggressivePlayerStrategy(const AggressivePlayerStrategy &copied) : PlayerStrategy(copied) {}
 
 // Destructor
 AggressivePlayerStrategy::~AggressivePlayerStrategy()
@@ -176,21 +172,9 @@ string AggressivePlayerStrategy::getType()
 // Neutral Player Strategy
 //--------------------------------------------------------------------------------------------------
 
-NeutralPlayerStrategy::NeutralPlayerStrategy()
-{
-    this->p = nullptr;
-}
+NeutralPlayerStrategy::NeutralPlayerStrategy(Player *player) : PlayerStrategy(player) {}
 
-
-NeutralPlayerStrategy::NeutralPlayerStrategy(Player *player)
-{
-    this->p = player;
-}
-
-NeutralPlayerStrategy::NeutralPlayerStrategy(const NeutralPlayerStrategy &copied)
-{
-    this->p = copied.p;
-}
+NeutralPlayerStrategy::NeutralPlayerStrategy(const NeutralPlayerStrategy &copied): PlayerStrategy(copied) {}
 
 NeutralPlayerStrategy::~NeutralPlayerStrategy()
 {
@@ -273,7 +257,3 @@ string CheaterPlayerStrategy::getType()
 //--------------------------------------------------------------------------------------------------
 // End of Cheater Player Strategy
 //--------------------------------------------------------------------------------------------------
-
-PlayerStrategy::PlayerStrategy()
-{
-}

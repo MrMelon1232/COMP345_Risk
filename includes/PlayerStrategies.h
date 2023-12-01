@@ -10,8 +10,8 @@ enum class OrderType; // Forward declaration
 
 class PlayerStrategy {
     public:
-        PlayerStrategy();
         PlayerStrategy(Player* player);
+        PlayerStrategy(const PlayerStrategy& copied);
         virtual void issueOrder(std::vector<Player*> target, OrderType type) = 0;
         virtual vector<Territory*> toDefend() = 0;
         virtual vector<Territory*> toAttack() = 0;
@@ -33,7 +33,6 @@ public:
 
 class AggressivePlayerStrategy : public PlayerStrategy {
 public:
-    AggressivePlayerStrategy();
     AggressivePlayerStrategy(Player* player);
     AggressivePlayerStrategy(const AggressivePlayerStrategy& copied);
     ~AggressivePlayerStrategy() override;
@@ -58,7 +57,6 @@ public:
 
 class NeutralPlayerStrategy : public PlayerStrategy {
 public:
-    NeutralPlayerStrategy();
     NeutralPlayerStrategy(Player* player);
     NeutralPlayerStrategy(const NeutralPlayerStrategy& copied);
     ~NeutralPlayerStrategy() override;

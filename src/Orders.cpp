@@ -191,7 +191,7 @@ void Advance::simulateAttack()
     {
         cout<<"WARNING: neutral player was attacked!";
         cout<<"Neutral player is now an aggressive player!";
-        AggressivePlayerStrategy *aggressive = new AggressivePlayerStrategy(); 
+        AggressivePlayerStrategy *aggressive = new AggressivePlayerStrategy(target->getOwner());
         target->getOwner()->setStrategy(aggressive); 
     }
 
@@ -256,8 +256,8 @@ void Bomb::execute()
         {
             cout<<"WARNING: neutral player was attacked!";
             cout<<"Neutral player is now an aggressive player!";
-            AggressivePlayerStrategy *aggressive = new AggressivePlayerStrategy(); 
-            target->getOwner()->setStrategy(aggressive); 
+            AggressivePlayerStrategy *aggressive = new AggressivePlayerStrategy(target->getOwner()); 
+            target->getOwner()->setStrategy(aggressive);
         }
 
         notify(*this);
