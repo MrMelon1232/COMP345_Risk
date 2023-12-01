@@ -86,6 +86,7 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
     //variables for issuing orders
     string playerTerritory, targetTerritory, playerList;
     int armyAmount, indexD = 0, indexA = 0;
+    Territory* toBomb = toAttack().front();
     Territory* strongest = toDefend().front();
     Territory* weakest = toDefend().back();
 
@@ -128,7 +129,6 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
         case OrderType::Bomb:
 
             cout << "Issuing bomb order from an AGGRESSIVE player..." << endl;
-            Territory *toBomb = toAttack().front();
             cout<<"An agressive player is bombing a player with ID:  "<< toBomb->getOwnerID()<<"."<< endl;
             newOrder = new Bomb(p, toBomb);
             break;
@@ -137,7 +137,6 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
 
             cout << "Issuing blockade order from an AGGRESSIVE player..." << endl;
             //Agressive player will blockade the weakest territory
-            Territory* weakest = toDefend().back();
             cout << "Aggressive player using blockade on weakest territory: " <<weakest->GetName()<<endl;
             newOrder = new Blockade(p, weakest);
             break;
