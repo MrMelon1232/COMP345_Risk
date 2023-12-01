@@ -395,6 +395,7 @@ void GameEngine::mainGameLoop() {
         nbTurnsPlayed++;
         gameEnd =  gameResultCheck();
     }
+
     cout << "Winner: " << (*players.at(0)) << endl;
 
 }
@@ -714,6 +715,9 @@ void GameEngine::resetGame() {
 }
 
 void GameEngine::startTournament(TournamentCommand* tournamentCmd) {
+    //log for the txt file
+    LogObserver logObserver("tournament.txt");
+    vector<string> endGameData;
     MapLoader* mapLoader = getCommandProcessor()->getMapLoader();
     for (string mapFile : tournamentCmd->mapFiles) {
         for (int j = 0; j < tournamentCmd->nbGames; j++) {
@@ -739,10 +743,21 @@ void GameEngine::startTournament(TournamentCommand* tournamentCmd) {
             gameStart();
             // Play the game.
             mainGameLoop();
+            //add game data (map#, game#, winning player)
+            endGameData.push_back(mapFile);
+            endGameData.push_back(to_string(j + 1));
+            if (players.size() == 1) {
+                endGameData.push_back(players.at(0)->getName());
+            }
+            else {
+                endGameData.push_back("Draw"); 
+            }
+            tournamentCmd->table.push_back(endGameData);
             // Clear game variables.
             clearGame();
         }
     }
+    tournamentCmd->attach(&logObserver);
 }
 
 void GameEngine::clearGame() {
