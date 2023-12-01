@@ -66,6 +66,20 @@ TournamentCommand& TournamentCommand::operator=(const TournamentCommand& tournam
     return *this;
 }
 
+const char* TournamentCommand::ToString(StrategyType type)
+{
+    switch (type)
+    {
+    case StrategyType::Human:   return "Human"; 
+    case StrategyType::Aggressive:   return "Aggressive";
+    case StrategyType::Benevolent:   return "Benevolent";
+    case StrategyType::Neutral:   return "Neutral";
+    case StrategyType::Cheater:   return "Cheater";
+    default:      return "[Unknown OS_type]";
+    }
+
+}
+
 // Tournament's destructor.
 TournamentCommand::~TournamentCommand() {
 
@@ -490,7 +504,7 @@ string Command::stringToLog() const {
     return "Command: " + cmdName + ", Effect: " + effect;
 }
 
-std::ostream& operator<<(std::ostream& output, const TournamentCommand& command)
+std::ostream& operator<<(std::ostream& output, TournamentCommand& command)
 {
     // TODO: insert return statement here
     output << "Tournament mode:\nM:";
@@ -502,12 +516,24 @@ std::ostream& operator<<(std::ostream& output, const TournamentCommand& command)
     output << "P: " << endl;
     for (int i = 0; i < command.playerStrats.size(); i++) {
         //need to convert enum to string
-        //output << command.playerStrats.at(i);
+        output << command.ToString(command.playerStrats.at(i));
     }
     //game and turn amount
     output << "G: " << command.nbGames << "\nD: " << command.maxTurnsPerGame << endl;
     //result table
     output << "\nResults:" << endl;
+    for (int i = 0; i < command.table.size(); i++) {
+        for (int j = 0; j < command.nbGames + 1; j++) {
+            //first line
+            if(i == 0 && j == 0){
+                output << "\t";
+            }
+            else if (i == 0 && j != 0) {
+                output << "Game " << j << "\t";
+            }
+            //result per map
+        }
+    }
 
     return output;
 }

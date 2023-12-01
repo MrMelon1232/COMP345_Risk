@@ -48,8 +48,10 @@ class TournamentCommand : public Command {
         int nbGames;
         int maxTurnsPerGame;
 
+        const char* ToString(StrategyType type);
+
         TournamentCommand& operator=(const TournamentCommand& command);
-        friend std::ostream& operator<<(std::ostream& output, const TournamentCommand& command);
+        friend std::ostream& operator<<(std::ostream& output, TournamentCommand& command);
 
         ~TournamentCommand();
 };
