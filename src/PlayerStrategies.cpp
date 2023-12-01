@@ -114,12 +114,12 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
 
             armyAmount = strongest->getNbArmies();
 
-            for (Territory* target : strongest->GetAdjacentTerritories()) 
+            for (Territory* toAdvance : strongest->GetAdjacentTerritories()) 
             {
-                if (target->getOwnerID() != p->getPlayerID()) 
+                if (toAdvance->getOwnerID() != p->getPlayerID()) 
                 {
-                    cout<<"An agressive player is advancing towards player with ID:  "<< target->getOwnerID()<<"."<< endl; 
-                    newOrder = new Advance(armyAmount, p, target, strongest);
+                    cout<<"An agressive player is advancing towards player with ID:  "<< toAdvance->getOwnerID()<<"."<< endl; 
+                    newOrder = new Advance(armyAmount, p, toAdvance, strongest);
                     break;
                 }
             }
@@ -128,9 +128,9 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
         case OrderType::Bomb:
 
             cout << "Issuing bomb order from an AGGRESSIVE player..." << endl;
-            Territory *target = toAttack().front();
-            cout<<"An agressive player is bombing a player with ID:  "<< target->getOwnerID()<<"."<< endl;
-            newOrder = new Bomb(p, target);
+            Territory *toBomb = toAttack().front();
+            cout<<"An agressive player is bombing a player with ID:  "<< toBomb->getOwnerID()<<"."<< endl;
+            newOrder = new Bomb(p, toBomb);
             break;
 
         case OrderType::Blockade:
