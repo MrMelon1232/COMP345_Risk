@@ -56,7 +56,7 @@ public:
     bool isAdjacent(Territory* territory);
     int getOwnerID();
     void setOwnerID(int playerID);
-
+    Player* getOwner();
     // Copy constructor
     Territory(const Territory& other);
     // Class assignment operator

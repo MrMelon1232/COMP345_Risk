@@ -152,6 +152,11 @@ bool Territory::isAdjacent(Territory* territory)
     return false;
 }
 
+Player* Territory::getOwner()
+{
+    return owner;
+}
+
 // Map class methods
 
 
