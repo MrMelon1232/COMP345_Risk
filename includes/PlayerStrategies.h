@@ -29,6 +29,8 @@ public:
     vector<Territory*> toDefend() override;
     vector<Territory*> toAttack() override;
     string getType() override;
+private:
+    Player* p;
 };
 
 class AggressivePlayerStrategy : public PlayerStrategy {
@@ -52,6 +54,8 @@ public:
     vector<Territory*> toDefend() override;
     vector<Territory*> toAttack() override;
     string getType() override;
+private:
+    Player* p;
 };
 
 

@@ -493,7 +493,7 @@ void GameEngine::issueOrdersPhase() {
         //cout << "\n-----------------debug line--------------------\n" << players.at(iteration)->getTempPool() << endl;
         //deploying reinforcements
         while (players.at(turn.at(iteration))->getTempPool() != 0) {
-            players.at(turn.at(iteration))->issueOrder(players.at(turn.at(iteration)), players, getOrderType("deploy"));
+            players.at(turn.at(iteration))->issueOrder(players, getOrderType("deploy"));
             if (players.at(turn.at(iteration))->getTempPool() == 0) {
                 trueFalse = false;
             }
@@ -505,7 +505,7 @@ void GameEngine::issueOrdersPhase() {
             char first = str.at(0);
             //remove player from roundrobin
             if (first == 'y') {
-                players.at(turn.at(iteration))->issueOrder(players.at(turn.at(iteration)), players, getOrderType("advance"));
+                players.at(turn.at(iteration))->issueOrder(players, getOrderType("advance"));
                 trueFalse = false;
                 break;
             }
@@ -529,7 +529,7 @@ void GameEngine::issueOrdersPhase() {
             //check if player has card
             for (int i = 0; i < players.at(turn.at(iteration))->getHandSize(); i++) {
                 if (players.at(turn.at(iteration))->getCard(i) == str) {
-                    players.at(turn.at(iteration))->issueOrder(players.at(turn.at(iteration)), players, getOrderType(str));
+                    players.at(turn.at(iteration))->issueOrder(players, getOrderType(str));
                     trueFalse = false;
                     cardUsed = true;
                     break;

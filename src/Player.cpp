@@ -114,174 +114,178 @@ vector<Territory*> Player::toAttack() {
 }
 
 // Function that creates an order object and adds it to the list of orders
-void Player::issueOrder(Player* player, vector<Player*> target, OrderType type) {
-    Order* newOrder = nullptr;
-    //variables for issuing orders
-    string playerTerritory, targetTerritory, playerList;
-    int armyAmount, indexD = 0, indexA = 0;
-    //player's territory list
-    for (int i = 0; i < player->toDefend().size(); i++) {
-        playerTerritory += "(" + to_string(i) + ")" + player->toDefend().at(i)->GetName() + " | ";
+void Player::issueOrder(vector<Player*> target, OrderType type) {
+
+    if (ps) {
+        ps->issueOrder(target, type); // Delegate to PlayerStrategy's issueOrder()
     }
+    // Order* newOrder = nullptr;
+    // //variables for issuing orders
+    // string playerTerritory, targetTerritory, playerList;
+    // int armyAmount, indexD = 0, indexA = 0;
+    // //player's territory list
+    // for (int i = 0; i < player->toDefend().size(); i++) {
+    //     playerTerritory += "(" + to_string(i) + ")" + player->toDefend().at(i)->GetName() + " | ";
+    // }
     
-    // Check which type of order it is
-    switch (type) {
-        case OrderType::Deploy:
-            cout << "Issuing deploy order..." << endl;
-            //message and input
-            while (true) {
-                cout << "Select territory to deploy army [int]: " << playerTerritory << endl;
-                cin >> indexD;
-                if (indexD >= player->getTerritories().size() || indexD < 0) {
-                    cout << "index out of range. try again." << endl;
-                }
-                else {
-                    break;
-                }
-            }
-            while (true) {
-                cout << "Select reinforcement amount to deploy [int] (" + to_string(player->getTempPool()) + " remaining) : " << endl;
-                cin >> armyAmount;
-                if (armyAmount < 0) {
-                    cout << "negative quantity is unavailable. try again." << endl;
-                }
-                else {
-                    break;
-                }
-            }
-            newOrder = new Deploy(armyAmount, player, player->toDefend().at(indexD));
-            setTempPool(getTempPool() - armyAmount);
-            break;
-        case OrderType::Advance:
-            cout << "Issuing advance order..." << endl;
-            //message and input
-            while (true) {
-                cout << "Select territory to move army from [int]: " << playerTerritory << endl;
-                cin >> indexD;
-                if (indexD >= player->getTerritories().size() || indexD < 0) {
-                    cout << "index out of range. try again." << endl;
-                }
-                else {
-                    break;
-                }
-            }
-            for (int i = 0; i < player->toDefend().at(indexD)->GetAdjacentTerritories().size(); i++) {
-                targetTerritory += "(" + to_string(i) + ")" + player->toDefend().at(indexD)->GetAdjacentTerritories().at(i)->GetName() + " | ";
-            }
-            while (true) {
-                cout << "Select territory to move army to [int]: " << targetTerritory << endl;
-                cin >> indexA;
-                if (indexA >= player->toDefend().at(indexD)->GetAdjacentTerritories().size() || indexA < 0) {
-                    cout << "index out of range. try again." << endl;
-                }
-                else {
-                    break;
-                }
-            }
-            while (true) {
-                cout << "Select army amount to move [int] :"/* + to_string(player->toDefend().at(indexD)->getNbArmies()) + " available) : "*/ << endl;
-                cin >> armyAmount;
-                if (armyAmount < 0) {
-                    cout << "negative quantity is unavailable. try again." << endl;
-                }
-                else {
-                    break;
-                }
-            }
-            newOrder = new Advance(armyAmount, player, player->toDefend().at(indexD)->GetAdjacentTerritories().at(indexA), player->toDefend().at(indexD));
-            break;
-        case OrderType::Bomb:
-            cout << "Issuing bomb order..." << endl;
-            //target's territory list
-            for (int i = 0; i < player->toAttack().size(); i++) {
-                targetTerritory += "(" + to_string(i) + ")" + player->toAttack().at(i)->GetName() + " | ";
-            }
-            //message and input
-            while (true) {
-                cout << "Select territory to bomb [int]: " << targetTerritory << endl;
-                cin >> indexA;
-                if (indexA >= player->getTerritories().size() || indexA < 0) {
-                    cout << "index out of range. try again." << endl;
-                }
-                else {
-                    break;
-                }
-            }
-            newOrder = new Bomb(player, player->toAttack().at(indexA));
-            break;
-        case OrderType::Blockade:
-            cout << "Issuing blockade order..." << endl;
-            //message and input
-            while (true) {
-                cout << "Select territory to blockade [int]: " << playerTerritory << endl;
-                cin >> indexD;
-                if (indexD >= player->getTerritories().size() || indexD < 0) {
-                    cout << "index out of range. try again." << endl;
-                }
-                else {
-                    break;
-                }
-            }
-            newOrder = new Blockade(player, player->toDefend().at(indexD));
-            break;
-        case OrderType::Airlift:
-            cout << "Issuing airlift order..." << endl;
-            //message and input
-            while (true) {
-                cout << "Select territory to move army from [int]: " << playerTerritory << endl;
-                cin >> indexD;
-                if (indexD >= player->getTerritories().size() || indexD < 0) {
-                    cout << "index out of range. try again." << endl;
-                }
-                else {
-                    break;
-                }
-            }
-            while (true) {
-                cout << "Select territory to move army to [int]: " << playerTerritory << endl;
-                cin >> indexA;
-                if (indexD >= player->getTerritories().size() || indexD < 0) {
-                    cout << "index out of range. try again." << endl;
-                }
-                else {
-                    break;
-                }
-            }
-            while (true) {
-                cout << "Select army amount to move [int] :"/* + to_string(player->toDefend().at(indexD)->getNbArmies()) + " remaining) : "*/ << endl;
-                cin >> armyAmount;
-                if (armyAmount < 0) {
-                    cout << "negative quantity is unavailable. try again." << endl;
-                }
-                else {
-                    break;
-                }
-            }
-            newOrder = new Airlift(player, player->toDefend().at(indexD), player->toDefend().at(indexA), armyAmount);
-            break;
-        case OrderType::Negotiate:
-            cout << "Issuing diplomacy order..." << endl;
-            //playerList
-            for (int i = 0; i < target.size(); i++) {
-                playerList += "(" + to_string(i) + ")" + target.at(i)->getName() + " | ";
-            }
-            //message and input
-            while (true) {
-                cout << "Select territory to move army from [int]: " << playerList << endl;
-                cin >> indexA;
-                if (indexA >= target.size() || indexA < 0) {
-                    cout << "index out of range. try again." << endl;
-                }
-                else {
-                    break;
-                }
-            }
-            newOrder = new Negotiate(player, target.at(indexA));
-            break;
-        default:
-            break;
-        }
-    orders->add(newOrder);
+    // // Check which type of order it is
+    // switch (type) {
+    //     case OrderType::Deploy:
+    //         cout << "Issuing deploy order..." << endl;
+    //         //message and input
+    //         while (true) {
+    //             cout << "Select territory to deploy army [int]: " << playerTerritory << endl;
+    //             cin >> indexD;
+    //             if (indexD >= player->getTerritories().size() || indexD < 0) {
+    //                 cout << "index out of range. try again." << endl;
+    //             }
+    //             else {
+    //                 break;
+    //             }
+    //         }
+    //         while (true) {
+    //             cout << "Select reinforcement amount to deploy [int] (" + to_string(player->getTempPool()) + " remaining) : " << endl;
+    //             cin >> armyAmount;
+    //             if (armyAmount < 0) {
+    //                 cout << "negative quantity is unavailable. try again." << endl;
+    //             }
+    //             else {
+    //                 break;
+    //             }
+    //         }
+    //         newOrder = new Deploy(armyAmount, player, player->toDefend().at(indexD));
+    //         setTempPool(getTempPool() - armyAmount);
+    //         break;
+    //     case OrderType::Advance:
+    //         cout << "Issuing advance order..." << endl;
+    //         //message and input
+    //         while (true) {
+    //             cout << "Select territory to move army from [int]: " << playerTerritory << endl;
+    //             cin >> indexD;
+    //             if (indexD >= player->getTerritories().size() || indexD < 0) {
+    //                 cout << "index out of range. try again." << endl;
+    //             }
+    //             else {
+    //                 break;
+    //             }
+    //         }
+    //         for (int i = 0; i < player->toDefend().at(indexD)->GetAdjacentTerritories().size(); i++) {
+    //             targetTerritory += "(" + to_string(i) + ")" + player->toDefend().at(indexD)->GetAdjacentTerritories().at(i)->GetName() + " | ";
+    //         }
+    //         while (true) {
+    //             cout << "Select territory to move army to [int]: " << targetTerritory << endl;
+    //             cin >> indexA;
+    //             if (indexA >= player->toDefend().at(indexD)->GetAdjacentTerritories().size() || indexA < 0) {
+    //                 cout << "index out of range. try again." << endl;
+    //             }
+    //             else {
+    //                 break;
+    //             }
+    //         }
+    //         while (true) {
+    //             cout << "Select army amount to move [int] :"/* + to_string(player->toDefend().at(indexD)->getNbArmies()) + " available) : "*/ << endl;
+    //             cin >> armyAmount;
+    //             if (armyAmount < 0) {
+    //                 cout << "negative quantity is unavailable. try again." << endl;
+    //             }
+    //             else {
+    //                 break;
+    //             }
+    //         }
+    //         newOrder = new Advance(armyAmount, player, player->toDefend().at(indexD)->GetAdjacentTerritories().at(indexA), player->toDefend().at(indexD));
+    //         break;
+    //     case OrderType::Bomb:
+    //         cout << "Issuing bomb order..." << endl;
+    //         //target's territory list
+    //         for (int i = 0; i < player->toAttack().size(); i++) {
+    //             targetTerritory += "(" + to_string(i) + ")" + player->toAttack().at(i)->GetName() + " | ";
+    //         }
+    //         //message and input
+    //         while (true) {
+    //             cout << "Select territory to bomb [int]: " << targetTerritory << endl;
+    //             cin >> indexA;
+    //             if (indexA >= player->getTerritories().size() || indexA < 0) {
+    //                 cout << "index out of range. try again." << endl;
+    //             }
+    //             else {
+    //                 break;
+    //             }
+    //         }
+    //         newOrder = new Bomb(player, player->toAttack().at(indexA));
+    //         break;
+    //     case OrderType::Blockade:
+    //         cout << "Issuing blockade order..." << endl;
+    //         //message and input
+    //         while (true) {
+    //             cout << "Select territory to blockade [int]: " << playerTerritory << endl;
+    //             cin >> indexD;
+    //             if (indexD >= player->getTerritories().size() || indexD < 0) {
+    //                 cout << "index out of range. try again." << endl;
+    //             }
+    //             else {
+    //                 break;
+    //             }
+    //         }
+    //         newOrder = new Blockade(player, player->toDefend().at(indexD));
+    //         break;
+    //     case OrderType::Airlift:
+    //         cout << "Issuing airlift order..." << endl;
+    //         //message and input
+    //         while (true) {
+    //             cout << "Select territory to move army from [int]: " << playerTerritory << endl;
+    //             cin >> indexD;
+    //             if (indexD >= player->getTerritories().size() || indexD < 0) {
+    //                 cout << "index out of range. try again." << endl;
+    //             }
+    //             else {
+    //                 break;
+    //             }
+    //         }
+    //         while (true) {
+    //             cout << "Select territory to move army to [int]: " << playerTerritory << endl;
+    //             cin >> indexA;
+    //             if (indexD >= player->getTerritories().size() || indexD < 0) {
+    //                 cout << "index out of range. try again." << endl;
+    //             }
+    //             else {
+    //                 break;
+    //             }
+    //         }
+    //         while (true) {
+    //             cout << "Select army amount to move [int] :"/* + to_string(player->toDefend().at(indexD)->getNbArmies()) + " remaining) : "*/ << endl;
+    //             cin >> armyAmount;
+    //             if (armyAmount < 0) {
+    //                 cout << "negative quantity is unavailable. try again." << endl;
+    //             }
+    //             else {
+    //                 break;
+    //             }
+    //         }
+    //         newOrder = new Airlift(player, player->toDefend().at(indexD), player->toDefend().at(indexA), armyAmount);
+    //         break;
+    //     case OrderType::Negotiate:
+    //         cout << "Issuing diplomacy order..." << endl;
+    //         //playerList
+    //         for (int i = 0; i < target.size(); i++) {
+    //             playerList += "(" + to_string(i) + ")" + target.at(i)->getName() + " | ";
+    //         }
+    //         //message and input
+    //         while (true) {
+    //             cout << "Select territory to move army from [int]: " << playerList << endl;
+    //             cin >> indexA;
+    //             if (indexA >= target.size() || indexA < 0) {
+    //                 cout << "index out of range. try again." << endl;
+    //             }
+    //             else {
+    //                 break;
+    //             }
+    //         }
+    //         newOrder = new Negotiate(player, target.at(indexA));
+    //         break;
+    //     default:
+    //         break;
+    //     }
+    // orders->add(newOrder);
 }
 
 // Function to add territories to the player's possession

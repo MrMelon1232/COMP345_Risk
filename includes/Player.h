@@ -73,7 +73,7 @@ public:
     std::vector<Territory*> toAttack();
 
     // Creates order object and adds it to the list of orders
-    void issueOrder(Player* player, vector<Player*> target, OrderType type);
+    void issueOrder(vector<Player*> target, OrderType type);
 
     // Destructor to clean up resources
     ~Player();
