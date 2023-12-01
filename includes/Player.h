@@ -111,6 +111,10 @@ public:
 
     //A3 part
     void setStrategy(PlayerStrategy* newStrategy);
+
+    //to implement
+    string getStrategy();
+
 };
 
 
