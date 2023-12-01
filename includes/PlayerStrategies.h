@@ -10,6 +10,7 @@ enum class OrderType; // Forward declaration
 
 class PlayerStrategy {
     public:
+        PlayerStrategy();
         PlayerStrategy(Player* player);
         virtual void issueOrder(std::vector<Player*> target, OrderType type) = 0;
         virtual vector<Territory*> toDefend() = 0;
