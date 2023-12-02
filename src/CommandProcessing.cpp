@@ -475,8 +475,10 @@ Command* FileCommandProcessorAdapter::readCommand() {
     string cmdName = commandLine.substr(0, spaceIndex);
 
     // If command is tournament, create instance of TournamentCommand
-    if (cmdName == "tournament")
-        return new TournamentCommand(cmdName.substr(11));
+    if (cmdName == "tournament") {
+        string arg = commandLine.substr(10);
+        return new TournamentCommand(arg);
+    }
 
     Command* command = new Command(cmdName);
     if (cmdName == "loadmap" || cmdName == "addplayer")

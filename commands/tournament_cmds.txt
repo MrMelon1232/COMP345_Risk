@@ -1,12 +1,1 @@
-tournament
-tournament -D 9
-tournament -D 51
-tournament -G 0 -D 35
-tournament -G 6 -D 35
-tournament -P cheater human -G 3 -D 35
-tournament -P cheater benevolent neutral aggressive cheater -G 3 -D 35
-tournament -P cheater benevolent neutral aggressive -G 3 -D 35
-tournament -M map1 map2 map3 map4 map5 map6 -P Aggressive Benevolent Neutral Cheater -G 5 -D 15
-tournament -M map1 map2 map3 map4 map5 -P Aggressive Benevolent Neutral Cheater -G 5 -D 15
 tournament -M ../Maps/Africa.map -P Aggressive Cheater -G 1 -D 10
-tournament -M ../Maps/Africa.map ../Maps/Americas 1792.map -P Aggressive Benevolent Neutral Cheater -G 3 -D 35
