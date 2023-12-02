@@ -383,7 +383,8 @@ string AggressivePlayerStrategy::getType()
 BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player *player) : PlayerStrategy(player) {}
 
 void BenevolentPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType type) {
-    Order* newOrder = nullptr;
+    Order* newOrder = nullptr; 
+    int armyAmount = 0;
 
     // Get the weakest territories to defend
     vector<Territory*> weakestTerritories = p->toDefend();
@@ -392,11 +393,12 @@ void BenevolentPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
     switch (type) {
         case OrderType::Deploy:
             cout << "Issuing deploy order for weakest territories..." << endl;
+            armyAmount = p->getReinforcementPool(); // Deploy all available armies to the weakest territories
             for (Territory* territory : weakestTerritories) {
-                int armyAmount = p->getReinforcementPool(); // Deploy all available armies to the weakest territories
                 newOrder = new Deploy(armyAmount, p, territory);
+                 //adding new order to list 
+                p->getOrdersList()->add(newOrder);   
             }
-            p->setTempPool(p->getTempPool() - p->getReinforcementPool());
             break;
 
         case OrderType::Advance:
@@ -412,8 +414,10 @@ void BenevolentPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
                 }
 
                 if (adjacentToWeakest != nullptr) {
-                    int armyAmount = adjacentToWeakest->getNbArmies() / 2;
+                    armyAmount = adjacentToWeakest->getNbArmies() / 2;
                     newOrder = new Advance(armyAmount, p, territory, adjacentToWeakest);
+                    //adding new order to list 
+                    p->getOrdersList()->add(newOrder);   
                 }
             }
             break;
@@ -428,7 +432,10 @@ void BenevolentPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
             for (Territory* territory : weakestTerritories) {
                 // Create a blockade order for each weakest territory owned by the player
                 newOrder = new Blockade(p, territory);
+                //adding new order to list 
+                p->getOrdersList()->add(newOrder);   
             }
+            break;
 
         case OrderType::Airlift:
             cout << "Issuing airlift order to reinforce weakest territories..." << endl;
@@ -445,8 +452,10 @@ void BenevolentPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
                     int randomIndex = rand() % eligibleTerritories.size();
                     Territory* sourceTerritory = eligibleTerritories[randomIndex];
                     // Choose the weakest territory as the destination
-                    int armyAmount = sourceTerritory->getNbArmies() / 2;
+                    armyAmount = sourceTerritory->getNbArmies() / 2;
                     newOrder = new Airlift(p, weakestOwnedTerritory, sourceTerritory, armyAmount);
+                    //adding new order to list 
+                    p->getOrdersList()->add(newOrder);   
                 }
             }
             break;
@@ -455,15 +464,15 @@ void BenevolentPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
             cout << "Issuing diplomacy order..." << endl;
             for (Player* enemyPlayer : target) {
                 if (enemyPlayer != p) {
-                    Order* newOrder = new Negotiate(p, enemyPlayer);
+                    newOrder = new Negotiate(p, enemyPlayer);
+                    //adding new order to list 
+                    p->getOrdersList()->add(newOrder);   
                 }
             }
             break;
         default:
             break;
-    }
-    //adding new order to list 
-    p->getOrdersList()->add(newOrder);    
+    } 
 }
 
 // To defend function
