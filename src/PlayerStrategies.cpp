@@ -358,12 +358,12 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
             cout << "Aggressive player REFUSES to negotiate!" << endl;
             break;
         
-        //adding new order to list 
-        p->getOrdersList()->add(newOrder);      
 
         default:
             break;
     }
+    //adding new order to list 
+    p->getOrdersList()->add(newOrder);      
 }
 
 //returns the type of the strategy
@@ -459,13 +459,11 @@ void BeneloventPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
                 }
             }
             break;
-
-        //adding new order to list 
-        p->getOrdersList()->add(newOrder);    
-
         default:
             break;
     }
+    //adding new order to list 
+    p->getOrdersList()->add(newOrder);    
 }
 
 // To defend function
