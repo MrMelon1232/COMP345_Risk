@@ -493,9 +493,10 @@ void GameEngine::issueOrdersPhase() {
         //show territories that player can deploy
         //cout << "\n-----------------debug line--------------------\n" << players.at(iteration)->getTempPool() << endl;
         //deploying reinforcements
-        while (players.at(turn.at(iteration))->getTempPool() != 0) {
+        while (players.at(turn.at(iteration))->getTempPool() > 0) {
+            cout << "\n-----------------debug line--------------------\n" << players.at(turn.at(iteration))->getTempPool() << endl;
             players.at(turn.at(iteration))->issueOrder(players, getOrderType("deploy"));
-            if (players.at(turn.at(iteration))->getTempPool() == 0) {
+            if (players.at(turn.at(iteration))->getTempPool() <= 0) {
                 trueFalse = false;
             }
         }

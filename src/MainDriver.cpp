@@ -14,16 +14,16 @@ void testA1() {
     testLoadMaps();
 
     // Test function for players
-    testPlayers();
+    //testPlayers();
 
     // Test function for orders
-    testOrdersList();
+    //testOrdersList();
 
     // Test function for cards
-    testCards();
+    //testCards();
 
     // Test function for game engine
-    testGameStates();
+    //testGameStates();
 }
 
 void testA2() {
@@ -51,7 +51,7 @@ int main() {
     //testA2();
 
     //Assignment 3
-    //testTournament();
-    testPlayerStrategies();
+    testTournament();
+    //testPlayerStrategies();
 }
 

@@ -397,7 +397,8 @@ void BenevolentPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
             for (Territory* territory : weakestTerritories) {
                 newOrder = new Deploy(armyAmount, p, territory);
                  //adding new order to list 
-                p->getOrdersList()->add(newOrder);   
+                p->getOrdersList()->add(newOrder);
+                p->setTempPool(p->getTempPool() - armyAmount);
             }
             break;
 
