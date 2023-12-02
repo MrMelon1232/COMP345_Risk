@@ -99,26 +99,17 @@ std::ostream& operator<<(std::ostream& os, Player& player) {
 
 // Function that returns a list of territories that are to be defended
 vector<Territory*> Player::toDefend() {
-    if (ps) {
-        return ps->toDefend(); // Delegate to PlayerStrategy's toDefend()
-    }
-    return {}; // Return empty vector if no strategy set
+    return ps->toDefend(); // Delegate to PlayerStrategy's toDefend()
 }
 
 // Function that returns a list of territories that are to be attacked
 vector<Territory*> Player::toAttack() {
-   if (ps) {
-        return ps->toAttack(); // Delegate to PlayerStrategy's toAttack()
-    }
-    return {}; // Return empty vector if no strategy set
+    return ps->toAttack(); // Delegate to PlayerStrategy's toAttack()
 }
 
 // Function that creates an order object and adds it to the list of orders
 void Player::issueOrder(vector<Player*> target, OrderType type) {
-
-    if (ps) {
-        ps->issueOrder(target, type); // Delegate to PlayerStrategy's issueOrder()
-    }
+    ps->issueOrder(target, type); // Delegate to PlayerStrategy's issueOrder()
     // Order* newOrder = nullptr;
     // //variables for issuing orders
     // string playerTerritory, targetTerritory, playerList;

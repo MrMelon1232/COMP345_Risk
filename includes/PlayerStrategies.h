@@ -43,9 +43,9 @@ public:
 };
 
 
-class BeneloventPlayerStrategy : public PlayerStrategy {
+class BenevolentPlayerStrategy : public PlayerStrategy {
 public:
-    BeneloventPlayerStrategy(Player* player);
+    BenevolentPlayerStrategy(Player* player);
     void issueOrder(std::vector<Player*> target, OrderType type) override;
     vector<Territory*> toDefend() override;
     vector<Territory*> toAttack() override;
@@ -88,3 +88,7 @@ enum class StrategyType {
 StrategyType getStrategyType(string);
 // Free function to create the proper strategy based on the type.
 PlayerStrategy* loadStrategy(Player* player, StrategyType strategyType);
+
+
+// Test function
+void testPlayerStrategies();

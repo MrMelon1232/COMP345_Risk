@@ -42,7 +42,7 @@ void HumanPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType type
                 }
             }
             while (true) {
-                cout << "Select reinforcement amount to deploy [int] (" + to_string(p->getTempPool()) + " remaining) : " << endl;
+                cout << "Select reinforcement amount to deploy [int] (" + to_string(p->getReinforcementPool()) + " remaining) : " << endl;
                 cin >> armyAmount;
                 if (armyAmount < 0) {
                     cout << "negative quantity is unavailable. try again." << endl;
@@ -52,7 +52,7 @@ void HumanPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType type
                 }
             }
             newOrder = new Deploy(armyAmount, p, p->toDefend().at(indexD));
-            p->setTempPool(p->getTempPool() - armyAmount);
+            p->setTempPool(p->getReinforcementPool() - armyAmount);
             break;
         case OrderType::Advance:
             cout << "Issuing advance order..." << endl;
@@ -245,7 +245,7 @@ vector<Territory*> AggressivePlayerStrategy::toAttack()
             if (adjacentTerritory->getOwnerID() != this->p->getPlayerID() && 
                 find(territoriesToAttack.begin(), territoriesToAttack.end(), adjacentTerritory) == territoriesToAttack.end()) 
                 {
-                territoriesToAttack.push_back(adjacentTerritory);
+                    territoriesToAttack.push_back(adjacentTerritory);
                 }
         }
     }
@@ -380,9 +380,9 @@ string AggressivePlayerStrategy::getType()
 //--------------------------------------------------------------------------------------------------
 // Benevolent Player Strategy
 //--------------------------------------------------------------------------------------------------
-BeneloventPlayerStrategy::BeneloventPlayerStrategy(Player *player) : PlayerStrategy(player) {}
+BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player *player) : PlayerStrategy(player) {}
 
-void BeneloventPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType type) {
+void BenevolentPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType type) {
     Order* newOrder = nullptr;
 
     // Get the weakest territories to defend
@@ -467,7 +467,7 @@ void BeneloventPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
 }
 
 // To defend function
-vector<Territory*> BeneloventPlayerStrategy::toDefend() {
+vector<Territory*> BenevolentPlayerStrategy::toDefend() {
     std::vector<Territory*> playerTerritories = p->getTerritories();
     std::vector<Territory*> weakestTerritories;
 
@@ -491,14 +491,14 @@ vector<Territory*> BeneloventPlayerStrategy::toDefend() {
 }
 
 // To attack function
-vector<Territory*> BeneloventPlayerStrategy::toAttack() {
+vector<Territory*> BenevolentPlayerStrategy::toAttack() {
     vector<Territory*> notAttacking;
     cout<<"Benevolent player is returning an empty list for attacking...";
     return notAttacking;
 }
 
 
-string BeneloventPlayerStrategy::getType() {
+string BenevolentPlayerStrategy::getType() {
     return "benevolent";
 }
 
@@ -618,7 +618,7 @@ PlayerStrategy* loadStrategy(Player* player, StrategyType strategyType) {
     else if (strategyType == StrategyType::Aggressive)
         return new AggressivePlayerStrategy(player);
     else if (strategyType == StrategyType::Benevolent)
-        return new BeneloventPlayerStrategy(player);
+        return new BenevolentPlayerStrategy(player);
     else if (strategyType == StrategyType::Neutral)
         return new NeutralPlayerStrategy(player);
     else if (strategyType == StrategyType::Cheater)

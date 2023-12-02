@@ -6,6 +6,7 @@
 #include "Orders.h"
 #include "Cards.h"
 #include "GameEngine.h"
+#include "PlayerStrategies.h"
 
 
 void testA1() {
@@ -50,6 +51,7 @@ int main() {
     //testA2();
 
     //Assignment 3
-    testTournament();
+    //testTournament();
+    testPlayerStrategies();
 }
 
