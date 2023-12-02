@@ -93,7 +93,7 @@ public:
         ~GameEngine();
 
         //Part 2 Logging
-        string stringToLog() const override;
+        string stringToLog() override;
     private:
         void setDefaultGameStates();
         void selectMode();

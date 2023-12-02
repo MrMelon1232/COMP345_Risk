@@ -65,6 +65,53 @@ TournamentCommand& TournamentCommand::operator=(const TournamentCommand& tournam
 
     return *this;
 }
+std::ostream& operator<<(std::ostream& output, TournamentCommand& command)
+{
+    /*// TODO: insert return statement here
+    output << "Tournament mode:\nM:";
+    //map list
+    for (int i = 0; i < command.mapFiles.size(); i++) {
+        output << command.mapFiles.at(i);
+    }
+    //player list
+    output << "\nP: " << endl;
+    for (int i = 0; i < command.playerStrats.size(); i++) {
+        //need to convert enum to string
+        output << command.ToString(command.playerStrats.at(i));
+    }
+    //game and turn amount
+    output << "\nG: " << command.nbGames << "\nD: " << command.maxTurnsPerGame << endl;
+    //result table
+    output << "\nResults:" << endl;
+    for (int i = 0; i < command.table.size(); i++) {
+        //output
+        if (i != 0) {
+            //Map
+            output << "\n" << command.table[i].at(0);
+        }
+        for (int j = 0; j < command.nbGames; j++) {
+            //first line
+            if (i == 0 && j == 0) {
+                output << "\t";
+            }
+            else if (i == 0 && j != 0) {
+                output << "Game " << j << "\t";
+            }
+            //result per map
+            else if (j != 0) {
+                output << "\t" << command.table[i].at(j);
+            }
+        }
+    }*/
+    return output;
+}
+
+
+void TournamentCommand::saveResult(string str) {
+    this->str = str;
+    notify(*this);
+}
+
 
 const char* TournamentCommand::ToString(StrategyType type)
 {
@@ -506,52 +553,50 @@ FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
 }
 
 // Part 2
-string CommandProcessor::stringToLog() const {
-    return "";
+string CommandProcessor::stringToLog() {
+    return "test";
 }
 
-string Command::stringToLog() const {
-    return "Command: " + cmdName + ", Effect: " + effect;
-}
-
-std::ostream& operator<<(std::ostream& output, TournamentCommand& command)
+string TournamentCommand::stringToLog()
 {
+    string str;
     // TODO: insert return statement here
-    output << "Tournament mode:\nM:";
+    str = "Tournament mode:\nM: ";
     //map list
-    for (int i = 0; i < command.mapFiles.size(); i++) {
-        output << command.mapFiles.at(i);
+    for (int i = 0; i < mapFiles.size(); i++) {
+        str += mapFiles.at(i);
+        str += "\t";
     }
     //player list
-    output << "\nP: " << endl;
-    for (int i = 0; i < command.playerStrats.size(); i++) {
+    str += "\nP: ";
+    for (int i = 0; i < playerStrats.size(); i++) {
         //need to convert enum to string
-        output << command.ToString(command.playerStrats.at(i));
+        str += ToString(playerStrats.at(i));
+        str += "\t";
     }
     //game and turn amount
-    output << "\nG: " << command.nbGames << "\nD: " << command.maxTurnsPerGame << endl;
+    str += "\nG: " + to_string(nbGames) + "\nD: " + to_string(maxTurnsPerGame) + "\n";
     //result table
-    output << "\nResults:" << endl;
-    for (int i = 0; i < command.table.size() + 1; i++) {
-        //output
-        if (i != 0) {
-            //Map
-            output << "\n" << command.table[i - 1].at(0);
-        }
-        for (int j = 0; j < command.nbGames + 1; j++) {
-            //first line
-            if(i == 0 && j == 0){
-                output << "\t";
-            }
-            else if (i == 0 && j != 0) {
-                output << "Game " << j << "\t";
-            }
-            //result per map
-            else if (j != 0) {
-                output << "\t" << command.table[i].at(j);
+    str += "\nResults:\n\t";
+    for (int i = 1; i <= nbGames; i++) {
+        str += "Game " + to_string(i) + "\t";
+    }
+    
+    for (int i = 0; i < table.size(); i++) {
+        //map
+        str += "\n" + table[i].at(0);
+        for (int j = 0; j < table[i].size(); j++) {
+            cout << table[i].at(j) << endl;
+            if (j != 0) {
+                str += "\t" + table[i].at(j);
             }
         }
     }
+    //cout << "\n-----------------inner debug line--------------------\n" << str << "\n------------------------------------------------\n" << endl;
+    cout << str << endl;
+    return str;
+}
 
-    return output;
+string Command::stringToLog() {
+    return "Command: " + cmdName + ", Effect: " + effect;
 }

@@ -11,13 +11,13 @@ using namespace std;
 // Interface for loggable class
 class ILoggable {
     public:
-        virtual string stringToLog() const = 0;
+        virtual string stringToLog();
 };
 
 // Observer interface
 class Observer {
     public: 
-        virtual void update(const ILoggable& loggable) = 0;
+        virtual void update(ILoggable& loggable);
 };
 
 // Subject class
@@ -25,7 +25,7 @@ class Subject {
     public:
         void attach(Observer *observer);
         void detach(Observer *observer);
-        void notify(const ILoggable& loggable);
+        void notify(ILoggable& loggable);
     
     private:
         vector<Observer*> observers;
@@ -36,7 +36,7 @@ class LogObserver: public Observer {
     public:
         LogObserver(const string& logFileName);
         ~LogObserver();
-        void update(const ILoggable& loggable) override;
+        virtual void update(ILoggable& loggable) override;
         
     private:
         ofstream logFile;

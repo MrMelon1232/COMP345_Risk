@@ -37,7 +37,7 @@ class Deploy : public Order
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Deploy& operator=(const Deploy& other);
-        string stringToLog() const override;        
+        string stringToLog() override;        
         string getName() const override { return "Deploy"; }
 
     private:
@@ -59,7 +59,7 @@ class Advance : public Order
         ostream& displayOrder(ostream& myOrder) const override;
         Advance& operator=(const Advance& other);
         void simulateAttack(); 
-        string stringToLog() const override;
+        string stringToLog() override;
         string getName() const override { return "Advance"; }
     
     private:
@@ -81,7 +81,7 @@ class Bomb : public Order
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Bomb& operator=(const Bomb& other);
-        string stringToLog() const override;
+        string stringToLog() override;
         string getName() const override { return "Bomb"; }
     
     private:
@@ -101,7 +101,7 @@ class Blockade : public Order
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Blockade& operator=(const Blockade& other);
-        string stringToLog() const override;
+        string stringToLog() override;
         string getName() const override { return "Blockade"; }
     
     private:
@@ -121,7 +121,7 @@ class Airlift : public Order
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Airlift& operator=(const Airlift& other);
-        string stringToLog() const override;
+        string stringToLog() override;
         string getName() const override { return "Airlift"; }
     
     private:
@@ -143,7 +143,7 @@ class Negotiate : public Order
         bool validate() override;
         ostream& displayOrder(ostream& myOrder) const override;
         Negotiate& operator=(const Negotiate& other);
-        string stringToLog() const override;
+        string stringToLog() override;
         string getName() const override { return "Negotiate"; }
     
     private:
@@ -177,7 +177,7 @@ class OrdersList: public ILoggable, public Subject
         OrdersList& operator=(const OrdersList& other);
         ~OrdersList(); 
         Order* getOrder(int i);
-        string stringToLog() const override;
+        string stringToLog() override;
                 
     private: 
         std::vector<Order*> listOfOrders;

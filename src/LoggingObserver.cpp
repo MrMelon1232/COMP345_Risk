@@ -8,11 +8,11 @@ void Subject::detach(Observer* observer) {
     observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
 }
 
-void LogObserver::update(const ILoggable& loggable) {
+void LogObserver::update(ILoggable& loggable) {
     logFile << loggable.stringToLog() << std::endl;
 } 
 
-void Subject::notify(const ILoggable& loggable) {
+void Subject::notify(ILoggable& loggable) {
     for (Observer* observer : observers) {
         observer->update(loggable);
     }
@@ -24,4 +24,13 @@ LogObserver::LogObserver(const string& logFileName) {
 
 LogObserver::~LogObserver() {
     logFile.close();
+}
+
+string ILoggable::stringToLog()
+{
+    return string();
+}
+
+void Observer::update(ILoggable& loggable)
+{
 }

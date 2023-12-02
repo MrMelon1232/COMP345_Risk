@@ -30,7 +30,7 @@ class Command: public ILoggable, public Subject {
         virtual ~Command();
 
         //Part 2 Loggable
-        string stringToLog() const override;
+        string stringToLog() override;
     private:
         string cmdName;
         string effect;
@@ -54,6 +54,11 @@ class TournamentCommand : public Command {
         friend std::ostream& operator<<(std::ostream& output, TournamentCommand& command);
 
         ~TournamentCommand();
+
+        string stringToLog() override;
+        void saveResult(string str);
+
+        string str;
 };
 
 class GameEngine; // forward declaration
@@ -76,7 +81,7 @@ class CommandProcessor: public ILoggable, public Subject {
         virtual ~CommandProcessor();
 
         // Part 2 Logging
-        string stringToLog() const override;
+        string stringToLog() override;
 
     private:
         virtual Command* readCommand();

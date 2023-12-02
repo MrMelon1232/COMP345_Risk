@@ -11,7 +11,7 @@
 
 void testA1() {
     // Test function for map
-    testLoadMaps();
+    //testLoadMaps();
 
     // Test function for players
     //testPlayers();
@@ -40,7 +40,7 @@ void testA2() {
     //testOrderExecution();
 
     // Test function for logging observer
-    //testLoggingObserver();
+    testLoggingObserver();
 }
 
 int main() {
