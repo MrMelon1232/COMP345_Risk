@@ -387,18 +387,22 @@ void GameEngine::mainGameLoop() {
     while (!gameEnd) {
         //cout << "inside while loop" << endl;
         //run game loop
-        
+        /*
         reinforcementPhase();
         issueOrdersPhase();
-        executeOrdersPhase();
+        executeOrdersPhase();*/
         
         //forceGameWin();
         nbTurnsPlayed++;
         gameEnd =  gameResultCheck();
     }
 
-    cout << "Winner: " << ((*players.at(0)).getName()) << endl;
-
+    if (players.size() > 1) {
+        cout << "The game is a draw!" << endl;
+    }
+    else if (players.size() == 1) {
+        cout << "Winner: " << (*players.at(0)).getStrategy() << ((*players.at(0)).getName()) << endl;
+    }
 }
 
 bool GameEngine::gameResultCheck() {
@@ -724,7 +728,7 @@ void GameEngine::startTournament(TournamentCommand* tournamentCmd) {
     MapLoader* mapLoader = getCommandProcessor()->getMapLoader();
     for (string mapFile : tournamentCmd->mapFiles) {
         //add game data (map#)
-        endGameData.push_back(mapFile);
+        endGameData.push_back("Map");
         for (int j = 0; j < tournamentCmd->nbGames; j++) {
             // Prepare the game.
             try {
@@ -749,24 +753,19 @@ void GameEngine::startTournament(TournamentCommand* tournamentCmd) {
             // Play the game.
             mainGameLoop();
             //add game data (winning player)
-            cout << players.size() << endl;
+            
             if (players.size() == 1) {
                 endGameData.push_back(players.at(0)->getStrategy());
             }
             else {
-                endGameData.push_back("Draw"); 
-            }
-            for (int i = 0; i < endGameData.size(); i++) {
-                cout << endGameData.at(i) << endl;
+                endGameData.push_back("Draw");
             }
             // Clear game variables.
             clearGame();
         }
         tournamentCmd->table.push_back(endGameData);
     }
-    //cout << "\n-----------------debug line--------------------\n" << "" << "\n------------------------------------------------\n" << endl;
     tournamentCmd->saveResult(tournamentCmd->stringToLog());
-    //cout << "\n-----------------debug line--------------------\n" << "" << "\n------------------------------------------------\n" << endl;
     tournamentCmd->detach(&logObserver);
 }
 

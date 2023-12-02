@@ -57,6 +57,7 @@ class TournamentCommand : public Command {
 
         string stringToLog() override;
         void saveResult(string str);
+        string getMapName(string mapFile);
 
         string str;
 };

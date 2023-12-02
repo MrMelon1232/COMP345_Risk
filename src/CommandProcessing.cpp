@@ -112,6 +112,12 @@ void TournamentCommand::saveResult(string str) {
     notify(*this);
 }
 
+string TournamentCommand::getMapName(string mapFile)
+{
+    string map = mapFile.substr(mapFile.rfind("/") + 1);
+    return map;
+}
+
 
 const char* TournamentCommand::ToString(StrategyType type)
 {
@@ -560,19 +566,18 @@ string CommandProcessor::stringToLog() {
 string TournamentCommand::stringToLog()
 {
     string str;
-    // TODO: insert return statement here
     str = "Tournament mode:\nM: ";
     //map list
     for (int i = 0; i < mapFiles.size(); i++) {
-        str += mapFiles.at(i);
-        str += "\t";
+        str += getMapName(mapFiles.at(i));
+        str += ",\t";
     }
     //player list
     str += "\nP: ";
     for (int i = 0; i < playerStrats.size(); i++) {
         //need to convert enum to string
         str += ToString(playerStrats.at(i));
-        str += "\t";
+        str += ",\t";
     }
     //game and turn amount
     str += "\nG: " + to_string(nbGames) + "\nD: " + to_string(maxTurnsPerGame) + "\n";
@@ -584,7 +589,7 @@ string TournamentCommand::stringToLog()
     
     for (int i = 0; i < table.size(); i++) {
         //map
-        str += "\n" + table[i].at(0);
+        str += "\n" + table[i].at(0) + " " + to_string(i+1);
         for (int j = 0; j < table[i].size(); j++) {
             cout << table[i].at(j) << endl;
             if (j != 0) {
@@ -592,8 +597,8 @@ string TournamentCommand::stringToLog()
             }
         }
     }
-    //cout << "\n-----------------inner debug line--------------------\n" << str << "\n------------------------------------------------\n" << endl;
-    cout << str << endl;
+    str += "\n\n";
+
     return str;
 }
 
