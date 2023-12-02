@@ -396,6 +396,7 @@ void BeneloventPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
                 int armyAmount = p->getReinforcementPool(); // Deploy all available armies to the weakest territories
                 newOrder = new Deploy(armyAmount, p, territory);
             }
+            p->setTempPool(p->getTempPool() - p->getReinforcementPool());
             break;
 
         case OrderType::Advance:
