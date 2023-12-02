@@ -617,7 +617,7 @@ PlayerStrategy* loadStrategy(Player* player, StrategyType strategyType) {
     if (strategyType == StrategyType::Human)
         return new HumanPlayerStrategy(player);
     else if (strategyType == StrategyType::Aggressive)
-        return new CheaterPlayerStrategy(player);
+        return new AggressivePlayerStrategy(player);
     else if (strategyType == StrategyType::Benevolent)
         return new BeneloventPlayerStrategy(player);
     else if (strategyType == StrategyType::Neutral)
