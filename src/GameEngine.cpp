@@ -391,7 +391,7 @@ void GameEngine::mainGameLoop() {
         issueOrdersPhase();
         executeOrdersPhase();
 
-        forceGameWin();
+        //forceGameWin();
         nbTurnsPlayed++;
         gameEnd =  gameResultCheck();
     }

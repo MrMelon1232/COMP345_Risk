@@ -3,7 +3,6 @@
 
 void testTournament() {
     GameEngine* gameEngine = new GameEngine();
-    // Enter the tournament command
     
     Command* cmd = nullptr;
     do {

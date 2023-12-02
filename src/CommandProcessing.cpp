@@ -114,9 +114,11 @@ Command* CommandProcessor::readCommand() {
     string cmdName;
     cin >> cmdName;
 
-    int tournamentIdx = cmdName.find("tournament");
-    if (tournamentIdx == 0)
-        return new TournamentCommand(cmdName.substr(11));
+    if (cmdName == "tournament") {
+        string arg;
+        std::getline(std::cin, arg);
+        return new TournamentCommand(arg);
+    }
 
     Command* command = new Command(cmdName);
 
@@ -181,6 +183,11 @@ bool CommandProcessor::validateTournament(Command* command) {
     }
 
     string cmdLine = tournamentCmd->getArg();
+    if (cmdLine == "") {
+        cout << "Invalid command: no arguments provided for the tournament." << endl;
+        return false;
+    }
+
     // Retrive number of turns.
     int nbTurns;
     int turnsIndex = cmdLine.find("-D");
@@ -219,11 +226,11 @@ bool CommandProcessor::validateTournament(Command* command) {
 
     // Retrieve player strats
     int stratIndex = cmdLine.find("-P");
-    string stratsStr = cmdLine.substr(stratIndex+3, gamesIndex);
+    string stratsStr = cmdLine.substr(stratIndex+3, gamesIndex-stratIndex-3);
     vector<StrategyType> playerStrats;
     int index = 0;
     while ((index = stratsStr.find(" ")) != std::string::npos) {
-        string strat = stratsStr.substr(index);
+        string strat = stratsStr.substr(0, index);
 
         StrategyType playerStrat = getStrategyType(strat);
         if (StrategyType::None != playerStrat && StrategyType::Human != playerStrat)
@@ -244,11 +251,12 @@ bool CommandProcessor::validateTournament(Command* command) {
     }
 
     // Retrieve list of maps
-    string mapsStr = cmdLine.substr(cmdLine.find("-M")+3, stratIndex);
+    int mapIndex = cmdLine.find("-M");
+    string mapsStr = cmdLine.substr(mapIndex+3, stratIndex-mapIndex-3);
     vector<string> mapFiles;
     index = 0;
     while ((index = mapsStr.find(" ")) != std::string::npos) {
-        string mapFile = mapsStr.substr(index);
+        string mapFile = mapsStr.substr(0, index);
         mapFiles.push_back(mapFile);
         mapsStr.erase(0, index + 1);
     }
