@@ -1,1 +1,1 @@
-tournament -M ../Maps/Africa.map -P Aggressive Benevolent -G 1 -D 10
+tournament -M ../Maps/Africa.map -P Benevolent Benevolent -G 1 -D 10

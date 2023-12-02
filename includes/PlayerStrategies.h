@@ -18,7 +18,7 @@ class PlayerStrategy {
         // Define other pure virtual methods or common functionalities for strategies
         virtual ~PlayerStrategy() = default;
         virtual string getType() = 0; 
-    private:
+    protected:
         Player* p;
 };
 
@@ -29,8 +29,6 @@ public:
     vector<Territory*> toDefend() override;
     vector<Territory*> toAttack() override;
     string getType() override;
-private:
-    Player* p;
 };
 
 class AggressivePlayerStrategy : public PlayerStrategy {
@@ -42,8 +40,6 @@ public:
     vector<Territory*> toDefend() override;
     vector<Territory*> toAttack() override;
     string getType() override;
-private:
-    Player* p;
 };
 
 
@@ -54,8 +50,6 @@ public:
     vector<Territory*> toDefend() override;
     vector<Territory*> toAttack() override;
     string getType() override;
-private:
-    Player* p;
 };
 
 
@@ -68,8 +62,6 @@ public:
     vector<Territory*> toDefend() override;
     vector<Territory*> toAttack() override;
     string getType() override;
-private:
-    Player* p;
 };
 
 
@@ -80,8 +72,6 @@ public:
     vector<Territory*> toDefend() override;
     vector<Territory*> toAttack() override;
     string getType() override;
-private:
-    Player* p;
 };
 
 // Enum containing the player strategies.
