@@ -170,55 +170,56 @@ void testPlayerStrategies() {
     // End of Benevolent Player Strategy
     //--------------------------------------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------------------------
- // Cheater Player Strategy
- //--------------------------------------------------------------------------------------------------
-Player * cheaterPlayer = new Player();
-PlayerStrategy* cheaterStrategy = new CheaterPlayerStrategy(cheaterPlayer);
-cheaterPlayer->setStrategy(cheaterStrategy);
-Player* cheaterPlayer2 = new Player();
-cheaterPlayer2->setName("CheaterBot");
-cheaterPlayer2->setStrategy(cheaterStrategy);
-vector<Player*> playerList3;
-playerList3.push_back(cheaterPlayer2); 
-cheaterPlayer->setReinforcementPool(1000);
+    //--------------------------------------------------------------------------------------------------
+    // Cheater Player Strategy
+    //--------------------------------------------------------------------------------------------------
+    Player * cheaterPlayer = new Player();
+    PlayerStrategy* cheaterStrategy = new CheaterPlayerStrategy(cheaterPlayer);
+    cheaterPlayer->setStrategy(cheaterStrategy);
+    Player* cheaterPlayer2 = new Player();
+    cheaterPlayer2->setName("CheaterBot");
+    cheaterPlayer2->setStrategy(cheaterStrategy);
+    vector<Player*> playerList3;
+    playerList3.push_back(cheaterPlayer2);
+    cheaterPlayer->setReinforcementPool(1000);
 
-// Simulate the Cheater player's behavior (automatically capture all adjacent territories)
-cout << "Testing Cheater Player Strategy...\n";
-Territory* germany3 = new Territory("Germany", "Europe", cheaterPlayer->getPlayerID());
-Territory* spain3 = new Territory("Spain", "Europe", cheaterPlayer->getPlayerID());
-cheaterPlayer->addTerritory(germany3); 
-cheaterPlayer->addTerritory(spain3);  
+    // Simulate the Cheater player's behavior (automatically conquer all adjacent territories)
+    cout << "Testing Cheater Player Strategy...\n";
+    Territory* germany3 = new Territory("Germany", "Europe", cheaterPlayer->getPlayerID());
+    Territory* spain3 = new Territory("Spain", "Europe", cheaterPlayer->getPlayerID());
+    cheaterPlayer->addTerritory(germany3); 
+    cheaterPlayer->addTerritory(spain3);   
 
-// Adding units
-germany3->setNbArmies(5); 
-spain3->setNbArmies(3);   
+    // Adding units
+    germany3->setNbArmies(5); 
+    spain3->setNbArmies(3);   
 
-cout << "Cheater player 2 owns France.\n";
-// Player 2 owns France
-Territory* france3 = new Territory("France", "Europe", cheaterPlayer2->getPlayerID());
-cheaterPlayer2->addTerritory(france3); 
+    cout << "Cheater player 2 owns France.\n";
+    // Player 2 owns France
+    Territory* france3 = new Territory("France", "Europe", cheaterPlayer2->getPlayerID());
+    cheaterPlayer2->addTerritory(france3); 
 
-cout << "Germany and France are adjacent to each other.\n";
-cout << "Spain and France are adjacent to each other.\n";
+    cout << "Germany and France are adjacent to each other.\n";
+    cout << "Spain and France are adjacent to each other.\n";
 
-// Germany is adjacent to France 
-germany3->AddAdjacentTerritory(france3);
-france3->AddAdjacentTerritory(germany3);
+    // Germany is adjacent to France 
+    germany3->AddAdjacentTerritory(france3); 
+    france3->AddAdjacentTerritory(germany3); 
 
-// Spain is adjacent to France
-spain3->AddAdjacentTerritory(france3); 
-france3->AddAdjacentTerritory(spain3);   
+    // Spain is adjacent to France
+    spain3->AddAdjacentTerritory(france3);  
+    france3->AddAdjacentTerritory(spain3);   
 
-// No need to issue orders for the Cheater player
+    // No need to issue orders for the Cheater player
 
-cout << "-----------Testing Orders execution-------------\n";
-OrdersList* orders3 = cheaterPlayer->getOrdersList();
-for (int i = 0; i < orders3->getSize(); i++) {
-    orders3->getOrder(i)->execute();
-}
-//--------------------------------------------------------------------------------------------------
-// End of Cheater Player Strategy
-//--------------------------------------------------------------------------------------------------
+    cout << "-----------Testing Orders execution-------------\n";
+    OrdersList* orders3 = cheaterPlayer->getOrdersList();
+    for (int i = 0; i < orders3->getSize(); i++) {
+        orders3->getOrder(i)->execute();
+    }
+    //--------------------------------------------------------------------------------------------------
+    // End of Cheater Player Strategy
+    //--------------------------------------------------------------------------------------------------
+
     
 }
