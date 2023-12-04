@@ -563,28 +563,44 @@ void GameEngine::issueOrdersPhase() {
             }
             //card for cpu
             else {
-
+                int randomValue;
+                randomValue = rand() % (players.at(turn.at(iteration))->getHandSize() + 1);
+                if (randomValue < players.at(turn.at(iteration))->getHandSize() && !cardUsed) {
+                    players.at(turn.at(iteration))->issueOrder(players, getOrderType(players.at(turn.at(iteration))->getCard(randomValue)));
+                }
                 trueFalse = false;
+                cardUsed = true;
+                break;
             }
         }
         //end turn or not
-        while (true) {
-            cout << "Will you end your turn? [y/n]" << endl;
-            cin >> str;
-            char first = str.at(0);
-            //remove player from roundrobin
-            if (first == 'y') {
-                turn.erase(turn.begin() + iteration);
-                break;
-            }
-            else if (first == 'n') {
-                break;
+        while (trueFalse) {
+            if (players.at(turn.at(iteration))->getStrategy() == "human") {
+                cout << "Will you end your turn? [y/n]" << endl;
+                cin >> str;
+                char first = str.at(0);
+                //remove player from roundrobin
+                if (first == 'y') {
+                    turn.erase(turn.begin() + iteration);
+                    break;
+                }
+                else if (first == 'n') {
+                    break;
+                }
+                else {
+                    cout << "Cannot understand choice. please enter again [y/n]: " << endl;
+                }
             }
             else {
-                cout << "Cannot understand choice. please enter again [y/n]: " << endl;
+                int randomValue;
+                randomValue = rand() % 2 + 1;
+                if (randomValue == 1) {
+                    turn.erase(turn.begin() + iteration);
+                    break;
+                }
+                break;
             }
         }
-
         //return to first iteration
         trueFalse = true;
         if (iteration >= turn.size()-1) {
@@ -598,6 +614,7 @@ void GameEngine::issueOrdersPhase() {
 
 void GameEngine::executeOrdersPhase() {
     //vector value for round-robin
+    cout << "Entering Execute Order Phase." << endl;
     vector<int> turn;
     for (int i = 0; i < players.size(); i++) {
         turn.push_back(i);
@@ -607,13 +624,11 @@ void GameEngine::executeOrdersPhase() {
     int iteration = 0;
     bool advance = false;
     while (!turn.empty()) {
+        cout << "Executing for: " << players.at(turn.at(iteration))->getStrategy() << endl;
         bool trueFalse = true;
         //first iteration for deploy orders
-        while (players.at(turn.at(iteration))->getReinforcementPool() != 0 && players.at(turn.at(iteration))->getOrdersList()->getSize() > 0) {
+        while (players.at(turn.at(iteration))->getReinforcementPool() > 0 && players.at(turn.at(iteration))->getOrdersList()->getSize() > 0) {
             for (int i = 0; i < players.at(turn.at(iteration))->getOrdersList()->getSize(); i++) {
-                cout << i << endl;
-                cout << players.at(turn.at(iteration))->getOrdersList()->getSize() << endl;
-
                 if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Deploy") {
                     players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute(); 
                     players.at(turn.at(iteration))->getOrdersList()->remove(i);
@@ -624,7 +639,6 @@ void GameEngine::executeOrdersPhase() {
         }
         //second iteration for remaining orders
         while (trueFalse) {
-            cout << "LineTest2" << endl;
             for (int i = 0; i < players.at(turn.at(iteration))->getOrdersList()->getSize(); i++) {
                 if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Advance") {
                     players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
@@ -658,6 +672,7 @@ void GameEngine::executeOrdersPhase() {
         if (players.at(turn.at(iteration))->getOrdersList()->getSize() == 0) {
             turn.erase(turn.begin() + iteration);
         }
+
         //return to first iteration
         if (iteration >= turn.size()-1) {
             iteration = 0;

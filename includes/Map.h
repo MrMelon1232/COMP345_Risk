@@ -43,6 +43,7 @@ private:
 public:
     Territory(const string& name, const string& continentName);
     Territory(const string& name, const string& continentName, int playerID);
+    ~Territory();
     string& GetName();
     const string& GetContinentName() const;
     void AddAdjacentTerritory(Territory* adjacent);

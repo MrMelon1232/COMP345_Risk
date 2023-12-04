@@ -324,6 +324,8 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
                 {
                     cout<<"An agressive player is advancing towards player with ID:  "<< toAdvance->getOwnerID()<<"."<< endl; 
                     newOrder = new Advance(armyAmount, p, toAdvance, strongest);
+                    //adding new order to list 
+                    p->getOrdersList()->add(newOrder);
                     break;
                 }
             }
@@ -334,6 +336,8 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
             cout << "Issuing bomb order from an AGGRESSIVE player..." << endl;
             cout<<"An agressive player is bombing a player with ID:  "<< toBomb->getOwnerID()<<"."<< endl;
             newOrder = new Bomb(p, toBomb);
+            //adding new order to list 
+            p->getOrdersList()->add(newOrder);
             break;
 
         case OrderType::Blockade:
@@ -342,6 +346,8 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
             //Agressive player will blockade the weakest territory
             cout << "Aggressive player using blockade on weakest territory: " <<weakest->GetName()<<endl;
             newOrder = new Blockade(p, weakest);
+            //adding new order to list 
+            p->getOrdersList()->add(newOrder);
             break;
 
         case OrderType::Airlift:
@@ -351,6 +357,8 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
             armyAmount = weakest->getNbArmies(); 
             cout << "Aggressive player about to airlift units to its strongest territory!"<<endl;
             newOrder = new Airlift(p, strongest, weakest, armyAmount);
+            //adding new order to list 
+            p->getOrdersList()->add(newOrder);
             break;
 
         case OrderType::Negotiate:
@@ -360,9 +368,7 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
 
         default:
             break;
-    }
-    //adding new order to list 
-    p->getOrdersList()->add(newOrder);      
+    }  
 }
 
 //returns the type of the strategy

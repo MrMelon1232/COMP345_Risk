@@ -284,6 +284,21 @@ void Player::addTerritory(Territory* territory) {
     territoriesOwned.push_back(territory);
 }
 
+// Function to add territories to the player's possession
+void Player::removeTerritory(Territory* territory) {
+    int index;
+    for (int i = 0; i < territoriesOwned.size(); i++) {
+        if (territoriesOwned.at(i) == territory) {
+            index = i;
+            break;
+        }
+    }
+    auto myIterator = territoriesOwned.begin();
+    advance(myIterator, index); 
+    delete* myIterator;
+    territoriesOwned.erase(myIterator);
+}
+
 // Destructor, clean up any allocated memory
 Player::~Player() {
     delete orders;

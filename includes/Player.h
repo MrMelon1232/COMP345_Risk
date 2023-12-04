@@ -98,6 +98,7 @@ public:
         void setTempPool(int count);
         // Add territory
         void addTerritory(Territory* territory);
+        void removeTerritory(Territory* territory);
 
         Hand* getHand() const {return hand;}
   
