@@ -385,7 +385,6 @@ void GameEngine::mainGameLoop() {
     cout << "\n\nentering main game loop" << endl;
     bool gameEnd = false;
     while (!gameEnd) {
-        //cout << "inside while loop" << endl;
         //run game loop
         
         reinforcementPhase();
@@ -393,6 +392,7 @@ void GameEngine::mainGameLoop() {
         executeOrdersPhase();
         
         //forceGameWin();
+
         nbTurnsPlayed++;
         gameEnd =  gameResultCheck();
         cout << "testing" << endl;
@@ -413,7 +413,6 @@ bool GameEngine::gameResultCheck() {
 
     auto iterator = players.begin();
     while (iterator != players.end()) {
-        //cout << "getting player data: " << players.at(0) << " " << players.at(1) << " " << players.at(2) << endl;
         cout << "checking player" << endl;
         if ((*iterator)->getTerritories().size() < 1) {
             cout << "Player " << (*iterator)->getName() + " ID: " << (*iterator)->getPlayerID() << " is out!" << endl;
@@ -431,7 +430,6 @@ bool GameEngine::gameResultCheck() {
             cout << "territories owned in continent: " << currentMap->getContinents().at(i)->getTerritory().size() << endl;
             numberTerritories += currentMap->getContinents().at(i)->getTerritory().size();
         }
-        //cout << numberTerritoriesOwned << " " << numberTerritories;
         if (numberTerritoriesOwned == numberTerritories) {
             return true;
         }
@@ -449,7 +447,6 @@ void GameEngine::reinforcementPhase() {
     auto iterator = players.begin();
     
     while (iterator != players.end()) {
-        //cout << "\n-----------------debug line--------------------\n" << (*iterator)->getTempPool() << endl;
         (*iterator)->setTempPool((*iterator)->getReinforcementPool());
         //number of territories owned by players
         int territoryQuantity = 0; 
@@ -474,7 +471,6 @@ void GameEngine::reinforcementPhase() {
         if (reinforcement < 3) {
             reinforcement = 3;
         }
-        //cout << "\n-----------------debug line--------------------\n" << reinforcement << endl;
         ++iterator;
     }
 }
@@ -486,8 +482,12 @@ void GameEngine::issueOrdersPhase() {
         turn.push_back(i);
         //setting reinforcement pool
         players.at(i)->setReinforcementPool(players.at(i)->getReinforcementPool() + reinforcement);
-        players.at(i)->setTempPool(players.at(i)->getTempPool() + reinforcement);
-        //cout << "\n-----------------debug line--------------------\n" << players.at(i)->getTempPool() << endl;
+        if (players.at(i)->getStrategy() == "neutral" || players.at(i)->getStrategy() == "cheater") {
+            players.at(i)->setTempPool(-1);
+        }
+        else {
+            players.at(i)->setTempPool(players.at(i)->getTempPool() + reinforcement);
+        }
     }
 
     //round-robin loop
@@ -495,15 +495,17 @@ void GameEngine::issueOrdersPhase() {
     int iteration = 0;
     while (!turn.empty()) {
         string str, availableOrder;
-        cout << "Current player issuing order: " << players.at(turn.at(iteration))->getName() << " ID: " << players.at(turn.at(iteration))->getPlayerID() << endl;
+        cout << "Current player issuing order: " << players.at(turn.at(iteration))->getName() << " ID: " << players.at(turn.at(iteration))->getPlayerID() << " | " << players.at(turn.at(iteration))->getStrategy() << endl;
         //show territories that player can deploy
-        //cout << "\n-----------------debug line--------------------\n" << players.at(iteration)->getTempPool() << endl;
         //deploying reinforcements
         while (players.at(turn.at(iteration))->getTempPool() > 0) {
-            //cout << "\n-----------------debug line--------------------\n" << players.at(turn.at(iteration))->getTempPool() << "\n------------------------------------------------\n" << endl;
             players.at(turn.at(iteration))->issueOrder(players, getOrderType("deploy"));
+
+            cout << players.at(turn.at(iteration))->getTempPool() << endl;
+            cout << players.at(turn.at(iteration))->getOrdersList()->getSize() << endl;
             if (players.at(turn.at(iteration))->getTempPool() <= 0) {
                 trueFalse = false;
+                break;
             }
         }
         //chose between advance or a card
@@ -587,22 +589,28 @@ void GameEngine::executeOrdersPhase() {
     int iteration = 0;
     bool advance = false;
     while (!turn.empty()) {
+        cout << "LineTest4" << endl;
+        cout << turn.size() << endl;
+        cout << players.at(turn.at(0))->getStrategy() << endl;
+        cout << players.at(turn.at(0))->getOrdersList()->getSize() << endl;
         bool trueFalse = true;
         //first iteration for deploy orders
-        while (players.at(turn.at(iteration))->getReinforcementPool() != 0) {
+        while (players.at(turn.at(iteration))->getReinforcementPool() != 0 && players.at(turn.at(iteration))->getOrdersList()->getSize() > 0) {
             for (int i = 0; i < players.at(turn.at(iteration))->getOrdersList()->getSize(); i++) {
+                cout << i << endl;
+                cout << players.at(turn.at(iteration))->getOrdersList()->getSize() << endl;
                 if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Deploy") {
                     players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute(); 
                     players.at(turn.at(iteration))->getOrdersList()->remove(i);
-                    i--;
-                    //cout << "DebugLine:" << players.at(turn.at(iteration))->getOrdersList()->getSize() << endl;
+                    i--;    
                 }
+                cout << "LineTest" << endl;
             }
             trueFalse = false;
         }
         //second iteration for remaining orders
-        //cout << players.at(turn.at(iteration))->getTerritories().at(0)->getNbArmies() << endl;
         while (trueFalse) {
+            cout << "LineTest2" << endl;
             for (int i = 0; i < players.at(turn.at(iteration))->getOrdersList()->getSize(); i++) {
                 if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Advance") {
                     players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
@@ -632,7 +640,7 @@ void GameEngine::executeOrdersPhase() {
             }
             trueFalse = false;
         }
-        cout << "DebugLine:" << players.at(turn.at(iteration))->getOrdersList()->getSize() << endl;
+        cout << "DebugLine:" << players.at(turn.at(iteration))->getStrategy() << " " << players.at(turn.at(iteration))->getOrdersList()->getSize() << endl;
         //remove player from roundrobin
         if (players.at(turn.at(iteration))->getOrdersList()->getSize() == 0) {
             turn.erase(turn.begin() + iteration);
@@ -646,7 +654,7 @@ void GameEngine::executeOrdersPhase() {
         }
         cout << "Debug:\t" << iteration << endl;
     }
-
+    cout << "LineTest3" << endl;
 }
 
 OrderType getOrderType(string str) {
@@ -685,7 +693,6 @@ void GameEngine::forceGameWin() {
             currentMap->getTerritories().at(i)->setOwnerID(players.at(0)->getPlayerID());
             players.at(0)->addTerritory(currentMap->getTerritories().at(i));
         }
-        //cout << players.at(0)->getTerritories().at(i)->GetName() << endl;
     }
 }
 

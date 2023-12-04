@@ -307,9 +307,11 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
             cout << "Issuing deploy order from an AGGRESSIVE player..." << endl;
 
             //The aggressive player will always deploy to the strongest territory it has
-            armyAmount = p->getReinforcementPool(); 
+            armyAmount = p->getTempPool();
             newOrder = new Deploy(armyAmount, p, strongest);
-            p->setReinforcementPool(p->getReinforcementPool() - armyAmount);
+            p->getOrdersList()->add(newOrder);
+            //p->setReinforcementPool(p->getReinforcementPool() - armyAmount);
+            p->setTempPool(p->getTempPool() - armyAmount);
             cout<< armyAmount <<" units have been deployed to " <<strongest->GetName()<<"."<< endl;; 
             break;
 
@@ -393,13 +395,18 @@ void BenevolentPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
     switch (type) {
         case OrderType::Deploy:
             cout << "Issuing deploy order for weakest territories..." << endl;
-            armyAmount = p->getReinforcementPool(); // Deploy all available armies to the weakest territories
+            armyAmount = p->getTempPool(); // Deploy all available armies to the weakest territories
+            newOrder = new Deploy(armyAmount, p, weakestTerritories.at(0));
+            //adding new order to list 
+            p->getOrdersList()->add(newOrder); 
+            p->setTempPool(p->getTempPool() - armyAmount);
+            /*
             for (Territory* territory : weakestTerritories) {
                 newOrder = new Deploy(armyAmount, p, territory);
                  //adding new order to list 
                 p->getOrdersList()->add(newOrder);
                 p->setTempPool(p->getTempPool() - armyAmount);
-            }
+            }*/
             break;
 
         case OrderType::Advance:
@@ -533,7 +540,7 @@ NeutralPlayerStrategy::~NeutralPlayerStrategy()
 vector<Territory*> NeutralPlayerStrategy::toAttack()
 {
     vector<Territory*> notAttacking;
-    cout<<"Neutral player is returning an empty list for attacking...";
+    cout << "Neutral player is returning an empty list for attacking..." << endl;
     return notAttacking;
 }
 
@@ -541,13 +548,13 @@ vector<Territory*> NeutralPlayerStrategy::toAttack()
 vector<Territory*> NeutralPlayerStrategy::toDefend()
 {
     vector<Territory*> notDefending;
-    cout<<"Neutral player is returning an empty list for defending...";
+    cout << "Neutral player is returning an empty list for defending..." << endl;
     return notDefending;
 }
 
 void NeutralPlayerStrategy::issueOrder(std::vector<Player*> target, OrderType type)
 {
-    cout<<"This is player is using the NeutralPlayerStrategy, it cannot issue orders of any type!"; 
+    cout << "This is player is using the NeutralPlayerStrategy, it cannot issue orders of any type!" << endl;
 }
 
 //returns the type of the strategy
