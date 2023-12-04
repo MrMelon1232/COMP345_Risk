@@ -36,7 +36,7 @@ private:
     int nbArmies;
     string continentName;
     vector<Territory*> adjacentTerritories;
-    Player* owner = nullptr;
+    Player* owner;
     Player* getOwner() const;
     int ownerID;
 

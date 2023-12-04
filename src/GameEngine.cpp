@@ -387,14 +387,15 @@ void GameEngine::mainGameLoop() {
     while (!gameEnd) {
         //cout << "inside while loop" << endl;
         //run game loop
-        /*
+        
         reinforcementPhase();
         issueOrdersPhase();
-        executeOrdersPhase();*/
+        executeOrdersPhase();
         
         //forceGameWin();
         nbTurnsPlayed++;
         gameEnd =  gameResultCheck();
+        cout << "testing" << endl;
     }
 
     if (players.size() > 1) {
@@ -437,9 +438,9 @@ bool GameEngine::gameResultCheck() {
     }
     cout << "Game still in progress, starting new turn." << endl;
 
-    if (maxTurns == -1) // The game played doesn't have a limit of turns.
-        return false;
-    return nbTurnsPlayed < maxTurns;
+    if (maxTurns == nbTurnsPlayed) // The game played doesn't have a limit of turns.
+        return true;
+    return false;
 }
 
 void GameEngine::reinforcementPhase() {
@@ -593,38 +594,45 @@ void GameEngine::executeOrdersPhase() {
                 if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Deploy") {
                     players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute(); 
                     players.at(turn.at(iteration))->getOrdersList()->remove(i);
+                    i--;
+                    //cout << "DebugLine:" << players.at(turn.at(iteration))->getOrdersList()->getSize() << endl;
                 }
             }
             trueFalse = false;
         }
         //second iteration for remaining orders
-        cout << players.at(turn.at(iteration))->getTerritories().at(0)->getNbArmies() << endl;
+        //cout << players.at(turn.at(iteration))->getTerritories().at(0)->getNbArmies() << endl;
         while (trueFalse) {
             for (int i = 0; i < players.at(turn.at(iteration))->getOrdersList()->getSize(); i++) {
                 if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Advance") {
                     players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
                     players.at(turn.at(iteration))->getOrdersList()->remove(i);
+                    i--;
                 }
                 else if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Bomb") {
                     players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
                     players.at(turn.at(iteration))->getOrdersList()->remove(i);
+                    i--;
                 }
                 else if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Blockade") {
                     players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
                     players.at(turn.at(iteration))->getOrdersList()->remove(i);
+                    i--;
                 }
                 else if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Airlift") {
                     players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
                     players.at(turn.at(iteration))->getOrdersList()->remove(i);
+                    i--;
                 }
                 else if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Negotiate") {
                     players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute();
                     players.at(turn.at(iteration))->getOrdersList()->remove(i);
+                    i--;
                 }
             }
             trueFalse = false;
         }
-
+        cout << "DebugLine:" << players.at(turn.at(iteration))->getOrdersList()->getSize() << endl;
         //remove player from roundrobin
         if (players.at(turn.at(iteration))->getOrdersList()->getSize() == 0) {
             turn.erase(turn.begin() + iteration);
@@ -636,7 +644,9 @@ void GameEngine::executeOrdersPhase() {
         else {
             iteration++;
         }
+        cout << "Debug:\t" << iteration << endl;
     }
+
 }
 
 OrderType getOrderType(string str) {
@@ -693,6 +703,7 @@ void GameEngine::gameStart() {
         Player* currentPlayer = getPlayers()[playerIndex];
         currentPlayer->addTerritory(territory);
         territory->setOwner(currentPlayer);
+        territory->setOwnerID(currentPlayer->getPlayerID());
         playerIndex = (playerIndex + 1) % getPlayers().size();
     }
 
