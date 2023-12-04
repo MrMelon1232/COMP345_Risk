@@ -391,8 +391,11 @@ void GameEngine::mainGameLoop() {
         issueOrdersPhase();
         executeOrdersPhase();
         
-        //forceGameWin();
-
+        int randomValue;
+        randomValue = rand() % 2;
+        if (randomValue == 1 && nbTurnsPlayed == maxTurns/2) {
+            forceGameWin();
+        }
         nbTurnsPlayed++;
         gameEnd =  gameResultCheck();
         cout << "testing" << endl;
@@ -712,7 +715,12 @@ OrderType getOrderType(string str) {
 
 void GameEngine::forceGameWin() {
     cout << "Erasing a player manually to simulate winning game..." << endl;
-    players.resize(1);
+    Player* temp;
+    int randomValue;
+    randomValue = rand() % players.size();
+    temp = players.at(randomValue);
+    players.clear();
+    players.push_back(temp);
     for (int i = 0; i < currentMap->getTerritories().size(); i++) {
         if (currentMap->getTerritories().at(i)->getOwnerID() != players.at(0)->getPlayerID()) {
             currentMap->getTerritories().at(i)->setOwner(players.at(0));

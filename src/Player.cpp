@@ -295,7 +295,6 @@ void Player::removeTerritory(Territory* territory) {
     }
     auto myIterator = territoriesOwned.begin();
     advance(myIterator, index); 
-    delete* myIterator;
     territoriesOwned.erase(myIterator);
 }
 

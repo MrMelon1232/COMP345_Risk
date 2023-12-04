@@ -82,10 +82,6 @@ string& Territory::GetName() {
     return name;
 }
 
-Territory::~Territory()
-{
-}
-
 // GetContinentName method
 const string& Territory::GetContinentName() const {
     return continentName;

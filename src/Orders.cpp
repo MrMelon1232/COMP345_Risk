@@ -353,7 +353,7 @@ void Blockade::execute()
         player->removeTerritory(target);
         target->setOwnerID(neutralPlayer->getPlayerID());
         neutralPlayer->addTerritory(target); 
-        //player.
+
         cout << target->GetName() << " now belongs to the neutral player" << endl;
         cout << "Units have been transferred to the neutral player\n";
         cout << "Displaying neutral player below...\n";
