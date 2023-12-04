@@ -309,10 +309,7 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
             //The aggressive player will always deploy to the strongest territory it has
             armyAmount = p->getTempPool();
             newOrder = new Deploy(armyAmount, p, strongest);
-            p->getOrdersList()->add(newOrder);
-            //p->setReinforcementPool(p->getReinforcementPool() - armyAmount);
             p->setTempPool(p->getTempPool() - armyAmount);
-            cout<< armyAmount <<" units have been deployed to " <<strongest->GetName()<<"."<< endl;; 
             break;
 
         case OrderType::Advance:

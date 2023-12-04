@@ -500,9 +500,6 @@ void GameEngine::issueOrdersPhase() {
         //deploying reinforcements
         while (players.at(turn.at(iteration))->getTempPool() > 0) {
             players.at(turn.at(iteration))->issueOrder(players, getOrderType("deploy"));
-
-            cout << players.at(turn.at(iteration))->getTempPool() << endl;
-            cout << players.at(turn.at(iteration))->getOrdersList()->getSize() << endl;
             if (players.at(turn.at(iteration))->getTempPool() <= 0) {
                 trueFalse = false;
                 break;
@@ -589,22 +586,18 @@ void GameEngine::executeOrdersPhase() {
     int iteration = 0;
     bool advance = false;
     while (!turn.empty()) {
-        cout << "LineTest4" << endl;
-        cout << turn.size() << endl;
-        cout << players.at(turn.at(0))->getStrategy() << endl;
-        cout << players.at(turn.at(0))->getOrdersList()->getSize() << endl;
         bool trueFalse = true;
         //first iteration for deploy orders
         while (players.at(turn.at(iteration))->getReinforcementPool() != 0 && players.at(turn.at(iteration))->getOrdersList()->getSize() > 0) {
             for (int i = 0; i < players.at(turn.at(iteration))->getOrdersList()->getSize(); i++) {
                 cout << i << endl;
                 cout << players.at(turn.at(iteration))->getOrdersList()->getSize() << endl;
+
                 if (players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->getName() == "Deploy") {
                     players.at(turn.at(iteration))->getOrdersList()->getOrder(i)->execute(); 
                     players.at(turn.at(iteration))->getOrdersList()->remove(i);
                     i--;    
                 }
-                cout << "LineTest" << endl;
             }
             trueFalse = false;
         }
@@ -640,7 +633,6 @@ void GameEngine::executeOrdersPhase() {
             }
             trueFalse = false;
         }
-        cout << "DebugLine:" << players.at(turn.at(iteration))->getStrategy() << " " << players.at(turn.at(iteration))->getOrdersList()->getSize() << endl;
         //remove player from roundrobin
         if (players.at(turn.at(iteration))->getOrdersList()->getSize() == 0) {
             turn.erase(turn.begin() + iteration);
@@ -652,9 +644,7 @@ void GameEngine::executeOrdersPhase() {
         else {
             iteration++;
         }
-        cout << "Debug:\t" << iteration << endl;
     }
-    cout << "LineTest3" << endl;
 }
 
 OrderType getOrderType(string str) {
