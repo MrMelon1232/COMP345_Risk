@@ -507,21 +507,33 @@ void GameEngine::issueOrdersPhase() {
         }
         //chose between advance or a card
         while (trueFalse && advance) {
-            cout << "Would you like to advance armies? Player won't be able to use advance again for this phase after selecting 'no'. [y/n] : " << endl;
-            cin >> str;
-            char first = str.at(0);
-            //remove player from roundrobin
-            if (first == 'y') {
-                players.at(turn.at(iteration))->issueOrder(players, getOrderType("advance"));
-                trueFalse = false;
-                break;
+            //advance for humans
+            if (players.at(turn.at(iteration))->getStrategy() == "human") {
+                cout << "Would you like to advance armies? Player won't be able to use advance again for this phase after selecting 'no'. [y/n] : " << endl;
+                cin >> str;
+
+                char first = str.at(0);
+                //remove player from roundrobin
+                if (first == 'y') {
+                    players.at(turn.at(iteration))->issueOrder(players, getOrderType("advance"));
+                    trueFalse = false;
+                    break;
+                }
+                else if (first == 'n') {
+                    advance = false;
+                    break;
+                }
+                else {
+                    cout << "Cannot understand choice. please enter again." << endl;
+                }
             }
-            else if (first == 'n') {
-                advance = false;
-                break;
-            }
+            //for cpu orders
             else {
-                cout << "Cannot understand choice. please enter again." << endl;
+                if (players.at(turn.at(iteration))->getStrategy() == "aggressive" || players.at(turn.at(iteration))->getStrategy() == "benevolent") {
+                    players.at(turn.at(iteration))->issueOrder(players, getOrderType("advance"));
+                }
+                advance = false;
+                trueFalse = false;
             }
         }
 
@@ -531,19 +543,28 @@ void GameEngine::issueOrdersPhase() {
             availableOrder += "[" + players.at(turn.at(iteration))->getCard(i) + "]\t";
         }
         while (trueFalse && !cardUsed) {
-            cout << "Available Order: " << availableOrder << "\nState the order ton be issued: " << endl;
-            cin >> str;
-            //check if player has card
-            for (int i = 0; i < players.at(turn.at(iteration))->getHandSize(); i++) {
-                if (players.at(turn.at(iteration))->getCard(i) == str) {
-                    players.at(turn.at(iteration))->issueOrder(players, getOrderType(str));
-                    trueFalse = false;
-                    cardUsed = true;
-                    break;
+            //card for humans
+            if (players.at(turn.at(iteration))->getStrategy() == "human") {
+                cout << "Available Order: " << availableOrder << "\nState the order ton be issued: " << endl;
+                cin >> str;
+
+                //check if player has card
+                for (int i = 0; i < players.at(turn.at(iteration))->getHandSize(); i++) {
+                    if (players.at(turn.at(iteration))->getCard(i) == str) {
+                        players.at(turn.at(iteration))->issueOrder(players, getOrderType(str));
+                        trueFalse = false;
+                        cardUsed = true;
+                        break;
+                    }
+                    else  if (i == players.at(turn.at(iteration))->getHandSize() - 1) {
+                        cout << "Invalid order. Please ender a valid order:" << endl;
+                    }
                 }
-                else  if (i == players.at(turn.at(iteration))->getHandSize()-1) {
-                    cout << "Invalid order. Please ender a valid order:" << endl;
-                }
+            }
+            //card for cpu
+            else {
+
+                trueFalse = false;
             }
         }
         //end turn or not
