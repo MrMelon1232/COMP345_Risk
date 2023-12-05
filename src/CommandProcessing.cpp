@@ -590,6 +590,7 @@ string TournamentCommand::stringToLog()
     for (int i = 0; i < table.size(); i++) {
         //map
         str += "\n" + table[i].at(0) + " " + to_string(i+1);
+        cout << "\n";
         for (int j = 0; j < table[i].size(); j++) {
             cout << table[i].at(j) << "\t";
             if (j != 0) {

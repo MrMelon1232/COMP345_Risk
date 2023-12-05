@@ -785,6 +785,7 @@ void GameEngine::startTournament(TournamentCommand* tournamentCmd) {
     MapLoader* mapLoader = getCommandProcessor()->getMapLoader();
     for (string mapFile : tournamentCmd->mapFiles) {
         //add game data (map#)
+        endGameData.clear();
         endGameData.push_back("Map");
         for (int j = 0; j < tournamentCmd->nbGames; j++) {
             // Prepare the game.
