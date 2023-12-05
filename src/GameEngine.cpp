@@ -813,7 +813,9 @@ void GameEngine::startTournament(TournamentCommand* tournamentCmd) {
             //add game data (winning player)
             
             if (players.size() == 1) {
-                endGameData.push_back(players.at(0)->getStrategy());
+                string str = players.at(0)->getStrategy();
+                str.resize(7);
+                endGameData.push_back(str);
             }
             else {
                 endGameData.push_back("Draw");
