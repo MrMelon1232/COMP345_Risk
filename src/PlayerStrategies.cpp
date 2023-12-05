@@ -290,7 +290,10 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
     //variables for issuing orders
     string playerTerritory, targetTerritory, playerList;
     int armyAmount, indexD = 0, indexA = 0;
-    Territory* toBomb = toAttack().front();
+    Territory* toBomb = nullptr;
+    if (toAttack().size() > 1) {
+        toBomb = toAttack().front();
+    }
     Territory* strongest = toDefend().front();
     Territory* weakest = toDefend().back();
 

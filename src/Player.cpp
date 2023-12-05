@@ -73,7 +73,7 @@ std::ostream& operator<<(std::ostream& os, Player& player) {
 
     os << "-------------------------------------------------------------\n";
     //displays playerID
-    os << "Player" << player.playerID << ": \n";
+    os << "Player " << player.playerID << ": \n";
 
     os << "Territories Owned: \n";
     for (Territory* territory : player.territoriesOwned) {

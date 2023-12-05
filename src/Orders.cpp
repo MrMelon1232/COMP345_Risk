@@ -356,8 +356,9 @@ void Blockade::execute()
 
         cout << target->GetName() << " now belongs to the neutral player" << endl;
         cout << "Units have been transferred to the neutral player\n";
-        cout << "Displaying neutral player below...\n";
-        //cout<< *neutralPlayer; 
+        //cout << "Displaying neutral player below...\n";
+        //cout << neutralPlayer->getName() << " " << endl;
+        //cout << *neutralPlayer << endl;
         cout << "\n";
         notify(*this);
     }
