@@ -569,7 +569,12 @@ void GameEngine::issueOrdersPhase() {
                 int randomValue;
                 randomValue = rand() % (players.at(turn.at(iteration))->getHandSize() + 1);
                 if (randomValue < players.at(turn.at(iteration))->getHandSize() && !cardUsed) {
-                    players.at(turn.at(iteration))->issueOrder(players, getOrderType(players.at(turn.at(iteration))->getCard(randomValue)));
+                    if (players.at(turn.at(iteration))->getCard(randomValue) == "reinforcement") {
+                        players.at(turn.at(iteration))->issueOrder(players, getOrderType("diplomacy"));
+                    }
+                    else {
+                        players.at(turn.at(iteration))->issueOrder(players, getOrderType(players.at(turn.at(iteration))->getCard(randomValue)));
+                    }
                 }
                 trueFalse = false;
                 cardUsed = true;
