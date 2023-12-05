@@ -51,7 +51,7 @@ int main() {
     //testA2();
 
     //Assignment 3
-    testTournament();
-    //testPlayerStrategies();
+    //testTournament();
+    testPlayerStrategies();
 }
 

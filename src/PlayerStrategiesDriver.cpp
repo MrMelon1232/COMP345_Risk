@@ -221,7 +221,7 @@ void testPlayerStrategies() {
     // End of Cheater Player Strategy
     //--------------------------------------------------------------------------------------------------
 
-        //--------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------
     // Aggressive Player Strategy
     //--------------------------------------------------------------------------------------------------
     cout << "-----------Start of Aggressive player -------------\n";
@@ -317,13 +317,13 @@ void testPlayerStrategies() {
     PlayerStrategy* neutralStrategy2 = new NeutralPlayerStrategy(neutralPlayer2);
     neutralPlayer2->setName("NeutralDummy");
     neutralPlayer2->setStrategy(neutralStrategy2);
-    vector<Player*> playerList3;
+    vector<Player*> playerList5;
     playerList3.push_back(neutralPlayer2);
     neutralPlayer->setReinforcementPool(1000);
     
     // Simulate issuing different types of orders
-    Territory* germany3 = new Territory("Germany", "Europe", neutralPlayer->getPlayerID());
-    Territory* spain3 = new Territory("Spain", "Europe", neutralPlayer2->getPlayerID());
+    Territory* germany5 = new Territory("Germany", "Europe", neutralPlayer->getPlayerID());
+    Territory* spain5 = new Territory("Spain", "Europe", neutralPlayer2->getPlayerID());
     neutralPlayer->addTerritory(germany3);
     neutralPlayer2->addTerritory(spain3); 
     germany3->setOwner(neutralPlayer);
@@ -335,7 +335,7 @@ void testPlayerStrategies() {
     
     cout << "Neutral player owns France.\n";
     //Player 2 owns France
-    Territory* france3 = new Territory("France", "Europe", neutralPlayer->getPlayerID());
+    Territory* france5 = new Territory("France", "Europe", neutralPlayer->getPlayerID());
     neutralPlayer->addTerritory(france2); 
     france3->setOwner(neutralPlayer);
 
@@ -387,7 +387,4 @@ void testPlayerStrategies() {
     //--------------------------------------------------------------------------------------------------
     // End of Neutral Player Strategy
     //--------------------------------------------------------------------------------------------------
-}
-
-    
 }
