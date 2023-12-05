@@ -291,7 +291,7 @@ void AggressivePlayerStrategy::issueOrder(std::vector<Player*> target, OrderType
     string playerTerritory, targetTerritory, playerList;
     int armyAmount, indexD = 0, indexA = 0;
     Territory* toBomb = nullptr;
-    if (toAttack().size() > 1) {
+    if (toAttack().size() > 0) {
         toBomb = toAttack().front();
     }
     Territory* strongest = toDefend().front();
